@@ -144,3 +144,17 @@ export async function signOutUser(): Promise<void> {
   }
   await signOut(auth);
 }
+
+/** Full log-out: signs out of Google/Firebase and starts fresh on the guest / owner login page. */
+export async function logOut(): Promise<void> {
+  try {
+    if (localStorage.getItem('content-draft') && !confirm('You have unpublished edits. They stay saved on this device. Log out anyway?')) return;
+  } catch {
+    /* storage blocked */
+  }
+  try {
+    await signOutUser();
+  } finally {
+    location.assign('/login');
+  }
+}

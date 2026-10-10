@@ -4,7 +4,7 @@ import { buildNav, type NavItem } from '../config/navigation';
 import { useContent } from '../lib/content';
 import { EditButton, setEditMode, useEditModeOn } from '../lib/edit';
 import { t } from '../i18n';
-import { adminHint } from '../lib/auth';
+import { adminHint, logOut } from '../lib/auth';
 import { ThemeToggle } from './ThemeToggle';
 
 function Item({ item, onClick }: { item: NavItem; onClick?: () => void }) {
@@ -30,6 +30,9 @@ function Item({ item, onClick }: { item: NavItem; onClick?: () => void }) {
     </NavLink>
   );
 }
+
+/** Owner-only menu tab (shown after an admin login on this device; /admin itself still checks the login). */
+const ADMIN_ITEM: NavItem = { id: 'admin', label: 'Admin', path: '/admin', icon: '⚙', side: 'portfolio', enabled: true, order: 999 };
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -63,6 +66,12 @@ export function Header() {
           {personal.map((i) => (
             <Item key={i.id} item={i} />
           ))}
+          {isAdmin ? (
+            <>
+              <span className="mx-2 h-5 w-px bg-line" aria-hidden="true" />
+              <Item item={ADMIN_ITEM} />
+            </>
+          ) : null}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -85,6 +94,11 @@ export function Header() {
             >
               Sign in
             </Link>
+          ) : null}
+          {isAdmin ? (
+            <button type="button" onClick={logOut} className="chip hidden min-h-11 px-3 text-fg hover:border-accent sm:inline-flex" title="Sign out and go to the login page">
+              Log out
+            </button>
           ) : null}
           <ThemeToggle />
           <button
@@ -113,6 +127,17 @@ export function Header() {
             {personal.map((i) => (
               <Item key={i.id} item={i} onClick={() => setOpen(false)} />
             ))}
+            {isAdmin ? (
+              <>
+                <p className="label col-span-full px-2.5 pt-3">// owner</p>
+                <Item item={ADMIN_ITEM} onClick={() => setOpen(false)} />
+              </>
+            ) : null}
+            {isAdmin ? (
+              <button type="button" onClick={logOut} className="col-span-full mt-2 flex min-h-11 items-center rounded-sm border-t border-line/60 px-2 pt-2 text-left text-sm text-muted hover:text-accent">
+                ⏻ Log out
+              </button>
+            ) : null}
           </div>
         </nav>
       )}
