@@ -192,6 +192,7 @@ export default function About() {
               ↓ Download CV (PDF)
             </a>
           ) : null}
+          <EditButton target={{ kind: 'cv-pdf' }} label="upload CV (PDF)" />
         </aside>
       </div>
     </>

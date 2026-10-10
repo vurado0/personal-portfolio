@@ -13,4 +13,8 @@ export const publishChanges = (baseSha: string, message: string, changes: Change
     body: JSON.stringify({ baseSha, message, changes }),
   });
 
+/** Replaces public/cv.pdf (one commit on main, separate from the draft). */
+export const uploadCvPdf = (baseSha: string, pdf: string) =>
+  apiFetch<{ commitSha: string; commitUrl: string }>('/api/cv-upload', { method: 'POST', body: JSON.stringify({ baseSha, pdf }) });
+
 export const deployStatus = (sha: string) => apiFetch<{ state: DeployState; url?: string }>(`/api/content?status=${sha}`);

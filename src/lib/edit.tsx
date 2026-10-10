@@ -15,6 +15,7 @@ export type EditTarget =
   | { kind: 'certificate'; id?: string }
   | { kind: 'hobby'; id?: string }
   | { kind: 'cv-personal' }
+  | { kind: 'cv-pdf' }
   | { kind: 'cv-section'; id?: string }
   | { kind: 'cv-entry'; section: string; index?: number }
   | { kind: 'post'; id: string }
