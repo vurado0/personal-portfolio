@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router';
 import backgrounds from '../generated/backgrounds.json';
-import { site } from '../config/site';
+import { useContent } from '../lib/content';
 import { signInWithGoogle, signOutUser, useAdminAuth } from '../lib/auth';
 import { Seo } from '../lib/head';
 
@@ -26,6 +26,7 @@ export default function Login() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const bg = backgrounds['espresso-shot'];
+  const site = useContent().content.profile;
 
   if (auth.status === 'admin') return <Navigate to={next} replace />;
 
@@ -61,13 +62,44 @@ export default function Login() {
               <span className="text-accent">$</span> sudo login
             </p>
             <h1 className="mt-4 font-mono text-4xl font-bold leading-tight sm:text-5xl">
-              Welcome back<span className="text-accent">.</span>
+              Welcome<span className="text-accent">.</span>
             </h1>
             <p className="mt-3 text-muted">
-              Owner area of <span className="text-fg">{site.name}</span>: write feed posts and edit skills, projects, articles and your CV.
+              Portfolio of <span className="text-fg">{site.name}</span> — {site.role}.
             </p>
 
-            <div className="card mt-8 space-y-5">
+            <section className="card mt-8 space-y-4" aria-labelledby="guest-title">
+              <div>
+                <p className="label">visitor · recruiter</p>
+                <h2 id="guest-title" className="mt-1 font-mono text-lg font-bold">
+                  View as guest
+                </h2>
+                <p className="mt-1 text-sm text-muted">No account needed. See the CV, projects and skills — read-only.</p>
+              </div>
+              <Link to="/about" className="btn-primary w-full hover:no-underline">
+                Continue as guest →
+              </Link>
+              <div className="flex flex-wrap gap-2 font-mono text-xs">
+                <Link to="/projects" className="chip text-fg hover:no-underline">
+                  projects
+                </Link>
+                <Link to="/skills" className="chip text-fg hover:no-underline">
+                  skills
+                </Link>
+                <Link to="/contact" className="chip text-fg hover:no-underline">
+                  contact
+                </Link>
+                <a href="/cv.pdf" className="chip text-fg hover:no-underline" download>
+                  ↓ cv.pdf
+                </a>
+              </div>
+            </section>
+
+            <div className="card mt-4 space-y-5">
+              <div>
+                <p className="label">owner</p>
+                <h2 className="mt-1 font-mono text-lg font-bold">Sign in to edit</h2>
+              </div>
               {auth.status === 'unconfigured' ? (
                 <p className="text-sm">Firebase is not configured yet (VITE_FIREBASE_* variables are missing).</p>
               ) : auth.status === 'loading' ? (
@@ -89,7 +121,7 @@ export default function Login() {
                 </>
               ) : (
                 <>
-                  <button type="button" className="btn-primary w-full gap-3" onClick={signIn} disabled={busy}>
+                  <button type="button" className="btn-ghost w-full gap-3" onClick={signIn} disabled={busy}>
                     <GoogleIcon />
                     {busy ? 'Opening Google…' : 'Continue with Google'}
                   </button>
