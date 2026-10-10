@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { cldUrl } from '../../lib/cloudinary';
+import { ItemTools } from '../../lib/edit';
 import type { Post, PostType } from '../../lib/feed';
 import { formatDateTime, relativeTime } from '../../lib/format';
 import { SkillChips, TagChip } from '../Chips';
@@ -16,7 +17,8 @@ export const typeLabel: Record<PostType, string> = {
 /** Timeline (X-style) post: meta labels left, content right, thin rules between posts. */
 export function PostCard({ post, detail = false }: { post: Post; detail?: boolean }) {
   return (
-    <article className="grid gap-x-8 gap-y-3 border-t border-ink/20 py-8 dark:border-cream/15 md:grid-cols-[9rem_1fr]">
+    <article className="group relative grid gap-x-8 gap-y-3 border-t border-ink/20 py-8 dark:border-cream/15 md:grid-cols-[9rem_1fr]">
+      <ItemTools target={{ kind: 'post', id: post.id }} label={post.music?.title || post.text.slice(0, 40) || 'post'} />
       <dl className="meta-grid content-start md:grid-cols-[3.5rem_1fr]">
         <dt>Type:</dt>
         <dd className="text-fg">{typeLabel[post.type]}</dd>

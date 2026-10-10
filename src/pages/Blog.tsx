@@ -7,7 +7,8 @@ import { FeedView } from '../components/feed/FeedView';
 import { PostCard, typeLabel } from '../components/feed/PostCard';
 import { Markdown } from '../components/Markdown';
 import { Notice } from '../components/Notice';
-import { content } from '../lib/content';
+import { useContent } from '../lib/content';
+import { AddButton, EditButton } from '../lib/edit';
 import { cldUrl } from '../lib/cloudinary';
 import { getPost, type Post } from '../lib/feed';
 import { NotConfiguredError } from '../lib/firebase';
@@ -59,6 +60,7 @@ export function BlogFeed() {
 }
 
 export function BlogArticles() {
+  const { content } = useContent();
   const [params, setParams] = useSearchParams();
   const tag = params.get('tag');
   const tags = [...new Set(content.articles.flatMap((a) => a.tags))].sort();
@@ -77,6 +79,7 @@ export function BlogArticles() {
           </div>
         )}
         {list.length ? list.map((a) => <ArticleRow key={a.slug} article={a} />) : <Notice title="No articles yet" />}
+        <AddButton target={{ kind: 'article' }} label="New article" className="mt-6" />
       </div>
     </>
   );
@@ -84,15 +87,19 @@ export function BlogArticles() {
 
 export function BlogArticle() {
   const { slug } = useParams();
+  const { content } = useContent();
   const a = content.articles.find((x) => x.slug === slug);
   if (!a) return <NotFound />;
   return (
     <>
       <Seo title={a.title} description={a.summary} image={a.cover} type="article" path={a.url} />
       <article className="container-page max-w-5xl pt-10">
-        <Link to="/blog/articles" className="text-sm">
-          ← Articles
-        </Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link to="/blog/articles" className="text-sm">
+            ← Articles
+          </Link>
+          <EditButton target={{ kind: 'article', path: `content/blog/${a.date}-${a.slug}.md` }} />
+        </div>
         <div className="mt-8 grid gap-6 border-t border-ink/25 pt-6 dark:border-cream/20 md:grid-cols-[9rem_1fr]">
           <dl className="meta-grid content-start md:grid-cols-[3.5rem_1fr]">
             <dt>Date:</dt>

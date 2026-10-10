@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router';
 import { PageHeader } from '../components/PageHeader';
-import { site } from '../config/site';
+import { useContent } from '../lib/content';
 import { firebaseConfigured } from '../lib/env';
 import { sendMessage } from '../lib/feed';
 import { Seo } from '../lib/head';
@@ -20,6 +20,7 @@ function recentSends(): number[] {
 }
 
 export default function Contact() {
+  const site = useContent().content.profile;
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error' | 'limited'>('idle');
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {

@@ -1,6 +1,6 @@
 // /admin — owner-only area: feed posts (phone friendly), site content and contact messages.
 import { lazy, Suspense, useEffect, useMemo, useState, type FormEvent } from 'react';
-import { Navigate } from 'react-router';
+import { Navigate, useSearchParams } from 'react-router';
 import { signOutUser, useAdminAuth } from '../lib/auth';
 import { apiFetch, cldUrl, deleteFromCloudinary, uploadToCloudinary } from '../lib/cloudinary';
 import { parseMusicUrl, providerLabel } from '../lib/embeds';
@@ -8,6 +8,7 @@ import {
   createPost,
   deleteMessage,
   deletePostDoc,
+  getPost,
   listAllPosts,
   listMessages,
   POST_TYPES,
@@ -464,6 +465,8 @@ export default function Admin() {
   const [tab, setTab] = useState<'posts' | 'editor' | 'content' | 'messages'>('posts');
   const [editing, setEditing] = useState<Post | null>(null);
   const [editorKey, setEditorKey] = useState(0);
+  const [params, setParams] = useSearchParams();
+  const postParam = params.get('post');
 
   const openEditor = (p: Post | null) => {
     setEditing(p);
@@ -481,6 +484,15 @@ export default function Admin() {
       ] as const,
     [editing],
   );
+
+  // "✎" on a feed post in edit mode links here with ?post=<id>.
+  useEffect(() => {
+    if (auth.status !== 'admin' || !postParam) return;
+    getPost(postParam).then((p) => {
+      if (p) openEditor(p);
+      setParams({}, { replace: true });
+    });
+  }, [auth.status, postParam]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (auth.status === 'signed-out' || auth.status === 'denied') return <Navigate to="/login?next=/admin" replace />;
 

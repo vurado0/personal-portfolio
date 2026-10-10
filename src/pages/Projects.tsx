@@ -3,11 +3,13 @@ import backgrounds from '../generated/backgrounds.json';
 import { ProjectCard, StatusBadge } from '../components/Cards';
 import { SkillChips } from '../components/Chips';
 import { Markdown } from '../components/Markdown';
-import { content } from '../lib/content';
+import { useContent } from '../lib/content';
+import { AddButton, EditButton } from '../lib/edit';
 import { Seo } from '../lib/head';
 import NotFound from './NotFound';
 
 export function Projects() {
+  const { content } = useContent();
   const bg = backgrounds['espresso-shot'];
   return (
     <>
@@ -28,6 +30,7 @@ export function Projects() {
         {content.projects.map((p) => (
           <ProjectCard key={p.slug} project={p} />
         ))}
+        <AddButton target={{ kind: 'project' }} label="New project" className="min-h-60" />
       </div>
     </>
   );
@@ -35,6 +38,7 @@ export function Projects() {
 
 export function ProjectDetail() {
   const { slug } = useParams();
+  const { content } = useContent();
   const p = content.projects.find((x) => x.slug === slug);
   if (!p) return <NotFound />;
   const links = Object.entries(p.links).filter((e): e is [string, string] => Boolean(e[1]));
@@ -42,9 +46,12 @@ export function ProjectDetail() {
     <>
       <Seo title={p.title} description={p.summary} image={p.cover} type="article" path={p.url} />
       <article className="container-page max-w-4xl pt-10">
-        <Link to="/projects" className="font-mono text-xs">
-          ← all projects
-        </Link>
+        <div className="flex items-center justify-between gap-3">
+          <Link to="/projects" className="font-mono text-xs">
+            ← all projects
+          </Link>
+          <EditButton target={{ kind: 'project', slug: p.slug }} />
+        </div>
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <StatusBadge status={p.status} />
           <span className="label">{p.period}</span>

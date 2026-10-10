@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { PageHeader } from '../components/PageHeader';
-import { site } from '../config/site';
+import { useContent } from '../lib/content';
 import { Seo } from '../lib/head';
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
@@ -14,6 +14,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 
 // TODO(legal): replace every placeholder in [brackets] with your real details before going live.
 export function Impressum() {
+  const site = useContent().content.profile;
   return (
     <>
       <Seo title="Impressum" path="/impressum" />
@@ -51,6 +52,7 @@ export function Impressum() {
 }
 
 export function Datenschutz() {
+  const site = useContent().content.profile;
   return (
     <>
       <Seo title="Datenschutz" path="/datenschutz" />

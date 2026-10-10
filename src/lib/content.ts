@@ -1,12 +1,43 @@
 import raw from 'virtual:content';
 import type { ArticleDoc, ContentBundle, KnowhowDoc, ProjectDoc, Skill } from '../types/content';
+import { useEdit } from './edit';
 
+/** Content as built into this deployment (prerendered). */
 export const content = raw as ContentBundle;
 
-export const skillById = new Map(content.skills.map((s) => [s.id, s]));
+export type SkillRefs = { projects: ProjectDoc[]; knowhow: KnowhowDoc[]; articles: ArticleDoc[] };
 
-export function getSkill(id: string): Skill | undefined {
-  return skillById.get(id);
+export type DerivedContent = {
+  content: ContentBundle;
+  skillById: Map<string, Skill>;
+  /** Static (repo) references for each skill; feed posts are added at runtime from Firestore. */
+  skillRefs: Map<string, SkillRefs>;
+  knowhowCategories: string[];
+};
+
+const cache = new WeakMap<ContentBundle, DerivedContent>();
+
+export function derive(bundle: ContentBundle): DerivedContent {
+  const hit = cache.get(bundle);
+  if (hit) return hit;
+  const refs = new Map<string, SkillRefs>(bundle.skills.map((s) => [s.id, { projects: [], knowhow: [], articles: [] }]));
+  for (const p of bundle.projects) p.skills.forEach((id) => refs.get(id)?.projects.push(p));
+  for (const k of bundle.knowhow) k.skills.forEach((id) => refs.get(id)?.knowhow.push(k));
+  for (const a of bundle.articles) a.skills.forEach((id) => refs.get(id)?.articles.push(a));
+  const d: DerivedContent = {
+    content: bundle,
+    skillById: new Map(bundle.skills.map((s) => [s.id, s])),
+    skillRefs: refs,
+    knowhowCategories: [...new Set(bundle.knowhow.map((k) => k.category))].sort(),
+  };
+  cache.set(bundle, d);
+  return d;
+}
+
+/** Content for rendering: the live, unpublished state in edit mode, otherwise the built content. */
+export function useContent(): DerivedContent {
+  const edit = useEdit();
+  return derive(edit?.bundle ?? content);
 }
 
 export const LEVEL_LABELS = ['', 'learning', 'learning', 'working', 'advanced', 'advanced'] as const;
@@ -14,19 +45,6 @@ export const LEVEL_LABELS = ['', 'learning', 'learning', 'working', 'advanced', 
 export function levelLabel(level: number): string {
   return LEVEL_LABELS[level] ?? 'working';
 }
-
-export type SkillRefs = { projects: ProjectDoc[]; knowhow: KnowhowDoc[]; articles: ArticleDoc[] };
-
-/** Static (repo) references for each skill; feed posts are added at runtime from Firestore. */
-export const skillRefs: Map<string, SkillRefs> = (() => {
-  const refs = new Map<string, SkillRefs>(content.skills.map((s) => [s.id, { projects: [], knowhow: [], articles: [] }]));
-  for (const p of content.projects) p.skills.forEach((id) => refs.get(id)?.projects.push(p));
-  for (const k of content.knowhow) k.skills.forEach((id) => refs.get(id)?.knowhow.push(k));
-  for (const a of content.articles) a.skills.forEach((id) => refs.get(id)?.articles.push(a));
-  return refs;
-})();
-
-export const knowhowCategories = [...new Set(content.knowhow.map((k) => k.category))].sort();
 
 export function categoryLabel(category: string): string {
   const special: Record<string, string> = { macos: 'macOS', c: 'C', git: 'Git', ci: 'CI' };

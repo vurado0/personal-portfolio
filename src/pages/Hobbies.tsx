@@ -1,8 +1,10 @@
 import { Background } from '../components/Background';
-import { content } from '../lib/content';
+import { useContent } from '../lib/content';
+import { AddButton, ItemTools } from '../lib/edit';
 import { Seo } from '../lib/head';
 
 export default function Hobbies() {
+  const { content } = useContent();
   return (
     <>
       <Seo title="Hobbies" description="What I do when I am not at the keyboard." path="/hobbies" />
@@ -17,7 +19,8 @@ export default function Hobbies() {
       </Background>
       <div className="container-page grid gap-0 pt-6">
         {content.hobbies.map((h) => (
-          <article key={h.id} className="grid gap-6 border-t border-ink/20 py-10 dark:border-cream/15 md:grid-cols-[1fr_1.2fr]">
+          <article key={h.id} className="group relative grid gap-6 border-t border-ink/20 py-10 dark:border-cream/15 md:grid-cols-[1fr_1.2fr]">
+            <ItemTools target={{ kind: 'hobby', id: h.id }} label={h.title} />
             <div>
               <h2 className="blog-headline text-4xl sm:text-5xl">{h.title}</h2>
               <p className="mt-4 max-w-lg text-lg">{h.text}</p>
@@ -36,6 +39,7 @@ export default function Hobbies() {
             {h.image ? <img src={h.image} alt="" loading="lazy" className="aspect-[4/3] w-full rounded-lg object-cover" /> : null}
           </article>
         ))}
+        <AddButton target={{ kind: 'hobby' }} label="Add hobby" className="mb-6" />
       </div>
     </>
   );
