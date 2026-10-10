@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
 import { enabledNav, site, type NavItem } from '../config/site';
 import { t } from '../i18n';
+import { adminHint } from '../lib/auth';
 import { ThemeToggle } from './ThemeToggle';
 
 function Item({ item, onClick }: { item: NavItem; onClick?: () => void }) {
@@ -30,8 +31,11 @@ function Item({ item, onClick }: { item: NavItem; onClick?: () => void }) {
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { pathname } = useLocation();
   useEffect(() => setOpen(false), [pathname]);
+  // Read after mount so prerendered HTML and hydration match.
+  useEffect(() => setIsAdmin(adminHint()), [pathname]);
 
   const portfolio = enabledNav.filter((i) => i.side === 'portfolio');
   const personal = enabledNav.filter((i) => i.side === 'personal');
@@ -56,6 +60,11 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {isAdmin && !pathname.startsWith('/admin') ? (
+            <Link to="/admin" className="chip min-h-11 border-accent px-3 text-accent hover:no-underline">
+              admin
+            </Link>
+          ) : null}
           <ThemeToggle />
           <button
             type="button"

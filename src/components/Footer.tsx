@@ -24,6 +24,9 @@ export function Footer() {
           <Link to="/datenschutz" className="text-muted hover:text-accent">
             {t('footer.privacy')}
           </Link>
+          <Link to="/login" className="text-muted/70 hover:text-accent" rel="nofollow">
+            Login
+          </Link>
         </nav>
       </div>
     </footer>

@@ -18,6 +18,7 @@ import Skills from './pages/Skills';
 
 // The admin area (and with it the upload code) is only downloaded when /admin is opened.
 const Admin = lazy(() => import('./pages/Admin'));
+const Login = lazy(() => import('./pages/Login'));
 
 export function App() {
   return (
@@ -57,6 +58,14 @@ export function App() {
         {isEnabled('contact') && <Route path="contact" element={<Contact />} />}
         <Route path="impressum" element={<Impressum />} />
         <Route path="datenschutz" element={<Datenschutz />} />
+        <Route
+          path="login"
+          element={
+            <Suspense fallback={<p className="container-page pt-10 text-muted">Loading…</p>}>
+              <Login />
+            </Suspense>
+          }
+        />
         <Route
           path="admin"
           element={
