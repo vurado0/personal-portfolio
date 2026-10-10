@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { t } from '../../i18n';
 import { POST_TYPES, usePublishedPosts, type PostType } from '../../lib/feed';
+import { AddButton } from '../../lib/edit';
 import { TagChip } from '../Chips';
 import { Notice } from '../Notice';
 import { PostCard, PostTile, typeLabel } from './PostCard';
@@ -56,6 +57,7 @@ export function FeedView() {
         </div>
       )}
 
+      <AddButton target={{ kind: 'post-new' }} label="New post — photo, thought, achievement or music" className="mt-6" />
       <div className="mt-6">
         {state.status === 'loading' && <p className="py-12 text-center text-muted">{t('common.loading')}</p>}
         {state.status === 'unconfigured' && <Notice title="Feed offline">{t('feed.notConfigured')}</Notice>}

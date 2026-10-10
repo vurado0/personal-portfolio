@@ -17,7 +17,9 @@ export type EditTarget =
   | { kind: 'cv-personal' }
   | { kind: 'cv-section'; id?: string }
   | { kind: 'cv-entry'; section: string; index?: number }
-  | { kind: 'post'; id: string };
+  | { kind: 'post'; id: string }
+  | { kind: 'post-new' }
+  | { kind: 'page'; id: string };
 
 export type EditApi = {
   /** Live content: published state + unpublished edits. */

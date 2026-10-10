@@ -2,13 +2,15 @@
 // Provides the live content (published + unpublished edits) to every page, a drawer with the
 // right form for whatever ✎ / + was clicked, delete/move actions and a floating publish bar.
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import hljs from 'highlight.js/lib/common';
 import { useAdminAuth } from '../lib/auth';
 import { deleteFromCloudinary } from '../lib/cloudinary';
 import { buildContent } from '../lib/content-core/build';
 import { EditContextProvider, setEditMode, type EditApi, type EditTarget } from '../lib/edit';
-import { deletePostDoc, getPost } from '../lib/feed';
+import { deletePostDoc, getPost, type Post } from '../lib/feed';
+import { PostEditor } from '../pages/admin/PostEditor';
+import { PageTextForm } from '../pages/admin/ItemForms';
 import { loadSnapshot, type Snapshot } from '../pages/admin/contentApi';
 import { DocForm, emptyDoc, toDoc, type DocKind } from '../pages/admin/DocsEditor';
 import { CERTS, CertificateForm, CV, CvEntryForm, CvPersonalForm, CvSectionForm, HOBBIES, HobbyForm, NavEditor, readCv } from '../pages/admin/ItemForms';
@@ -154,8 +156,32 @@ function FormFor({ target, onDone }: { target: EditTarget; onDone: () => void })
     case 'cv-entry':
       return <CvEntryForm section={target.section} index={target.index} onDone={onDone} />;
     case 'post':
-      return null;
+      return <PostLoader id={target.id} onDone={onDone} />;
+    case 'post-new':
+      return (
+        <>
+          <h3 className="mb-4 font-mono text-xl font-bold">New post</h3>
+          <PostEditor editing={null} onDone={onDone} />
+        </>
+      );
+    case 'page':
+      return <PageTextForm id={target.id} onDone={onDone} />;
   }
+}
+
+function PostLoader({ id, onDone }: { id: string; onDone: () => void }) {
+  const [post, setPost] = useState<Post | null | undefined>(undefined);
+  useEffect(() => {
+    getPost(id).then(setPost, () => setPost(null));
+  }, [id]);
+  if (post === undefined) return <p className="text-muted">Loading post…</p>;
+  if (post === null) return <p>Post not found.</p>;
+  return (
+    <>
+      <h3 className="mb-4 font-mono text-xl font-bold">Edit post</h3>
+      <PostEditor editing={post} onDone={onDone} />
+    </>
+  );
 }
 
 function Drawer({ target, onClose }: { target: EditTarget; onClose: () => void }) {
@@ -190,7 +216,6 @@ function Drawer({ target, onClose }: { target: EditTarget; onClose: () => void }
 
 function LiveEdit({ children, onPublished, published, onDismiss }: { children: ReactNode; onPublished: (p: { sha: string; url: string }) => void; published: Published | null; onDismiss: () => void }) {
   const ws = useWorkspace();
-  const navigate = useNavigate();
   const [target, setTarget] = useState<EditTarget | null>(null);
   const bundle = useMemo(() => buildContent(ws.files, { includeDrafts: true, publicFiles: new Set(ws.publicFiles), highlight }).bundle, [ws.files, ws.publicFiles]);
   const close = useCallback(() => setTarget(null), []);
@@ -198,14 +223,14 @@ function LiveEdit({ children, onPublished, published, onDismiss }: { children: R
   const api = useMemo<EditApi>(
     () => ({
       bundle,
-      open: (t) => (t.kind === 'post' ? navigate(`/admin?post=${t.id}`) : setTarget(t)),
+      open: (t) => setTarget(t),
       remove: (t, label) => {
         removeTarget(ws, t, label).catch((e) => alert((e as Error).message));
       },
       move: (t, dir) => moveTarget(ws, t, dir),
       canMove: (t) => MOVABLE.has(t.kind),
     }),
-    [bundle, ws, navigate],
+    [bundle, ws],
   );
 
   return (
