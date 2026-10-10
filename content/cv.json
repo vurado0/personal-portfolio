@@ -13,24 +13,16 @@
     "drivingLicence": "B",
     "photo": ""
   },
-  "summary": "TBE",
+  "summary": "Software Design student at FH JOANNEUM in Graz, currently on Erasmus at the Universidad de Alcalá in Spain. I enjoy building complete products, from the backend and database to a clean, fast interface, and shipping them with Docker, Kubernetes and CI/CD pipelines. Right now I'm going deeper into C and C++, data structures and operating systems, because I want to understand what happens under the hood. In my bachelor thesis I compare Japanese and European web design with automated, data-driven measurements. Outside of uni I build my own tools, mostly language-learning apps for Japanese and Spanish, used daily by at least one very demanding user: me. I speak German, English, Russian, Spanish and Japanese, and I'm looking for opportunities where I can keep learning and get out of my comfort zone.",
   "sections": [
-    {
-      "id": "work",
-      "type": "timeline",
-      "title": "Work experience",
-      "visible": true,
-      "items": [
-        { "title": "IT support (part-time, placeholder)", "org": "Example GmbH", "start": "2025-03", "end": "2025-09", "text": "PLACEHOLDER — what you did and achieved." }
-      ]
-    },
+    { "id": "work", "type": "timeline", "title": "Work experience", "visible": true, "items": [] },
     {
       "id": "education",
       "type": "timeline",
       "title": "Education and training",
       "visible": true,
       "items": [
-        { "title": "BSc Information Technology (placeholder)", "org": "FH JOANNEUM, Graz", "start": "2024-10", "text": "PLACEHOLDER — focus areas, relevant courses." },
+        { "title": "Software Design & Cloud Computing Bsc", "org": "FH JOANNEUM, Graz", "start": "2024-10", "text": "focus areas, relevant courses." },
         { "title": "Matura (placeholder)", "org": "Example school", "start": "2019", "end": "2024" }
       ]
     },
@@ -61,6 +53,5 @@
     { "id": "soft-skills", "type": "text", "title": "Communication and interpersonal skills", "visible": false, "text": "" },
     { "id": "awards", "type": "list", "title": "Honours and awards", "visible": false, "items": [] },
     { "id": "interests", "type": "list", "title": "Hobbies and interests", "visible": true, "items": [{ "name": "Filmmaking" }, { "name": "Languages" }] }
-  ],
-  "pdf": "/cv.pdf"
+  ]
 }
