@@ -1,11 +1,35 @@
-# Personal portfolio, know-how & blog
+# ☕ Kaito Snezhko — Portfolio, Know-how & Blog
 
-A coffee-themed personal website with two sides:
+**Live: [personal-portfolio-eta-ten-37.vercel.app](https://personal-portfolio-eta-ten-37.vercel.app)**
+
+My personal corner of the web: who I am as an IT student and developer, what I can do, what I've built — and a bit of everyday life on the side. The whole site is brewed in coffee tones: a dark *espresso* side for the professional part and a warm *latte* side for the personal one.
+
+## What you'll find
+
+| | |
+| --- | --- |
+| **Skills** | Grouped by area with a level from *learning* to *advanced* — every skill links to the projects, articles and posts where I actually used it. |
+| **Projects** | What each project solves, how it works, its stack and the lessons learned. |
+| **Know-how** | My public IT notebook: Linux, networking, Docker, Git and more — searchable, with copy-ready code blocks. |
+| **About / CV** | A Europass-style CV: experience, education, language levels (CEFR), digital skills, certifications — plus a PDF download. |
+| **Blog** | A social-style feed (photos, daily wins, thoughts, the songs on repeat) and longer articles. |
+| **Certificates · Hobbies · Contact** | Where I'm heading, what I do off the clock, and how to reach me. |
+
+Recruiters and visitors can browse everything without an account — the [login page](https://personal-portfolio-eta-ten-37.vercel.app/login) has a one-click **guest view**.
+
+## Highlights
+
+- **Edit in place** — signed in as the owner, every page becomes editable: hover for ✎ / ✕, add new items, rename or hide menu tabs, and publish. Changes are validated in the browser, committed to this repo and live about a minute later.
+- **Fast & SEO-friendly** — portfolio pages and articles are prerendered to static HTML; the feed loads live from Firestore.
+- **Privacy first** — no tracking, self-hosted fonts, Spotify/SoundCloud players only load after a click, and photo location data is stripped before upload.
+- **Free to run** — Vercel Hobby, Firebase Spark and Cloudinary Free.
+
+## How it works
 
 - **Portfolio** (dark "espresso", monospace): Home, Skills, Know-how, Projects, About/CV, Certificates, Contact
 - **Personal** (light "latte", grotesk): Blog with a social-style **Feed** (photos, achievements, thoughts, music) and longer **Articles**, plus Hobbies
 
-Portfolio content is Markdown/JSON in [`content/`](content) and is **prerendered** at build time. Feed posts are written from the phone on a private `/admin` page and stored in **Firestore**; photos go to **Cloudinary** through signed uploads. Everything runs on free tiers (Vercel Hobby, Firebase Spark, Cloudinary Free).
+Portfolio content is Markdown/JSON in [`content/`](content) and is **prerendered** at build time. Feed posts are written from the phone on a private `/admin` page and stored in **Firestore**; photos go to **Cloudinary** through signed uploads.
 
 The full requirements are in [`docs/requirements.md`](docs/requirements.md).
 
