@@ -67,6 +67,7 @@ export function ProfileEditor({ onDone }: { onDone?: () => void } = {}) {
         <TextField label="role" required value={p.role} onChange={(role) => set({ role })} placeholder="IT student & developer" />
         <TextField label="location" value={p.location} onChange={(location) => set({ location })} placeholder="Graz, Austria" />
         <TextField label="email" type="email" required value={p.email} onChange={(email) => set({ email })} />
+        <TextField label="photo (home page)" value={p.photo ?? ''} onChange={(photo) => set({ photo: photo || undefined })} placeholder="/images/me.webp or https://…" />
       </div>
       <TextField label="tagline" value={p.tagline} onChange={(tagline) => set({ tagline })} hint="One line on the home page." />
       <TextArea label="description" value={p.description} onChange={(description) => set({ description })} rows={2} hint="Used for search engines and link previews." />

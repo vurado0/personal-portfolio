@@ -48,9 +48,9 @@ export default function Home() {
   const espresso = backgrounds['espresso-shot'];
   return (
     <>
-      <Seo path="/" image={espresso.src} />
+      <Seo path="/" image={site.photo || espresso.src} />
       <section className="relative overflow-hidden border-b border-line/60">
-        <div className="container-page grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[1.3fr_1fr]">
+        <div className="container-page grid items-center gap-10 py-14 sm:py-20 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:gap-12">
           <div>
             <div className="flex items-center justify-between gap-3">
               <p className="font-mono text-sm text-muted">
@@ -58,7 +58,7 @@ export default function Home() {
               </p>
               <EditButton target={{ kind: 'profile' }} label="edit profile" />
             </div>
-            <h1 className="mt-4 font-mono text-4xl font-bold leading-tight tracking-tight sm:text-6xl">
+            <h1 className="mt-4 font-mono text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
               {site.name}
               <span className="text-accent">.</span>
             </h1>
@@ -91,17 +91,28 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-sm lg:max-w-none">
+          <div className="relative mx-auto w-full max-w-xs md:mx-0 md:ml-auto md:max-w-sm">
             <div className="absolute -inset-6 rounded-full bg-crema/10 blur-3xl" aria-hidden="true" />
-            <img
-              src={espresso.src}
-              width={espresso.width}
-              height={espresso.height}
-              alt="An espresso shot pouring from a portafilter"
-              fetchPriority="high"
-              className="relative aspect-[4/5] w-full rounded-lg border border-line/60 object-cover shadow-warm"
-              style={{ backgroundImage: `url(${espresso.placeholder})`, backgroundSize: 'cover' }}
-            />
+            {site.photo ? (
+              <img
+                src={site.photo}
+                width={886}
+                height={886}
+                alt={`Portrait of ${site.name}`}
+                fetchPriority="high"
+                className="relative aspect-square w-full rounded-lg border border-line/60 bg-dark-roast object-cover shadow-warm"
+              />
+            ) : (
+              <img
+                src={espresso.src}
+                width={espresso.width}
+                height={espresso.height}
+                alt=""
+                fetchPriority="high"
+                className="relative aspect-[4/5] w-full rounded-lg border border-line/60 object-cover shadow-warm"
+                style={{ backgroundImage: `url(${espresso.placeholder})`, backgroundSize: 'cover' }}
+              />
+            )}
           </div>
         </div>
       </section>
