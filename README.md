@@ -134,7 +134,7 @@ See [`.env.example`](.env.example). Locally in `.env.local` (never committed); o
 | --- | --- | --- |
 | `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_APP_ID` | client | Firebase web config (public by design) |
 | `VITE_USE_EMULATORS` | client | `true` only locally with the emulators — **always `false` on Vercel** |
-| `VITE_CLOUDINARY_CLOUD_NAME` | client + server | Cloudinary cloud name |
+| `CLOUDINARY_CLOUD_NAME` | server | Cloudinary cloud name (the browser gets it from `/api/cloudinary-sign`) |
 | `FIREBASE_PROJECT_ID` | server | used by `firebase-admin` to verify ID tokens |
 | `ADMIN_UID` | server | the only UID allowed to upload/delete |
 | `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | server | signing — **never** give these a `VITE_` prefix |
