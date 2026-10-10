@@ -1,0 +1,30 @@
+{
+  "groups": [
+    { "id": "programming", "label": "Programming" },
+    { "id": "cloud-devops", "label": "Cloud & DevOps" },
+    { "id": "systems-networking", "label": "Systems & Networking" },
+    { "id": "tools", "label": "Tools" },
+    { "id": "languages", "label": "Spoken languages" }
+  ],
+  "skills": [
+    { "id": "java", "name": "Java", "group": "programming", "level": 4, "context": "PLACEHOLDER — main university language: OOP, collections, JUnit, Spring Boot basics." },
+    { "id": "c", "name": "C", "group": "programming", "level": 3, "context": "PLACEHOLDER — systems programming course: pointers, memory, make." },
+    { "id": "typescript", "name": "TypeScript", "group": "programming", "level": 3, "context": "PLACEHOLDER — this website and small React tools." },
+    { "id": "python", "name": "Python", "group": "programming", "level": 3, "context": "PLACEHOLDER — scripting, automation and data cleanup." },
+    { "id": "sql", "name": "SQL", "group": "programming", "level": 3, "context": "PLACEHOLDER — PostgreSQL schemas, joins and indexes." },
+    { "id": "docker", "name": "Docker", "group": "cloud-devops", "level": 3, "context": "PLACEHOLDER — containerising dev setups, compose stacks, networking." },
+    { "id": "ci-cd", "name": "CI/CD", "group": "cloud-devops", "level": 2, "context": "PLACEHOLDER — GitHub Actions pipelines, Vercel deploys." },
+    { "id": "aws", "name": "AWS", "group": "cloud-devops", "level": 1, "context": "PLACEHOLDER — learning for the Cloud Practitioner exam." },
+    { "id": "firebase", "name": "Firebase", "group": "cloud-devops", "level": 2, "context": "PLACEHOLDER — Auth + Firestore for this site's feed." },
+    { "id": "linux", "name": "Linux", "group": "systems-networking", "level": 4, "context": "PLACEHOLDER — daily driver on servers: shell, systemd, permissions, SSH." },
+    { "id": "networking", "name": "Networking", "group": "systems-networking", "level": 3, "context": "PLACEHOLDER — TCP/IP, subnetting, DNS, firewalls." },
+    { "id": "security", "name": "Security basics", "group": "systems-networking", "level": 2, "context": "PLACEHOLDER — hardening SSH, least privilege, OWASP Top 10." },
+    { "id": "macos", "name": "macOS", "group": "systems-networking", "level": 4, "context": "PLACEHOLDER — dev machine setup, Homebrew, shell tooling." },
+    { "id": "git", "name": "Git", "group": "tools", "level": 4, "context": "PLACEHOLDER — branching, rebasing, clean history, GitHub flow." },
+    { "id": "vscode", "name": "VS Code", "group": "tools", "level": 4, "context": "PLACEHOLDER — main editor with remote containers." },
+    { "id": "claude-code", "name": "Claude Code", "group": "tools", "level": 3, "context": "PLACEHOLDER — AI pair programming for features and content." },
+    { "id": "english", "name": "English", "group": "languages", "level": 4, "context": "PLACEHOLDER — C1, daily use in tech." },
+    { "id": "german", "name": "German", "group": "languages", "level": 4, "context": "PLACEHOLDER — study language in Austria." },
+    { "id": "spanish", "name": "Spanish", "group": "languages", "level": 2, "context": "PLACEHOLDER — learning (A2), see my Spanish learning project." }
+  ]
+}

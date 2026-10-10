@@ -1,0 +1,15 @@
+{
+  "summary": "PLACEHOLDER — two sentences about who you are, what you study and what kind of work you are looking for.",
+  "timeline": [
+    { "type": "education", "title": "BSc Information Technology (placeholder)", "org": "FH JOANNEUM, Graz", "start": "2024-10", "text": "PLACEHOLDER — focus areas, relevant courses." },
+    { "type": "work", "title": "IT support (part-time, placeholder)", "org": "Example GmbH", "start": "2025-03", "end": "2025-09", "text": "PLACEHOLDER — what you did and achieved." },
+    { "type": "certificate", "title": "Cisco CCNA Introduction to Networks (placeholder)", "org": "Cisco Networking Academy", "start": "2025-06" },
+    { "type": "education", "title": "Matura (placeholder)", "org": "Example school", "start": "2019", "end": "2024" }
+  ],
+  "languages": [
+    { "name": "German", "level": "C1" },
+    { "name": "English", "level": "C1" },
+    { "name": "Spanish", "level": "A2" }
+  ],
+  "pdf": "/cv.pdf"
+}

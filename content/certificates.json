@@ -1,0 +1,5 @@
+[
+  { "id": "ccna-itn", "title": "CCNA: Introduction to Networks", "issuer": "Cisco Networking Academy", "status": "done", "date": "2025-06-30", "skills": ["networking"] },
+  { "id": "aws-ccp", "title": "AWS Certified Cloud Practitioner", "issuer": "Amazon Web Services", "status": "in progress", "date": "2026-12-15", "skills": ["aws"] },
+  { "id": "lfcs", "title": "Linux Foundation Certified Sysadmin (LFCS)", "issuer": "The Linux Foundation", "status": "planned", "skills": ["linux", "security"] }
+]
