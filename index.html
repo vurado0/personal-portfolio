@@ -7,8 +7,7 @@
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
     <meta name="theme-color" content="#1A120D" />
     <script>
-      // Set theme + side before first paint: saved choice wins, otherwise the side's default
-      // (portfolio = dark espresso, personal = light latte).
+      // Set theme + side before first paint: saved choice wins, otherwise dark on every page.
       (function () {
         var prefixes = __PERSONAL_PREFIXES__;
         var p = location.pathname;
@@ -17,7 +16,7 @@
         try { saved = localStorage.getItem('theme'); } catch (e) {}
         var d = document.documentElement;
         d.dataset.side = side;
-        d.dataset.theme = saved === 'light' || saved === 'dark' ? saved : side === 'personal' ? 'light' : 'dark';
+        d.dataset.theme = saved === 'light' ? 'light' : 'dark';
       })();
     </script>
     <!--app-head-->
