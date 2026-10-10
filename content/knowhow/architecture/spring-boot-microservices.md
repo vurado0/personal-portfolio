@@ -22,6 +22,15 @@ From *Software Architecture* (FH JOANNEUM, summer 2026). There were three labs a
 - **Monitoring**: an admin server shows health, metrics and logs of all registered clients (Spring Boot Actuator).
 - **Inter-service communication**: services call each other over REST by name instead of hard-coded URLs.
 
+## Security: login with JWT (Linto, Kotlin)
+
+In our startup project **Linto** (a vocabulary app), the backend is Spring Boot in **Kotlin** with Spring Security:
+
+- `POST /auth/register` and `/auth/login` are public. Passwords are hashed with BCrypt, and login returns a signed JWT.
+- A `JwtAuthenticationFilter` (`OncePerRequestFilter`) reads `Authorization: Bearer …`, checks the token and sets the user in the `SecurityContext`.
+- The `SecurityConfig` is stateless (`SessionCreationPolicy.STATELESS`), lets only `/auth/**` through without a token and sets CORS for the React frontend.
+- The database schema is versioned with **Flyway** migrations, and GitLab CI runs build, tests, SAST and secret detection.
+
 ## Lessons from the PetClinic upgrade
 
 - Upgrade in small steps (Java version, then Spring Boot, then dependencies) and run the tests after each one.

@@ -1,9 +1,9 @@
 ---
 title: "Android with Kotlin: Compose, MVVM, coroutines"
 category: mobile
-tags: [android, kotlin, mvvm, coroutines]
+tags: [android, kotlin, mvvm, coroutines, room]
 skills: [kotlin]
-summary: How a modern Android app is structured — Jetpack Compose UI, a ViewModel holding state, coroutines for background work and navigation between screens — from the todo, recipe and Linto apps I built.
+summary: "How a modern Android app is structured — Jetpack Compose UI, a ViewModel holding state, coroutines, Room + Retrofit for offline-first data and navigation — from the todo, recipe and Linto apps I built."
 updated: 2026-06-15
 difficulty: beginner
 ---
@@ -36,6 +36,14 @@ class TodoViewModel : ViewModel() {
 - `viewModelScope.launch { … }` is cancelled automatically when the ViewModel is gone.
 - Do slow work on `Dispatchers.IO`, and only update the UI from the main thread.
 - `suspend` functions pause without blocking a thread.
+
+## Offline-first: Room + Retrofit
+
+In the **Linto demo app** (Japanese vocabulary) the data comes from a web service, but the app also works offline:
+
+- **Retrofit** loads the vocabulary as JSON (kotlinx.serialization DTOs).
+- **Room** (entity, DAO, database) stores it locally, and the UI only observes the database as a `Flow`.
+- The repository fetches from the network, writes to Room, and if the network fails, the cached data is still shown.
 
 ## Navigation
 
