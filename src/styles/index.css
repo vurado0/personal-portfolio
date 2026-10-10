@@ -1,0 +1,163 @@
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-bg text-fg antialiased;
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  [data-side="personal"] body {
+    font-family: var(--font-blog);
+    font-size: 17px;
+  }
+  a {
+    @apply text-link underline-offset-4 decoration-1 hover:underline;
+  }
+  ::selection {
+    background: rgb(var(--crema) / 0.35);
+  }
+  :focus-visible {
+    outline: 2px solid rgb(var(--crema));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  code, pre, kbd, samp {
+    font-family: var(--font-mono);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6;
+  }
+  /* "// section" titles on the portfolio side */
+  .section-title {
+    @apply font-mono text-xs font-bold uppercase tracking-label text-muted;
+  }
+  .section-title::before {
+    content: "// ";
+    @apply text-accent;
+  }
+  .label {
+    @apply font-mono text-[11px] uppercase tracking-label text-muted;
+  }
+  .card {
+    @apply rounded-lg border border-line/60 bg-surface p-5 shadow-warm;
+  }
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-sm border border-line/70 px-2 py-0.5 font-mono text-xs no-underline transition-colors;
+  }
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-md px-4 py-2 font-mono text-sm font-bold no-underline transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-accent text-on-accent hover:bg-caramel hover:no-underline;
+  }
+  .btn-ghost {
+    @apply btn border border-line text-fg hover:border-accent hover:no-underline;
+  }
+  .input {
+    @apply w-full rounded-md border border-line bg-surface px-3 py-2.5 text-base text-fg placeholder:text-muted/70 focus:border-accent focus:outline-none;
+  }
+  /* Blog side: large tight headlines like the Raptor Text reference */
+  .blog-headline {
+    font-family: var(--font-blog);
+    @apply font-black leading-[0.95] tracking-tightest;
+  }
+  .meta-grid {
+    @apply grid grid-cols-[4.5rem_1fr] gap-x-3 text-[13px] leading-5 text-muted;
+    font-family: var(--font-blog);
+  }
+  .bg-overlay {
+    background: linear-gradient(180deg, rgb(var(--bg) / 0.55), rgb(var(--bg) / 0.92));
+    backdrop-filter: blur(2px);
+  }
+}
+
+/* ---- Markdown prose -------------------------------------------------------- */
+.prose-coffee {
+  @apply prose max-w-none;
+  --tw-prose-body: rgb(var(--fg));
+  --tw-prose-headings: rgb(var(--fg));
+  --tw-prose-links: rgb(var(--link));
+  --tw-prose-bold: rgb(var(--fg));
+  --tw-prose-counters: rgb(var(--muted));
+  --tw-prose-bullets: rgb(var(--accent));
+  --tw-prose-hr: rgb(var(--line));
+  --tw-prose-quotes: rgb(var(--fg));
+  --tw-prose-quote-borders: rgb(var(--accent));
+  --tw-prose-captions: rgb(var(--muted));
+  --tw-prose-code: rgb(var(--fg));
+  --tw-prose-pre-code: rgb(var(--cream));
+  --tw-prose-pre-bg: rgb(var(--espresso));
+  --tw-prose-th-borders: rgb(var(--line));
+  --tw-prose-td-borders: rgb(var(--line) / 0.6);
+}
+.prose-coffee :where(h1, h2, h3, h4) {
+  scroll-margin-top: 5rem;
+  position: relative;
+}
+.prose-coffee .heading-anchor {
+  @apply absolute -left-5 no-underline opacity-0 transition-opacity;
+  color: rgb(var(--accent));
+}
+.prose-coffee :where(h2, h3):hover .heading-anchor {
+  opacity: 1;
+}
+.prose-coffee :where(code):not(pre code) {
+  @apply rounded-sm px-1 py-0.5 font-normal;
+  background: rgb(var(--line) / 0.25);
+}
+.prose-coffee :where(code):not(pre code)::before,
+.prose-coffee :where(code):not(pre code)::after {
+  content: none;
+}
+.prose-coffee img {
+  @apply rounded-md;
+}
+.code-block {
+  @apply relative my-6;
+}
+.code-block pre {
+  @apply m-0 overflow-x-auto rounded-md border border-mocha/60 text-[13px] leading-6;
+}
+.code-block .code-lang {
+  @apply absolute left-3 top-2 font-mono text-[10px] uppercase tracking-label text-latte;
+}
+.code-block .code-lang + .copy-btn + pre {
+  @apply pt-8;
+}
+.copy-btn {
+  @apply absolute right-2 top-2 rounded-sm border border-mocha bg-dark-roast px-2 py-0.5 font-mono text-[11px] text-latte transition-colors hover:border-crema hover:text-cream;
+}
+.copy-btn[data-copied] {
+  @apply border-crema text-crema;
+}
+
+/* Syntax highlighting (highlight.js classes) in coffee tones */
+.hljs { color: rgb(var(--cream)); background: transparent; }
+.hljs-comment, .hljs-quote { color: #9a7a5c; font-style: italic; }
+.hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-built_in { color: #e59a4f; }
+.hljs-string, .hljs-attr, .hljs-symbol, .hljs-bullet, .hljs-addition { color: #c9b27a; }
+.hljs-number, .hljs-meta, .hljs-link { color: #e0b27e; }
+.hljs-title, .hljs-section, .hljs-type, .hljs-name { color: #f0c896; font-weight: 600; }
+.hljs-variable, .hljs-template-variable, .hljs-params { color: #d8c3a5; }
+.hljs-deletion { color: #e07a5f; }
+.hljs-emphasis { font-style: italic; }
+.hljs-strong { font-weight: 700; }
