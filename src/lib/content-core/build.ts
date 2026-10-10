@@ -11,12 +11,14 @@ import type {
   Difficulty,
   Hobby,
   KnowhowDoc,
+  NavEntry,
   Profile,
   ProjectDoc,
   ProjectStatus,
   Skill,
   SkillGroup,
 } from '../../types/content.ts';
+import { NAV_DEFAULTS } from '../../config/navigation.ts';
 
 export type Issue = { level: 'error' | 'warn'; file: string; message: string };
 
@@ -30,6 +32,23 @@ export type BuildOptions = {
 
 /** Repo-relative path → file content. */
 export type FileMap = Record<string, string>;
+
+const CV_DATE_RE = /^\d{4}(-\d{2})?$/;
+const CEFR = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+const emptyPersonal = () => ({
+  fullName: '',
+  headline: '',
+  email: '',
+  phone: '',
+  address: '',
+  website: '',
+  linkedin: '',
+  github: '',
+  nationality: '',
+  dateOfBirth: '',
+  drivingLicence: '',
+  photo: '',
+});
 
 export const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 export const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -333,6 +352,17 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
       issues.push({ level: 'error', file: profileFile, message: `social "${s.label || s.id}": id, label and an http(s)/mailto URL are required` });
   }
 
+  // ---- Navigation -------------------------------------------------------------
+  const navFile = 'content/navigation.json';
+  const navigation = readJson<NavEntry[]>(files, navFile, issues, []);
+  const knownNav = new Set(NAV_DEFAULTS.map((d) => d.id));
+  if (!Array.isArray(navigation)) issues.push({ level: 'error', file: navFile, message: 'must be a list' });
+  for (const n of Array.isArray(navigation) ? navigation : []) {
+    if (!knownNav.has(n.id)) issues.push({ level: 'error', file: navFile, message: `unknown menu item "${n.id}" (known: ${[...knownNav].join(', ')})` });
+    if (!n.label?.trim()) issues.push({ level: 'error', file: navFile, message: `menu item "${n.id}" needs a label` });
+    if (typeof n.enabled !== 'boolean') issues.push({ level: 'error', file: navFile, message: `menu item "${n.id}": enabled must be true or false` });
+  }
+
   // ---- JSON collections ---------------------------------------------------
   const hobbiesFile = 'content/hobbies.json';
   const hobbies = readJson<Hobby[]>(files, hobbiesFile, issues, []);
@@ -342,10 +372,40 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
   }
 
   const cvFile = 'content/cv.json';
-  const cv = readJson<Cv>(files, cvFile, issues, { summary: '', timeline: [], languages: [] });
-  for (const t of cv.timeline ?? []) {
-    if (!t.title || !t.org || !/^\d{4}(-\d{2})?$/.test(t.start))
-      issues.push({ level: 'error', file: cvFile, message: `timeline "${t.title}": title, org and start (YYYY or YYYY-MM) are required` });
+  const cv = readJson<Cv>(files, cvFile, issues, { personal: emptyPersonal(), summary: '', sections: [] });
+  const cvErr = (message: string) => issues.push({ level: 'error', file: cvFile, message });
+  if (!cv.personal || typeof cv.personal !== 'object') {
+    cvErr('"personal" is required');
+    cv.personal = emptyPersonal();
+  }
+  cv.personal = { ...emptyPersonal(), ...cv.personal };
+  if (!Array.isArray(cv.sections)) {
+    cvErr('"sections" must be a list');
+    cv.sections = [];
+  }
+  const sectionIds = new Set<string>();
+  for (const sec of cv.sections) {
+    const where = `section "${sec.title || sec.id}"`;
+    if (!sec.id || !SLUG_RE.test(sec.id)) cvErr(`${where}: id must be lowercase-kebab`);
+    if (sectionIds.has(sec.id)) cvErr(`${where}: duplicate id`);
+    sectionIds.add(sec.id);
+    if (!sec.title?.trim()) cvErr(`${where}: title is required`);
+    if (sec.type === 'timeline') {
+      for (const e of sec.items ?? [])
+        if (!e.title?.trim() || !e.org?.trim() || !CV_DATE_RE.test(e.start ?? '') || (e.end && !CV_DATE_RE.test(e.end)))
+          cvErr(`${where} → "${e.title || '(untitled)'}": title, organisation and start (YYYY or YYYY-MM) are required; end must be YYYY or YYYY-MM`);
+    } else if (sec.type === 'languages') {
+      if (!Array.isArray(sec.motherTongues)) cvErr(`${where}: motherTongues must be a list`);
+      for (const l of sec.items ?? []) {
+        if (!l.name?.trim()) cvErr(`${where}: every language needs a name`);
+        for (const k of ['listening', 'reading', 'spokenInteraction', 'spokenProduction', 'writing'] as const)
+          if (!CEFR.includes(l[k])) cvErr(`${where} → ${l.name}: ${k} must be one of ${CEFR.join(', ')}`);
+      }
+    } else if (sec.type === 'list') {
+      for (const it of sec.items ?? []) if (!it.name?.trim()) cvErr(`${where}: every entry needs a name`);
+    } else if (sec.type !== 'text') {
+      cvErr(`${where}: unknown type "${(sec as { type: string }).type}"`);
+    }
   }
   if (cv.pdf) allLinks.push({ file: cvFile, href: cv.pdf });
 
@@ -389,7 +449,7 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
   }
 
   return {
-    bundle: { profile, skillGroups, skills, knowhow, projects, articles, hobbies, cv, certificates },
+    bundle: { profile, navigation: Array.isArray(navigation) ? navigation : [], skillGroups, skills, knowhow, projects, articles, hobbies, cv, certificates },
     issues,
   };
 }

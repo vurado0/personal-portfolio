@@ -1,0 +1,11 @@
+[
+  { "id": "home", "label": "Home", "enabled": true },
+  { "id": "skills", "label": "Skills", "enabled": true },
+  { "id": "knowhow", "label": "Know-how", "enabled": true },
+  { "id": "projects", "label": "Projects", "enabled": true },
+  { "id": "blog", "label": "Blog", "enabled": true },
+  { "id": "hobbies", "label": "Hobbies", "enabled": true },
+  { "id": "about", "label": "About / CV", "enabled": true },
+  { "id": "certificates", "label": "Certificates", "enabled": true },
+  { "id": "contact", "label": "Contact", "enabled": true }
+]
