@@ -345,6 +345,7 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
     if (typeof profile[key] !== 'string' || !profile[key].trim())
       issues.push({ level: 'error', file: profileFile, message: `"${key}" is required` });
   }
+  if (profile.photo) allLinks.push({ file: profileFile, href: profile.photo });
   if (!Array.isArray(profile.currentFocus)) issues.push({ level: 'error', file: profileFile, message: '"currentFocus" must be a list' });
   if (!Array.isArray(profile.socials)) issues.push({ level: 'error', file: profileFile, message: '"socials" must be a list' });
   for (const s of profile.socials ?? []) {
@@ -438,7 +439,6 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
     ...knowhow.map((d) => `/knowhow/${d.category}`),
     ...projects.map((d) => d.url),
     ...articles.map((d) => d.url),
-    ...skills.map((s) => `/skills/${s.id}`),
   ]);
   for (const { file, href } of allLinks) {
     if (!href.startsWith('/') || href.startsWith('//')) continue;

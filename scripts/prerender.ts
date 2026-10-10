@@ -32,7 +32,6 @@ const template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
 // ---- Routes ---------------------------------------------------------------
 const routes = new Set<string>(['/', '/impressum', '/datenschutz']);
 for (const item of enabledNav) routes.add(item.path);
-if (isEnabled('skills')) bundle.skills.forEach((s) => routes.add(`/skills/${s.id}`));
 if (isEnabled('knowhow')) {
   bundle.knowhow.forEach((d) => {
     routes.add(`/knowhow/${d.category}`);

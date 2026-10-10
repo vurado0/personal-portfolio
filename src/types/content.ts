@@ -122,6 +122,8 @@ export type Profile = {
   description: string;
   location: string;
   email: string;
+  /** Portrait on the home page (file in public/ or URL) */
+  photo?: string;
   currentFocus: string[];
   socials: { id: string; label: string; url: string }[];
 };

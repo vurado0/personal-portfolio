@@ -6,6 +6,7 @@
   "description": "Personal IT portfolio, know-how base and blog: skills, projects, guides and a personal feed.",
   "location": "Graz, Austria",
   "email": "kaitosnezhko@gmail.com",
+  "photo": "/images/me.webp",
   "currentFocus": ["Bachelor Thesis", "Japanese language", "C and C++ backend development", "Data structures / Algorithms"],
   "socials": [
     { "id": "github", "label": "GitHub", "url": "https://github.com/vurado0" },

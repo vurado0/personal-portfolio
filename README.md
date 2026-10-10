@@ -79,13 +79,13 @@ Then create `.env.development.local` (git-ignored) with `VITE_FIREBASE_API_KEY=d
 | Project | `content/projects/<slug>.md` — `title, summary, stack, skills, role, status, period, links, cover, featured` |
 | Blog article | `content/blog/<yyyy-mm-dd>-<slug>.md` — `title, date, tags, skills, summary, cover, draft` |
 | Hobbies / CV / certificates | `content/hobbies.json`, `content/cv.json`, `content/certificates.json` |
-| Name, role, socials | `content/profile.json` |
+| Name, role, photo, socials | `content/profile.json` (photo file in `public/images/`) |
 | Menu labels, order, visibility | `content/navigation.json` (paths/icons/sides in `src/config/navigation.ts`) |
 | Feed post | `/admin` on the live site — no deploy needed |
 
 Everything in `content/` can also be edited in the browser — directly on the pages in edit mode, or under **`/admin` → Content** (see below).
 
-Projects, articles, know-how, certificates and feed posts reference skills via `skills: [...]`; each skill page lists everything that links to it. `npm run validate:content` (also part of `npm run build`) fails on unknown skill ids and broken internal links. `draft: true` articles show in `npm run dev` only.
+Projects, articles, know-how, certificates and feed posts reference skills via `skills: [...]`; each skill card on /skills shows how many projects, articles and posts use it (only non-zero counts), and skill chips link to that card. `npm run validate:content` (also part of `npm run build`) fails on unknown skill ids and broken internal links. `draft: true` articles show in `npm run dev` only.
 
 ## Firebase setup (once)
 
@@ -102,7 +102,8 @@ Projects, articles, know-how, certificates and feed posts reference skills via `
 ## Login, edit mode & content editor
 
 - **`/login`** has two ways in: **Continue as guest** (visitors/recruiters, read-only, no account) and **Sign in to edit** (owner, Google). The header shows "login" for visitors and "admin" for you.
-- **Edit mode:** once you're signed in as the owner, every page becomes editable in place: hover an element for ~0.3 s to get **✎ edit / ✕ delete** (and ↑↓ where order matters) in its top-right corner; dashed **+ Add …** tiles create new skills, projects, know-how, articles, certificates, hobbies and CV entries/sections. **✎ menu** renames, reorders and shows/hides pages; **profile** edits name, role and links. Changes show up immediately on the page and collect in the floating bar; **Publish** validates them (same rules as the build) and commits them to `main` through `/api/content` — Vercel redeploys in ~1 min and the bar shows the deploy status. **preview** shows the published site as visitors see it. The editor code is only downloaded for the owner.
+- **Visitor view first:** everyone — the owner too — lands on the recruiter view. The top-right button says **Sign in** (visitors) or **✎ Edit** (owner); **✓ Done** / **done** switches back. Edit mode lasts for the browser session.
+- **Edit mode:** once switched on, every page becomes editable in place: hover an element for ~0.3 s to get **✎ edit / ✕ delete** (and ↑↓ where order matters) in its top-right corner; dashed **+ Add …** tiles create new skills, projects, know-how, articles, certificates, hobbies and CV entries/sections. **✎ menu** renames, reorders and shows/hides pages; **profile** edits name, role and links. Changes show up immediately on the page and collect in the floating bar; **Publish** validates them (same rules as the build) and commits them to `main` through `/api/content` — Vercel redeploys in ~1 min and the bar shows the deploy status. **preview** shows the published site as visitors see it. The editor code is only downloaded for the owner.
 - **`/admin`** keeps the feed (posts, photos, music), contact messages and a **Content** tab with the same editors as lists.
 - Deleting a skill also removes it from every project/article/certificate that references it. IDs and slugs cannot be changed after creation (they are URLs). Feed posts are deleted immediately (they live in Firestore, not in the repo).
 - **CV** (`content/cv.json`) follows the Europass structure: personal information (contact, nationality, date of birth, driving licence, photo — empty fields stay hidden), a profile text, and any number of sections of type *timeline* (work, education, certifications, volunteering…), *languages* (mother tongues + CEFR levels for listening, reading, spoken production/interaction, writing), *list* (digital skills, awards, interests…) or *text*. Sections can be added from Europass presets, renamed, hidden, reordered and deleted.

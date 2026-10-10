@@ -1,6 +1,6 @@
 // Edit mode (owner only). This file is tiny and part of the public bundle; the actual editor
 // (forms, validation, GitHub publishing) is loaded lazily from src/edit/ only for the owner.
-import { createContext, useContext, useEffect, useState, type ComponentType, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useSyncExternalStore, type ComponentType, type ReactNode } from 'react';
 import { useLocation } from 'react-router';
 import type { ContentBundle } from '../types/content';
 
@@ -35,21 +35,52 @@ export function useEdit(): EditApi | null {
   return useContext(EditContext);
 }
 
-/** Loads the editor for the owner (hinted by localStorage after an admin login) and wraps the app. */
+// ---- Edit-mode switch ----------------------------------------------------------
+// Everyone (the owner too) first sees the visitor version. The owner turns edit mode on with the
+// "✎ Edit" button; it lasts for the browser session only.
+
+const EDIT_KEY = 'edit-mode';
+const listeners = new Set<() => void>();
+
+function readEditMode(): boolean {
+  try {
+    return sessionStorage.getItem(EDIT_KEY) === '1' && localStorage.getItem('is-admin') === '1';
+  } catch {
+    return false;
+  }
+}
+
+export function setEditMode(on: boolean) {
+  try {
+    if (on) sessionStorage.setItem(EDIT_KEY, '1');
+    else sessionStorage.removeItem(EDIT_KEY);
+  } catch {
+    /* ignore */
+  }
+  listeners.forEach((fn) => fn());
+}
+
+export function useEditModeOn(): boolean {
+  return useSyncExternalStore(
+    (fn) => {
+      listeners.add(fn);
+      return () => listeners.delete(fn);
+    },
+    readEditMode,
+    () => false,
+  );
+}
+
+/** Loads the editor once the owner switches edit mode on, and wraps the app with it. */
 export function EditRoot({ children }: { children: ReactNode }) {
   const [Provider, setProvider] = useState<ComponentType<{ children: ReactNode }> | null>(null);
+  const on = useEditModeOn();
   // /admin has its own editor (and /login no content): keep a single draft owner at a time.
   const off = /^\/(admin|login)(\/|$)/.test(useLocation().pathname);
   useEffect(() => {
-    let isAdmin = false;
-    try {
-      isAdmin = localStorage.getItem('is-admin') === '1';
-    } catch {
-      /* ignore */
-    }
-    if (isAdmin) import('../edit/EditProvider').then((m) => setProvider(() => m.EditProvider));
-  }, []);
-  return Provider && !off ? <Provider>{children}</Provider> : <>{children}</>;
+    if (on && !Provider) import('../edit/EditProvider').then((m) => setProvider(() => m.EditProvider));
+  }, [on, Provider]);
+  return Provider && on && !off ? <Provider>{children}</Provider> : <>{children}</>;
 }
 
 const toolBtn =

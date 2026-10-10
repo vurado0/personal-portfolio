@@ -27,4 +27,4 @@ I wanted one place for my CV, my IT notes and a personal feed — without paying
 
 PLACEHOLDER — write what you learned, e.g. about prerendering, Firestore rules and image pipelines.
 
-See the [skills page](/skills/firebase) for how everything connects.
+See the [skills page](/skills) for how everything connects.

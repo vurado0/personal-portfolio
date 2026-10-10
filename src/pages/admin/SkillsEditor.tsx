@@ -84,7 +84,7 @@ export function SkillForm({ skill, isNew, onDone }: { skill: Skill; isNew: boole
           set({ id });
         }}
         disabled={!isNew}
-        hint={isNew ? 'Used in URLs (/skills/<id>) and references — cannot be changed later.' : 'IDs are stable and cannot be changed.'}
+        hint={isNew ? 'Used to link projects and articles to this skill — cannot be changed later.' : 'IDs are stable and cannot be changed.'}
       />
       <SelectField label="group" value={s.group} onChange={(group) => set({ group })} options={ws.groups.map((g) => ({ value: g.id, label: g.label }))} />
       <LevelPicker value={s.level} onChange={(level) => set({ level })} />

@@ -1,4 +1,5 @@
-import { Link, useSearchParams } from 'react-router';
+import { useEffect } from 'react';
+import { useLocation, useSearchParams } from 'react-router';
 import { PageHeader } from '../components/PageHeader';
 import { TagChip } from '../components/Chips';
 import { levelLabel, useContent } from '../lib/content';
@@ -23,34 +24,35 @@ export function LevelBar({ level }: { level: number }) {
   );
 }
 
-function SkillCard({ skill, postCount }: { skill: Skill; postCount: number | null }) {
+function SkillCard({ skill, postCount, highlight }: { skill: Skill; postCount: number | null; highlight: boolean }) {
   const refs = useContent().skillRefs.get(skill.id) ?? { projects: [], knowhow: [], articles: [] };
-  const counts = [
-    ['projects', refs.projects.length],
-    ['know-how', refs.knowhow.length],
-    ['articles', refs.articles.length],
-    ...(postCount !== null ? [['posts', postCount] as const] : []),
-  ] as const;
+  // Only show what is actually linked to this skill.
+  const counts = (
+    [
+      ['project', refs.projects.length],
+      ['know-how', refs.knowhow.length],
+      ['article', refs.articles.length],
+      ['post', postCount ?? 0],
+    ] as const
+  ).filter(([, n]) => n > 0);
   return (
-    <article className="card group relative flex flex-col gap-3 hover:border-accent/70">
+    <article id={`skill-${skill.id}`} className={`card group relative flex scroll-mt-24 flex-col gap-3 transition-shadow ${highlight ? 'border-accent ring-2 ring-accent/40' : ''}`}>
       <ItemTools target={{ kind: 'skill', id: skill.id }} label={skill.name} />
       <div className="flex items-start justify-between gap-3">
-        <h3 className="font-mono font-bold">
-          <Link to={`/skills/${skill.id}`} className="text-fg after:absolute after:inset-0 hover:text-accent hover:no-underline">
-            {skill.name}
-          </Link>
-        </h3>
+        <h3 className="font-mono font-bold">{skill.name}</h3>
         <LevelBar level={skill.level} />
       </div>
       <p className="text-sm text-muted">{skill.context}</p>
-      <p className="mt-auto font-mono text-[11px] text-muted">
-        {counts.map(([label, n], i) => (
-          <span key={label}>
-            {i > 0 ? ' · ' : ''}
-            <span className={n > 0 ? 'text-fg' : ''}>{n}</span> {n === 1 ? label.replace(/s$/, '') : label}
-          </span>
-        ))}
-      </p>
+      {counts.length > 0 ? (
+        <p className="mt-auto font-mono text-[11px] text-muted">
+          {counts.map(([label, n], i) => (
+            <span key={label}>
+              {i > 0 ? ' · ' : ''}
+              <span className="text-fg">{n}</span> {label === 'know-how' || n === 1 ? label : `${label}s`}
+            </span>
+          ))}
+        </p>
+      ) : null}
     </article>
   );
 }
@@ -58,6 +60,11 @@ function SkillCard({ skill, postCount }: { skill: Skill; postCount: number | nul
 export default function Skills() {
   const { content } = useContent();
   const editing = Boolean(useEdit());
+  const { hash } = useLocation();
+  // Skill chips elsewhere link to /skills#skill-<id>: scroll to and highlight that card.
+  useEffect(() => {
+    if (hash) document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [hash]);
   const [params, setParams] = useSearchParams();
   const group = params.get('group');
   const posts = usePublishedPosts(100);
@@ -88,7 +95,7 @@ export default function Skills() {
               </h2>
               <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {skills.map((s) => (
-                  <SkillCard key={s.id} skill={s} postCount={postCount(s.id)} />
+                  <SkillCard key={s.id} skill={s} postCount={postCount(s.id)} highlight={hash === `#skill-${s.id}`} />
                 ))}
                 <AddButton target={{ kind: 'skill', group: g.id }} label={`Add ${g.label.toLowerCase()} skill`} className="min-h-40" />
               </div>
