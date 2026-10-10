@@ -12,6 +12,7 @@ import type {
   Hobby,
   KnowhowDoc,
   NavEntry,
+  PageText,
   Profile,
   ProjectDoc,
   ProjectStatus,
@@ -364,6 +365,15 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
     if (typeof n.enabled !== 'boolean') issues.push({ level: 'error', file: navFile, message: `menu item "${n.id}": enabled must be true or false` });
   }
 
+  // ---- Page texts -------------------------------------------------------------
+  const pagesFile = 'content/pages.json';
+  const pages = readJson<Record<string, PageText>>(files, pagesFile, issues, {});
+  if (!pages || typeof pages !== 'object' || Array.isArray(pages)) issues.push({ level: 'error', file: pagesFile, message: 'must be an object { "<page>": { title, intro, … } }' });
+  for (const [id, page] of Object.entries(pages ?? {})) {
+    if (!page?.title?.trim()) issues.push({ level: 'error', file: pagesFile, message: `page "${id}" needs a title` });
+    for (const m of page?.meta ?? []) if (!m.label?.trim()) issues.push({ level: 'error', file: pagesFile, message: `page "${id}": every meta line needs a label` });
+  }
+
   // ---- JSON collections ---------------------------------------------------
   const hobbiesFile = 'content/hobbies.json';
   const hobbies = readJson<Hobby[]>(files, hobbiesFile, issues, []);
@@ -449,7 +459,7 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
   }
 
   return {
-    bundle: { profile, navigation: Array.isArray(navigation) ? navigation : [], skillGroups, skills, knowhow, projects, articles, hobbies, cv, certificates },
+    bundle: { profile, navigation: Array.isArray(navigation) ? navigation : [], pages: pages && typeof pages === 'object' ? pages : {}, skillGroups, skills, knowhow, projects, articles, hobbies, cv, certificates },
     issues,
   };
 }

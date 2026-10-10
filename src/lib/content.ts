@@ -1,5 +1,5 @@
 import raw from 'virtual:content';
-import type { ArticleDoc, ContentBundle, KnowhowDoc, ProjectDoc, Skill } from '../types/content';
+import type { ArticleDoc, ContentBundle, KnowhowDoc, PageText, ProjectDoc, Skill } from '../types/content';
 import { useEdit } from './edit';
 
 /** Content as built into this deployment (prerendered). */
@@ -38,6 +38,12 @@ export function derive(bundle: ContentBundle): DerivedContent {
 export function useContent(): DerivedContent {
   const edit = useEdit();
   return derive(edit?.bundle ?? content);
+}
+
+/** Editable texts of a page, with a fallback so a missing entry never breaks the page. */
+export function usePageText(id: string, fallback: PageText): PageText {
+  const page = useContent().content.pages[id];
+  return page ? { ...fallback, ...page } : fallback;
 }
 
 export const LEVEL_LABELS = ['', 'learning', 'learning', 'working', 'advanced', 'advanced'] as const;

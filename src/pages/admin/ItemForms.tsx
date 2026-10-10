@@ -13,6 +13,7 @@ import {
   type CvSectionType,
   type Hobby,
   type NavEntry,
+  type PageText,
 } from '../../types/content';
 import { Actions, ErrorList, Field, LinesField, SelectField, SkillPicker, TextArea, TextField, Toggle } from './ui';
 import { prettyJson, readJsonFile, slugify } from './serialize';
@@ -462,6 +463,55 @@ export function CvOverview() {
       <button type="button" className="btn-ghost w-full" onClick={() => setForm({ kind: 'section' })}>
         + Add CV section
       </button>
+    </div>
+  );
+}
+
+// ---- Page texts ----------------------------------------------------------------
+
+export const PAGES = 'content/pages.json';
+
+/** Pages with the editorial (blog-style) header use meta lines instead of a "// label". */
+const EDITORIAL_PAGES = new Set(['blog', 'hobbies']);
+
+export function PageTextForm({ id, onDone }: { id: string; onDone: () => void }) {
+  const ws = useWorkspace();
+  const all = readJsonFile<Record<string, PageText>>(ws.files[PAGES], {});
+  const [page, setPage] = useState<PageText>(all[id] ?? { title: '' });
+  const [errors, setErrors] = useState<string[]>([]);
+  const editorial = EDITORIAL_PAGES.has(id);
+  const set = (patch: Partial<PageText>) => setPage((p) => ({ ...p, ...patch }));
+  const save = () => {
+    if (!page.title.trim()) return setErrors(['Title is required.']);
+    const clean: PageText = { ...page, title: page.title.trim(), meta: page.meta?.filter((m) => m.label.trim()) };
+    if (!clean.meta?.length) delete clean.meta;
+    ws.write({ [PAGES]: prettyJson({ ...all, [id]: clean }) });
+    onDone();
+  };
+  return (
+    <div className="space-y-5">
+      <Title>{`Page text · ${id}`}</Title>
+      {!editorial && <TextField label="small label above the title" value={page.label ?? ''} onChange={(label) => set({ label })} placeholder={id} />}
+      <TextField label="title" required value={page.title} onChange={(title) => set({ title })} />
+      <TextArea label="intro text" value={page.intro ?? ''} onChange={(intro) => set({ intro })} rows={3} hint="Empty = no intro." />
+      {editorial && (
+        <LinesField
+          label="meta lines (one per line: Label | Value)"
+          value={(page.meta ?? []).map((m) => `${m.label} | ${m.value}`)}
+          onChange={(lines) =>
+            set({
+              meta: lines.map((line) => {
+                const [label, ...rest] = line.split('|');
+                return { label: label.trim().replace(/:$/, ''), value: rest.join('|').trim() };
+              }),
+            })
+          }
+          rows={3}
+          hint="Shown left of the title, e.g. “Blog | Personal”."
+        />
+      )}
+      <ErrorList errors={errors} />
+      <Actions onSave={save} onCancel={onDone} />
     </div>
   );
 }

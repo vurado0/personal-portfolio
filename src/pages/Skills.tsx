@@ -74,7 +74,7 @@ export default function Skills() {
   return (
     <>
       <Seo title="Skills" description="Skills grouped by area, each linked to the projects, know-how and posts where I used it." path="/skills" />
-      <PageHeader label="skills" title="What I work with">
+      <PageHeader pageId="skills" label="skills" title="What I work with">
         Every skill links to the projects, know-how articles and posts where it shows up.
       </PageHeader>
       <div className="container-page">

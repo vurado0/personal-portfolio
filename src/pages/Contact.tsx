@@ -59,7 +59,7 @@ export default function Contact() {
   return (
     <>
       <Seo title="Contact" description={`Get in touch with ${site.name}.`} path="/contact" />
-      <PageHeader label="contact" title="Say hello">
+      <PageHeader pageId="contact" label="contact" title="Say hello">
         Questions, opportunities or just a coffee recommendation — write me a message.
       </PageHeader>
       <div className="container-page grid gap-12 pt-10 lg:grid-cols-[1fr_18rem]">

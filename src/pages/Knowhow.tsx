@@ -48,7 +48,7 @@ export default function Knowhow() {
   return (
     <>
       <Seo title={title} description="My IT knowledge base: guides, cheat sheets and setups." path={category ? `/knowhow/${category}` : '/knowhow'} />
-      <PageHeader label="know-how" title={category ? `${categoryLabel(category)}` : 'Knowledge base'}>
+      <PageHeader pageId={category ? undefined : 'knowhow'} label="know-how" title={category ? `${categoryLabel(category)}` : 'Knowledge base'}>
         Guides, cheat sheets and setups I keep coming back to.
       </PageHeader>
       <div className="container-page grid gap-10 pt-8 lg:grid-cols-[13rem_1fr]">

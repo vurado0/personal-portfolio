@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Link, NavLink, useParams, useSearchParams } from 'react-router';
 import { ArticleRow } from '../components/Cards';
 import { SkillChips, TagChip } from '../components/Chips';
@@ -7,7 +7,7 @@ import { FeedView } from '../components/feed/FeedView';
 import { PostCard, typeLabel } from '../components/feed/PostCard';
 import { Markdown } from '../components/Markdown';
 import { Notice } from '../components/Notice';
-import { useContent } from '../lib/content';
+import { useContent, usePageText } from '../lib/content';
 import { AddButton, EditButton } from '../lib/edit';
 import { cldUrl } from '../lib/cloudinary';
 import { getPost, type Post } from '../lib/feed';
@@ -17,6 +17,14 @@ import { Seo } from '../lib/head';
 import NotFound from './NotFound';
 
 function BlogHeader() {
+  const text = usePageText('blog', {
+    title: 'Daily grind.',
+    intro: 'Photos, small wins, thoughts and the songs on repeat — plus longer articles.',
+    meta: [
+      { label: 'Blog', value: 'Personal' },
+      { label: 'Style', value: 'Feed & Articles' },
+    ],
+  });
   const tab = ({ isActive }: { isActive: boolean }) =>
     `-mb-px border-b-2 px-1 pb-3 text-lg font-bold no-underline hover:no-underline ${isActive ? 'border-accent text-fg' : 'border-transparent text-muted hover:text-fg'}`;
   return (
@@ -24,14 +32,19 @@ function BlogHeader() {
       <div className="container-page pt-14 sm:pt-20">
         <div className="grid gap-6 md:grid-cols-[9rem_1fr]">
           <dl className="meta-grid content-start md:grid-cols-[3.5rem_1fr]">
-            <dt>Blog:</dt>
-            <dd className="text-fg">Personal</dd>
-            <dt>Style:</dt>
-            <dd>Feed & Articles</dd>
+            {(text.meta ?? []).map((m, i) => (
+              <Fragment key={m.label}>
+                <dt>{m.label}:</dt>
+                <dd className={i === 0 ? 'text-fg' : ''}>{m.value}</dd>
+              </Fragment>
+            ))}
           </dl>
           <div>
-            <h1 className="blog-headline text-6xl sm:text-8xl">Daily grind.</h1>
-            <p className="mt-4 max-w-xl text-lg">Photos, small wins, thoughts and the songs on repeat — plus longer articles.</p>
+            <div className="flex items-start justify-between gap-3">
+              <h1 className="blog-headline text-6xl sm:text-8xl">{text.title}</h1>
+              <EditButton target={{ kind: 'page', id: 'blog' }} label="page text" />
+            </div>
+            {text.intro ? <p className="mt-4 max-w-xl whitespace-pre-line text-lg">{text.intro}</p> : null}
           </div>
         </div>
         <nav aria-label="Blog sections" className="mt-10 flex gap-6 border-b border-ink/20 dark:border-cream/20">

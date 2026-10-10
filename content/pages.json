@@ -1,0 +1,42 @@
+{
+  "blog": {
+    "title": "Daily grind.",
+    "intro": "Photos, small wins, thoughts and the songs on repeat — plus longer articles.",
+    "meta": [
+      { "label": "Blog", "value": "Personal" },
+      { "label": "Style", "value": "Feed & Articles" }
+    ]
+  },
+  "hobbies": {
+    "title": "Off the clock.",
+    "intro": "",
+    "meta": [
+      { "label": "Page", "value": "Hobbies" }
+    ]
+  },
+  "skills": {
+    "label": "skills",
+    "title": "What I work with",
+    "intro": "Grouped by area — with the projects, articles and posts where I used them."
+  },
+  "knowhow": {
+    "label": "know-how",
+    "title": "Knowledge base",
+    "intro": "Guides, cheat sheets and setups I keep coming back to."
+  },
+  "projects": {
+    "label": "projects",
+    "title": "Things I built",
+    "intro": "From idea to done: what each project solves, how, and what I learned."
+  },
+  "certificates": {
+    "label": "certificates",
+    "title": "Certifications",
+    "intro": "Completed, in progress and on the roadmap."
+  },
+  "contact": {
+    "label": "contact",
+    "title": "Say hello",
+    "intro": "Questions, opportunities or just a coffee recommendation — write me a message."
+  }
+}

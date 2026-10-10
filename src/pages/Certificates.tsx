@@ -19,7 +19,7 @@ export default function Certificates() {
   return (
     <>
       <Seo title="Certificates" description="Completed, in-progress and planned certifications." path="/certificates" />
-      <PageHeader label="certificates" title="Certifications">
+      <PageHeader pageId="certificates" label="certificates" title="Certifications">
         Completed, in progress and on the roadmap.
       </PageHeader>
       <div className="container-page space-y-12 pt-10">

@@ -1,20 +1,30 @@
 import { Background } from '../components/Background';
-import { useContent } from '../lib/content';
-import { AddButton, ItemTools } from '../lib/edit';
+import { Fragment } from 'react';
+import { useContent, usePageText } from '../lib/content';
+import { AddButton, EditButton, ItemTools } from '../lib/edit';
 import { Seo } from '../lib/head';
 
 export default function Hobbies() {
   const { content } = useContent();
+  const text = usePageText('hobbies', { title: 'Off the clock.', meta: [{ label: 'Page', value: 'Hobbies' }] });
   return (
     <>
       <Seo title="Hobbies" description="What I do when I am not at the keyboard." path="/hobbies" />
       <Background name="latte-swirl" position="center 20%">
         <div className="container-page pb-12 pt-14 sm:pt-20">
-          <dl className="meta-grid">
-            <dt>Page:</dt>
-            <dd className="text-fg">Hobbies</dd>
-          </dl>
-          <h1 className="blog-headline mt-4 text-6xl sm:text-8xl">Off the clock.</h1>
+          <div className="flex items-start justify-between gap-3">
+            <dl className="meta-grid">
+              {(text.meta ?? []).map((m, i) => (
+                <Fragment key={m.label}>
+                  <dt>{m.label}:</dt>
+                  <dd className={i === 0 ? 'text-fg' : ''}>{m.value}</dd>
+                </Fragment>
+              ))}
+            </dl>
+            <EditButton target={{ kind: 'page', id: 'hobbies' }} label="page text" />
+          </div>
+          <h1 className="blog-headline mt-4 text-6xl sm:text-8xl">{text.title}</h1>
+          {text.intro ? <p className="mt-4 max-w-xl whitespace-pre-line text-lg">{text.intro}</p> : null}
         </div>
       </Background>
       <div className="container-page grid gap-0 pt-6">
