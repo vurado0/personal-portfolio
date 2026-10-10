@@ -3,13 +3,14 @@ import backgrounds from '../generated/backgrounds.json';
 import { ProjectCard, StatusBadge } from '../components/Cards';
 import { SkillChips } from '../components/Chips';
 import { Markdown } from '../components/Markdown';
-import { useContent } from '../lib/content';
+import { useContent, usePageText } from '../lib/content';
 import { AddButton, EditButton } from '../lib/edit';
 import { Seo } from '../lib/head';
 import NotFound from './NotFound';
 
 export function Projects() {
   const { content } = useContent();
+  const text = usePageText('projects', { label: 'projects', title: 'Things I built', intro: 'From idea to done: what each project solves, how, and what I learned.' });
   const bg = backgrounds['espresso-shot'];
   return (
     <>
@@ -21,9 +22,12 @@ export function Projects() {
           aria-hidden="true"
         />
         <div className="container-page relative pb-10 pt-12 sm:pt-16">
-          <p className="section-title">projects</p>
-          <h1 className="mt-3 font-mono text-3xl font-bold sm:text-4xl">Things I built</h1>
-          <p className="mt-4 max-w-xl text-muted">From idea to done: what each project solves, how, and what I learned.</p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="section-title">{text.label}</p>
+            <EditButton target={{ kind: 'page', id: 'projects' }} label="page text" />
+          </div>
+          <h1 className="mt-3 font-mono text-3xl font-bold sm:text-4xl">{text.title}</h1>
+          {text.intro ? <p className="mt-4 max-w-xl whitespace-pre-line text-muted">{text.intro}</p> : null}
         </div>
       </header>
       <div className="container-page mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">

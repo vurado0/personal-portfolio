@@ -128,11 +128,15 @@ export type Profile = {
   socials: { id: string; label: string; url: string }[];
 };
 
+/** Editable heading, intro and meta labels of a page (content/pages.json). */
+export type PageText = { label?: string; title: string; intro?: string; meta?: { label: string; value: string }[] };
+
 export type NavEntry = { id: string; label: string; enabled: boolean };
 
 export type ContentBundle = {
   profile: Profile;
   navigation: NavEntry[];
+  pages: Record<string, PageText>;
   skillGroups: SkillGroup[];
   skills: Skill[];
   knowhow: KnowhowDoc[];

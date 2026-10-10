@@ -5,37 +5,47 @@ import { MusicCard } from '../components/feed/MusicCard';
 import { PostTile } from '../components/feed/PostCard';
 import { isEnabled } from '../config/site';
 import { useContent } from '../lib/content';
-import { EditButton } from '../lib/edit';
+import { AddButton, EditButton, useEdit } from '../lib/edit';
 import { usePublishedPosts } from '../lib/feed';
 import { Seo } from '../lib/head';
 
 function LatestFeed() {
   const state = usePublishedPosts(100);
-  if (state.status !== 'ready' || state.data.length === 0) return null;
-  const latest = state.data.slice(0, 6);
-  const music = state.data.find((p) => p.type === 'music' && p.music);
+  const editing = Boolean(useEdit());
+  const posts = state.status === 'ready' ? state.data : [];
+  if (!posts.length && !editing) return null;
+  // The newest music post gets the "now playing" card; the grid shows the other posts (no duplicates).
+  const music = posts.find((p) => p.type === 'music' && p.music);
+  const tiles = posts.filter((p) => p !== music).slice(0, 6);
+  const both = Boolean(music) && tiles.length > 0;
   return (
     <section className="container-page mt-20" aria-labelledby="feed-title">
-      <div className="flex items-baseline justify-between">
+      <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 id="feed-title" className="section-title">
           latest from the feed
         </h2>
-        <Link to="/blog" className="font-mono text-xs">
-          open feed →
-        </Link>
-      </div>
-      <div className={`mt-6 grid gap-6 ${music ? 'lg:grid-cols-[1fr_24rem]' : ''}`}>
-        <div className="grid grid-cols-3 gap-1 overflow-hidden rounded-lg">
-          {latest.map((p) => (
-            <PostTile key={p.id} post={p} />
-          ))}
+        <div className="flex items-center gap-3">
+          <EditButton target={{ kind: 'post-new' }} label="new post" />
+          <Link to="/blog" className="font-mono text-xs">
+            open feed →
+          </Link>
         </div>
+      </div>
+      <div className={`mt-6 grid gap-6 ${both ? 'lg:grid-cols-[minmax(0,1fr)_26rem]' : ''}`}>
+        {tiles.length > 0 && (
+          <div className={`grid grid-cols-3 gap-1 self-start overflow-hidden rounded-lg ${both ? '' : 'sm:grid-cols-6'}`}>
+            {tiles.map((p) => (
+              <PostTile key={p.id} post={p} />
+            ))}
+          </div>
+        )}
         {music?.music ? (
-          <div data-side="personal" className="font-blog">
+          <div className={`font-blog ${both ? '' : 'max-w-xl'}`}>
             <p className="section-title mb-3">now playing / current mood</p>
             <MusicCard music={music.music} comment={music.text} mood={music.mood} />
           </div>
         ) : null}
+        {!posts.length ? <AddButton target={{ kind: 'post-new' }} label="Write your first post" /> : null}
       </div>
     </section>
   );

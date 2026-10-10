@@ -82,6 +82,16 @@ export function PostTile({ post }: { post: Post }) {
     <Link to={`/blog/p/${post.id}`} className="group relative block aspect-square overflow-hidden bg-latte/40 no-underline hover:no-underline" aria-label={`${typeLabel[post.type]}: ${post.text.slice(0, 80) || post.music?.title || 'post'}`}>
       {img ? (
         <img src={cldUrl(img.url, 480)} alt={img.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+      ) : post.type === 'music' && post.music ? (
+        <div className="flex h-full flex-col justify-between bg-mocha p-3 text-cream">
+          <span className="text-3xl" aria-hidden="true">
+            ♪
+          </span>
+          <span>
+            <span className="blog-headline line-clamp-2 block text-lg">{post.music.title || 'Untitled track'}</span>
+            {post.music.artist ? <span className="block truncate text-xs text-latte">{post.music.artist}</span> : null}
+          </span>
+        </div>
       ) : (
         <div className="flex h-full items-end bg-foam p-3 dark:bg-dark-roast">
           <p className="blog-headline line-clamp-5 text-lg text-fg">
