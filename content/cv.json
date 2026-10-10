@@ -2,18 +2,18 @@
   "personal": {
     "fullName": "Kaito Snezhko",
     "headline": "IT student & developer",
-    "email": "hello@example.com",
-    "phone": "",
+    "email": "kaito.snezhko@edu.fh-joanneum.at",
+    "phone": "+4367761711671",
     "address": "Graz, Austria",
     "website": "",
-    "linkedin": "",
+    "linkedin": "https://www.linkedin.com/in/kaito-snezhko-68a883348",
     "github": "https://github.com/vurado0",
-    "nationality": "",
-    "dateOfBirth": "",
-    "drivingLicence": "",
+    "nationality": "Austria ",
+    "dateOfBirth": "2003-11-25",
+    "drivingLicence": "B",
     "photo": ""
   },
-  "summary": "PLACEHOLDER — two sentences about who you are, what you study and what kind of work you are looking for.",
+  "summary": "TBE",
   "sections": [
     {
       "id": "work",

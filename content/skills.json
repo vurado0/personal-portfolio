@@ -23,8 +23,10 @@
     { "id": "git", "name": "Git", "group": "tools", "level": 4, "context": "PLACEHOLDER — branching, rebasing, clean history, GitHub flow." },
     { "id": "vscode", "name": "VS Code", "group": "tools", "level": 4, "context": "PLACEHOLDER — main editor with remote containers." },
     { "id": "claude-code", "name": "Claude Code", "group": "tools", "level": 3, "context": "PLACEHOLDER — AI pair programming for features and content." },
-    { "id": "english", "name": "English", "group": "languages", "level": 4, "context": "PLACEHOLDER — C1, daily use in tech." },
-    { "id": "german", "name": "German", "group": "languages", "level": 4, "context": "PLACEHOLDER — study language in Austria." },
-    { "id": "spanish", "name": "Spanish", "group": "languages", "level": 2, "context": "PLACEHOLDER — learning (A2), see my Spanish learning project." }
+    { "id": "english", "name": "English 🇬🇧", "group": "languages", "level": 5, "context": "C1, daily use in tech.\nAs well as enrollment in semester abroad in Spain 2026/7" },
+    { "id": "german", "name": "German 🇩🇪", "group": "languages", "level": 5, "context": "Second mother language" },
+    { "id": "spanish", "name": "Spanish 🇪🇸", "group": "languages", "level": 3, "context": "Oral high school exam on B1 level" },
+    { "id": "russian", "name": "Russian 🇷🇺", "group": "languages", "level": 5, "context": "First mother language" },
+    { "id": "japanese", "name": "Japanese 🇯🇵", "group": "languages", "level": 4, "context": "Self learned, currently B2 \nKanji knowledge: 1k\nRough estimation: JLPT N3-2" }
   ]
 }
