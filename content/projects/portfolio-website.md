@@ -1,12 +1,12 @@
 ---
 title: Portfolio & blog website
 summary: This site — a coffee-themed portfolio, know-how base and personal feed with a phone-friendly admin.
-stack: [React, TypeScript, Vite, Tailwind, Firebase, Cloudinary, Vercel]
-skills: [typescript, react, firebase, ci-cd, git, claude-code]
-tags: [web, personal]
+stack: [ React, TypeScript, Vite, Tailwind, Firebase, Cloudinary, Vercel ]
+skills: [ typescript, react, firebase, ci-cd, git, claude-code ]
+tags: [ web, personal ]
 role: Solo developer & designer
 status: in progress
-period: 2026
+period: "2026"
 links:
   github: https://github.com/vurado0/personal-portfolio
   demo: https://www.kaito-tech.site
@@ -35,6 +35,4 @@ I wanted one place for my CV, my IT notes and a personal feed — without paying
 
 ## Lessons learned
 
-PLACEHOLDER — write what you learned, e.g. about prerendering, Firestore rules and image pipelines.
-
-See the [skills page](/skills) for how everything connects.
+TBE
