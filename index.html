@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en" data-side="portfolio">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
+    <meta name="theme-color" content="#1A120D" />
+    <script>
+      // Set theme + side before first paint: saved choice wins, otherwise the side's default
+      // (portfolio = dark espresso, personal = light latte).
+      (function () {
+        var prefixes = __PERSONAL_PREFIXES__;
+        var p = location.pathname;
+        var side = prefixes.some(function (x) { return p === x || p.indexOf(x + '/') === 0; }) ? 'personal' : 'portfolio';
+        var saved = null;
+        try { saved = localStorage.getItem('theme'); } catch (e) {}
+        var d = document.documentElement;
+        d.dataset.side = side;
+        d.dataset.theme = saved === 'light' || saved === 'dark' ? saved : side === 'personal' ? 'light' : 'dark';
+      })();
+    </script>
+    <!--app-head-->
+  </head>
+  <body>
+    <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-accent focus:px-3 focus:py-2 focus:text-on-accent">Skip to content</a>
+    <div id="root"><!--app-html--></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
