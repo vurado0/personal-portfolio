@@ -53,6 +53,6 @@ export function levelLabel(level: number): string {
 }
 
 export function categoryLabel(category: string): string {
-  const special: Record<string, string> = { macos: 'macOS', c: 'C', git: 'Git', ci: 'CI' };
+  const special: Record<string, string> = { macos: 'macOS', c: 'C', cpp: 'C++', git: 'Git', ci: 'CI', 'machine-learning': 'Machine learning' };
   return special[category] ?? category.charAt(0).toUpperCase() + category.slice(1);
 }
