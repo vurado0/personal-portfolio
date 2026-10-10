@@ -1,0 +1,97 @@
+import { Link } from 'react-router';
+import { cldUrl } from '../../lib/cloudinary';
+import type { Post, PostType } from '../../lib/feed';
+import { formatDateTime, relativeTime } from '../../lib/format';
+import { SkillChips, TagChip } from '../Chips';
+import { ImageCarousel } from './ImageCarousel';
+import { MusicCard } from './MusicCard';
+
+export const typeLabel: Record<PostType, string> = {
+  photo: 'Photo',
+  text: 'Thought',
+  achievement: 'Achievement',
+  music: 'Music',
+};
+
+/** Timeline (X-style) post: meta labels left, content right, thin rules between posts. */
+export function PostCard({ post, detail = false }: { post: Post; detail?: boolean }) {
+  return (
+    <article className="grid gap-x-8 gap-y-3 border-t border-ink/20 py-8 dark:border-cream/15 md:grid-cols-[9rem_1fr]">
+      <dl className="meta-grid content-start md:grid-cols-[3.5rem_1fr]">
+        <dt>Type:</dt>
+        <dd className="text-fg">{typeLabel[post.type]}</dd>
+        <dt>Date:</dt>
+        <dd>
+          <time dateTime={post.createdAt.toISOString()} title={formatDateTime(post.createdAt)}>
+            {relativeTime(post.createdAt)}
+          </time>
+        </dd>
+        {post.mood && post.type !== 'music' ? (
+          <>
+            <dt>Mood:</dt>
+            <dd>{post.mood}</dd>
+          </>
+        ) : null}
+        {!post.published ? (
+          <>
+            <dt>State:</dt>
+            <dd className="font-bold text-fg">Draft</dd>
+          </>
+        ) : null}
+      </dl>
+
+      <div className="min-w-0 space-y-4">
+        {post.type === 'achievement' ? (
+          <div className="flex items-start gap-3">
+            <span className="flex h-12 w-12 flex-none items-center justify-center rounded-full bg-accent text-2xl text-on-accent shadow-warm" aria-hidden="true">
+              {post.badge || '★'}
+            </span>
+            <p className="blog-headline pt-1 text-3xl sm:text-4xl">{post.text}</p>
+          </div>
+        ) : post.type === 'music' && post.music ? null : (
+          <p className={`whitespace-pre-line ${post.type === 'text' ? 'blog-headline text-3xl font-bold sm:text-[2.6rem]' : 'text-lg'}`}>{post.text}</p>
+        )}
+
+        {post.images.length > 0 ? <ImageCarousel images={post.images} /> : null}
+        {post.type === 'music' && post.music ? <MusicCard music={post.music} comment={post.text} mood={post.mood} /> : null}
+
+        {(post.tags.length > 0 || post.skills.length > 0) && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {post.tags.map((tag) => (
+              <TagChip key={tag} tag={tag} />
+            ))}
+            <SkillChips ids={post.skills} />
+          </div>
+        )}
+        {!detail ? (
+          <Link to={`/blog/p/${post.id}`} className="inline-block text-sm">
+            Open post →
+          </Link>
+        ) : null}
+      </div>
+    </article>
+  );
+}
+
+/** Photo grid (Instagram/VSCO-style) tile. */
+export function PostTile({ post }: { post: Post }) {
+  const img = post.images[0] ?? (post.music?.coverUrl ? { url: post.music.coverUrl, alt: post.music.title } : null);
+  return (
+    <Link to={`/blog/p/${post.id}`} className="group relative block aspect-square overflow-hidden bg-latte/40 no-underline hover:no-underline" aria-label={`${typeLabel[post.type]}: ${post.text.slice(0, 80) || post.music?.title || 'post'}`}>
+      {img ? (
+        <img src={cldUrl(img.url, 480)} alt={img.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+      ) : (
+        <div className="flex h-full items-end bg-foam p-3 dark:bg-dark-roast">
+          <p className="blog-headline line-clamp-5 text-lg text-fg">
+            {post.type === 'achievement' ? `${post.badge || '★'} ` : ''}
+            {post.text}
+          </p>
+        </div>
+      )}
+      {post.images.length > 1 ? (
+        <span className="absolute right-2 top-2 rounded-sm bg-espresso/70 px-1.5 text-xs text-cream">1/{post.images.length}</span>
+      ) : null}
+      {post.type === 'music' ? <span className="absolute right-2 top-2 rounded-sm bg-espresso/70 px-1.5 text-xs text-cream">♪</span> : null}
+    </Link>
+  );
+}
