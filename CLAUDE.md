@@ -15,7 +15,8 @@ Always run `npm run build` before committing; fix all errors.
 ## Architecture
 
 - `content/` → parsed and validated by the pure `src/lib/content-core/` (no Node APIs). `scripts/lib/content.ts` feeds it files from disk (+ highlight.js) for the Vite plugin `virtual:content`, the validator and the prerenderer; the admin content editor (`src/pages/admin/`) runs the same validation in the browser before committing through `api/content.ts` (GitHub API).
-- `src/config/site.ts` — menu (`enabled`/`order`/`side`), fonts; identity comes from `content/profile.json`. `side` decides the default theme (portfolio = dark, personal = light).
+- `src/config/navigation.ts` — fixed menu data (paths, icons, sides); labels/order/visibility come from `content/navigation.json`, identity from `content/profile.json` (`src/config/site.ts` merges them).
+- Pages read content via `useContent()` (`src/lib/content.ts`): static bundle for visitors/prerendering, the live draft in edit mode. Edit-mode UI (`ItemTools`, `AddButton`, `EditButton` from `src/lib/edit.tsx`) renders nothing for visitors; the editor itself (`src/edit/EditProvider.tsx`) is lazy-loaded for the owner only. New editable things need an `EditTarget` kind plus a form in `FormFor`. `side` decides the default theme (portfolio = dark, personal = light).
 - `src/lib/firebase.ts` loads Firebase lazily; never import `firebase/*` statically in components (keeps it out of the main bundle and out of prerendering).
 - Feed (`src/lib/feed.ts`): public queries **must** filter `where('published', '==', true)` or the rules reject them.
 - `api/` — Vercel functions; imports use `.js` extensions (NodeNext). Admin check: `api/_lib/auth.ts` (`verifyIdToken` + `ADMIN_UID`).
