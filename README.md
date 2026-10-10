@@ -103,7 +103,7 @@ The repo is connected to Vercel; every push to `main` deploys production, every 
 3. Firebase → **Authentication → Settings → Authorized domains** → add `<project>.vercel.app` and any custom domain (without `https://`). Preview domains need to be added too if you want to log in on previews.
 4. Live test: pages load, `/admin` login works, a photo post uploads and appears in the feed, the music card loads the player only after the click, the contact form saves.
 
-`vercel.json` uses `cleanUrls` so prerendered pages (`dist/skills.html` → `/skills`) are served directly, and rewrites everything else except `/api/*` to `spa.html` (the client-side app for `/blog/p/:id`, `/admin` and 404s).
+`vercel.json` uses `cleanUrls` so prerendered pages (`dist/skills.html` → `/skills`) are served directly, and rewrites everything else except `/api/*` to `/spa` (`spa.html`) (the client-side app for `/blog/p/:id`, `/admin` and 404s).
 
 ## Design
 

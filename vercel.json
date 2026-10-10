@@ -5,7 +5,7 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/spa.html" }],
+  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/spa" }],
   "headers": [
     {
       "source": "/assets/(.*)",
