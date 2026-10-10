@@ -2,7 +2,7 @@
 
 🇬🇧 [English](README.md) · 🇩🇪 **Deutsch**
 
-**Live: [personal-portfolio-eta-ten-37.vercel.app](https://personal-portfolio-eta-ten-37.vercel.app)**
+**Live: [www.kaito-tech.site](https://www.kaito-tech.site)**
 
 Meine persönliche Ecke im Netz: wer ich als IT-Student und Entwickler bin, was ich kann, was ich gebaut habe – und nebenbei ein Stück Alltag. Die ganze Seite ist in Kaffeetönen gehalten: eine dunkle *Espresso*-Seite für den beruflichen Teil und eine warme *Latte*-Seite für den persönlichen.
 
@@ -17,7 +17,7 @@ Meine persönliche Ecke im Netz: wer ich als IT-Student und Entwickler bin, was 
 | **Blog** | Ein Feed wie auf Social Media (Fotos, kleine Erfolge, Gedanken, die Songs in Dauerschleife) und längere Artikel. |
 | **Zertifikate · Hobbies · Kontakt** | Wohin ich mich entwickle, was ich in meiner Freizeit mache und wie man mich erreicht. |
 
-Recruiter und Besucher können alles ohne Konto ansehen – die [Login-Seite](https://personal-portfolio-eta-ten-37.vercel.app/login) bietet mit einem Klick eine **Gastansicht**.
+Recruiter und Besucher können alles ohne Konto ansehen – die [Login-Seite](https://www.kaito-tech.site/login) bietet mit einem Klick eine **Gastansicht**.
 
 ## Highlights
 
