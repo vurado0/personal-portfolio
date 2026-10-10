@@ -1,0 +1,52 @@
+import { SkillChips } from '../components/Chips';
+import { PageHeader } from '../components/PageHeader';
+import { content } from '../lib/content';
+import { formatDate } from '../lib/format';
+import { Seo } from '../lib/head';
+import type { CertificateStatus } from '../types/content';
+
+const order: CertificateStatus[] = ['done', 'in progress', 'planned'];
+const badge: Record<CertificateStatus, string> = {
+  done: 'border-fg/60 text-fg',
+  'in progress': 'border-accent text-accent',
+  planned: 'border-line text-muted',
+};
+
+export default function Certificates() {
+  return (
+    <>
+      <Seo title="Certificates" description="Completed, in-progress and planned certifications." path="/certificates" />
+      <PageHeader label="certificates" title="Certifications">
+        Completed, in progress and on the roadmap.
+      </PageHeader>
+      <div className="container-page space-y-12 pt-10">
+        {order.map((status) => {
+          const list = content.certificates.filter((c) => c.status === status);
+          if (!list.length) return null;
+          return (
+            <section key={status} aria-labelledby={`c-${status}`}>
+              <h2 id={`c-${status}`} className="section-title">
+                {status}
+              </h2>
+              <div className="mt-4 grid gap-4 md:grid-cols-2">
+                {list.map((c) => (
+                  <article key={c.id} className="card flex flex-col gap-2">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="font-mono font-bold">{c.url ? <a href={c.url} target="_blank" rel="noopener noreferrer">{c.title} ↗</a> : c.title}</h3>
+                      <span className={`chip flex-none ${badge[c.status]}`}>{c.status}</span>
+                    </div>
+                    <p className="text-sm text-muted">
+                      {c.issuer}
+                      {c.date ? ` · ${c.status === 'done' ? 'earned' : 'target'} ${formatDate(c.date)}` : ''}
+                    </p>
+                    <SkillChips ids={c.skills} className="mt-1" />
+                  </article>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </div>
+    </>
+  );
+}
