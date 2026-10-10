@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router';
 import hljs from 'highlight.js/lib/common';
-import { useAdminAuth } from '../lib/auth';
+import { logOut, useAdminAuth } from '../lib/auth';
 import { deleteFromCloudinary } from '../lib/cloudinary';
 import { buildContent } from '../lib/content-core/build';
 import { EditContextProvider, setEditMode, type EditApi, type EditTarget } from '../lib/edit';
@@ -13,7 +13,7 @@ import { PostEditor } from '../pages/admin/PostEditor';
 import { PageTextForm } from '../pages/admin/ItemForms';
 import { loadSnapshot, type Snapshot } from '../pages/admin/contentApi';
 import { DocForm, emptyDoc, toDoc, type DocKind } from '../pages/admin/DocsEditor';
-import { CERTS, CertificateForm, CV, CvEntryForm, CvPersonalForm, CvSectionForm, HOBBIES, HobbyForm, NavEditor, readCv } from '../pages/admin/ItemForms';
+import { CERTS, CertificateForm, CV, CvEntryForm, CvPdfForm, CvPersonalForm, CvSectionForm, HOBBIES, HobbyForm, NavEditor, readCv } from '../pages/admin/ItemForms';
 import { ProfileEditor } from '../pages/admin/JsonEditors';
 import { DeployNotice, PublishBar, useDeployPolling, type Published } from '../pages/admin/publish';
 import { prettyJson, readJsonFile } from '../pages/admin/serialize';
@@ -119,7 +119,7 @@ function moveTarget(ws: Workspace, target: EditTarget, dir: -1 | 1) {
 
 // ---- Drawer ------------------------------------------------------------------------
 
-function FormFor({ target, onDone }: { target: EditTarget; onDone: () => void }) {
+function FormFor({ target, onDone, onPublished }: { target: EditTarget; onDone: () => void; onPublished: (p: { sha: string; url: string }) => void }) {
   const ws = useWorkspace();
   switch (target.kind) {
     case 'profile':
@@ -151,6 +151,8 @@ function FormFor({ target, onDone }: { target: EditTarget; onDone: () => void })
       return <HobbyForm id={target.id} onDone={onDone} />;
     case 'cv-personal':
       return <CvPersonalForm onDone={onDone} />;
+    case 'cv-pdf':
+      return <CvPdfForm onDone={onDone} onUploaded={onPublished} />;
     case 'cv-section':
       return <CvSectionForm id={target.id} onDone={onDone} />;
     case 'cv-entry':
@@ -184,7 +186,7 @@ function PostLoader({ id, onDone }: { id: string; onDone: () => void }) {
   );
 }
 
-function Drawer({ target, onClose }: { target: EditTarget; onClose: () => void }) {
+function Drawer({ target, onClose, onPublished }: { target: EditTarget; onClose: () => void; onPublished: (p: { sha: string; url: string }) => void }) {
   const panel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -206,7 +208,7 @@ function Drawer({ target, onClose }: { target: EditTarget; onClose: () => void }
             ✕ close
           </button>
         </div>
-        <FormFor target={target} onDone={onClose} />
+        <FormFor target={target} onDone={onClose} onPublished={onPublished} />
       </div>
     </div>
   );
@@ -236,7 +238,7 @@ function LiveEdit({ children, onPublished, published, onDismiss }: { children: R
   return (
     <EditContextProvider value={api}>
       <div className="pb-36">{children}</div>
-      {target ? <Drawer target={target} onClose={close} /> : null}
+      {target ? <Drawer target={target} onClose={close} onPublished={onPublished} /> : null}
       <div className="fixed inset-x-0 bottom-0 z-50 space-y-2 p-2 sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-[28rem] sm:p-0">
         {published ? <DeployNotice published={published} onDismiss={onDismiss} /> : null}
         <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-line bg-bg/95 px-3 py-2 font-mono text-xs shadow-warm backdrop-blur">
@@ -253,6 +255,9 @@ function LiveEdit({ children, onPublished, published, onDismiss }: { children: R
           <Link to="/admin" className="chip min-h-9 text-fg">
             admin
           </Link>
+          <button type="button" className="chip min-h-9" onClick={logOut} title="Sign out and go to the login page">
+            log out
+          </button>
         </div>
         <PublishBar section={target ? 'drawer' : 'page'} onPublished={onPublished} floating />
       </div>

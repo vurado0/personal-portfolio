@@ -13,8 +13,13 @@ export function HeadProvider({ collector, children }: { collector?: Collector; c
   return <HeadContext.Provider value={collector ?? null}>{children}</HeadContext.Provider>;
 }
 
-export function fullTitle(title?: string): string {
-  return title ? `${title} · ${site.name}` : `${site.name} — ${site.role}`;
+/** The browser tab always shows the site title; link previews still name the page. */
+export function fullTitle(): string {
+  return site.siteTitle;
+}
+
+export function previewTitle(title?: string): string {
+  return title ? `${title} · ${site.siteTitle}` : `${site.siteTitle} — ${site.name}`;
 }
 
 function absolute(url: string, base: string): string {
@@ -25,18 +30,19 @@ const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').repl
 
 /** Serialises head data to HTML tags (used by the prerender script). */
 export function headToHtml(data: HeadData, baseUrl: string): string {
-  const title = fullTitle(data.title);
+  const title = fullTitle();
+  const ogTitle = previewTitle(data.title);
   const description = data.description ?? site.description;
   const url = absolute(data.path ?? '/', baseUrl);
   const tags = [
     `<title>${esc(title)}</title>`,
     `<meta name="description" content="${esc(description)}">`,
     `<link rel="canonical" href="${esc(url)}">`,
-    `<meta property="og:title" content="${esc(title)}">`,
+    `<meta property="og:title" content="${esc(ogTitle)}">`,
     `<meta property="og:description" content="${esc(description)}">`,
     `<meta property="og:type" content="${data.type ?? 'website'}">`,
     `<meta property="og:url" content="${esc(url)}">`,
-    `<meta property="og:site_name" content="${esc(site.name)}">`,
+    `<meta property="og:site_name" content="${esc(site.siteTitle)}">`,
     `<meta name="twitter:card" content="${data.image ? 'summary_large_image' : 'summary'}">`,
   ];
   if (data.image) tags.push(`<meta property="og:image" content="${esc(absolute(data.image, baseUrl))}">`);
@@ -64,11 +70,10 @@ export function Seo(props: HeadData) {
   if (collector) collector.data = props;
 
   useEffect(() => {
-    const title = fullTitle(props.title);
     const description = props.description ?? site.description;
-    document.title = title;
+    document.title = fullTitle();
     setMeta('name', 'description', description);
-    setMeta('property', 'og:title', title);
+    setMeta('property', 'og:title', previewTitle(props.title));
     setMeta('property', 'og:description', description);
     setMeta('property', 'og:type', props.type ?? 'website');
     setMeta('property', 'og:url', location.href);

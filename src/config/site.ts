@@ -10,6 +10,7 @@ export type { NavItem, Side } from './navigation';
 
 export const site = {
   ...(profile as Profile),
+  siteTitle: (profile as Profile).siteTitle || 'Kaito Tech',
   url: 'https://personal-portfolio.vercel.app',
   language: 'en',
   fonts: {

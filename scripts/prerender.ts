@@ -134,7 +134,7 @@ const x = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(
 const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 <channel>
-  <title>${x(site.name)}</title>
+  <title>${x(site.siteTitle)}</title>
   <link>${siteUrl}</link>
   <description>${x(site.description)}</description>
   <language>${site.language}</language>

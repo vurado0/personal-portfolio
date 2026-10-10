@@ -28,13 +28,13 @@ function apply(theme: Theme) {
   listeners.forEach((fn) => fn());
 }
 
-/** Keeps data-side / data-theme in sync with the route; a saved choice always wins. */
+/** Keeps data-side in sync with the route. The theme does not change on navigation: dark by default,
+ *  light only when chosen with the toggle (saved), so moving between pages never flips it. */
 export function useSideTheme() {
   const { pathname } = useLocation();
   useEffect(() => {
-    const side = sideForPath(pathname);
-    document.documentElement.dataset.side = side;
-    apply(savedTheme() ?? (side === 'personal' ? 'light' : 'dark'));
+    document.documentElement.dataset.side = sideForPath(pathname);
+    apply(savedTheme() ?? 'dark');
   }, [pathname]);
 }
 

@@ -116,6 +116,8 @@ export type Certificate = {
 
 export type Profile = {
   name: string;
+  /** Browser-tab / site title, the same on every page (default "Kaito Tech") */
+  siteTitle?: string;
   handle: string;
   role: string;
   tagline: string;

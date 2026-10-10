@@ -2,7 +2,7 @@
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Navigate, useSearchParams } from 'react-router';
 import { AuthError } from '../components/AuthError';
-import { signOutUser, useAdminAuth } from '../lib/auth';
+import { logOut, useAdminAuth } from '../lib/auth';
 import { cldUrl, deleteFromCloudinary } from '../lib/cloudinary';
 import { deleteMessage, deletePostDoc, getPost, listAllPosts, listMessages, updatePost, type Message, type Post } from '../lib/feed';
 import { formatDateTime } from '../lib/format';
@@ -176,8 +176,8 @@ export default function Admin() {
                 <a href="/" className="chip min-h-9 text-fg">
                   view site
                 </a>
-                <button type="button" className="chip min-h-9" onClick={signOutUser}>
-                  sign out
+                <button type="button" className="chip min-h-9" onClick={logOut}>
+                  log out
                 </button>
               </div>
             </div>

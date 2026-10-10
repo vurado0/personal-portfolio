@@ -17,6 +17,7 @@ import {
 } from '../../types/content';
 import { Actions, ErrorList, Field, LinesField, SelectField, SkillPicker, TextArea, TextField, Toggle } from './ui';
 import { prettyJson, readJsonFile, slugify } from './serialize';
+import { uploadCvPdf } from './contentApi';
 import { useWorkspace } from './workspace';
 
 export const CERTS = 'content/certificates.json';
@@ -233,6 +234,66 @@ export function CvPersonalForm({ onDone }: { onDone: () => void }) {
       <TextArea label="profile / about me" value={summary} onChange={setSummary} rows={4} hint="Short professional summary at the top of the CV." />
       <TextField label="cv pdf" value={pdf} onChange={setPdf} hint="Path of a PDF in public/ (e.g. /cv.pdf). Empty = no download button." />
       <Actions onSave={save} onCancel={onDone} />
+    </div>
+  );
+}
+
+const MAX_PDF = 3_000_000;
+
+const toBase64 = (file: File) =>
+  new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',')[1] ?? '');
+    reader.onerror = () => reject(new Error('Could not read the file.'));
+    reader.readAsDataURL(file);
+  });
+
+/** Uploads a new public/cv.pdf straight to GitHub (its own commit, goes live after the deploy). */
+export function CvPdfForm({ onDone, onUploaded }: { onDone: () => void; onUploaded: (p: { sha: string; url: string }) => void }) {
+  const ws = useWorkspace();
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const pending = ws.changes.length;
+  const current = readCv(ws.files).pdf;
+
+  const upload = async () => {
+    if (!file) return;
+    if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) return setError('Please choose a PDF file.');
+    if (file.size > MAX_PDF) return setError(`The PDF is ${(file.size / 1e6).toFixed(1)} MB — the limit is 3 MB.`);
+    setBusy(true);
+    setError('');
+    try {
+      const r = await uploadCvPdf(ws.headSha, await toBase64(file));
+      onUploaded({ sha: r.commitSha, url: r.commitUrl });
+      onDone();
+    } catch (e) {
+      setError((e as Error).message);
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      <Title>Upload CV (PDF)</Title>
+      <p className="text-sm text-muted">
+        Replaces the PDF behind the “Download CV” button{current ? <> (currently <a href={current} target="_blank" rel="noopener noreferrer">{current}</a>)</> : null}. It is live about a minute after the upload, once the site has redeployed. Max. 3 MB.
+      </p>
+      {pending ? (
+        <p className="rounded-md border border-accent/60 px-3 py-2 text-sm">You have {pending} unpublished change(s). Publish or discard them first, then upload the PDF.</p>
+      ) : null}
+      <Field label="pdf file">
+        <input type="file" accept="application/pdf,.pdf" className="input" disabled={busy || pending > 0} onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+      </Field>
+      <ErrorList errors={error ? [error] : []} />
+      <div className="flex gap-2">
+        <button type="button" className="btn-primary" disabled={!file || busy || pending > 0} onClick={upload}>
+          {busy ? 'Uploading…' : '⇪ Upload'}
+        </button>
+        <button type="button" className="btn-ghost" onClick={onDone} disabled={busy}>
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }
