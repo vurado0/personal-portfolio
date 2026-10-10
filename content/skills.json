@@ -10,6 +10,7 @@
     { "id": "java", "name": "Java", "group": "programming", "level": 4, "context": "PLACEHOLDER — main university language: OOP, collections, JUnit, Spring Boot basics." },
     { "id": "c", "name": "C", "group": "programming", "level": 3, "context": "PLACEHOLDER — systems programming course: pointers, memory, make." },
     { "id": "cpp", "name": "C++", "group": "programming", "level": 3, "context": "Data structures course (UAH, fall 2026): linked stacks, queues and lists built by hand, RAII destructors, leak-free code." },
+    { "id": "javascript", "name": "JavaScript", "group": "programming", "level": 4, "context": "Framework-free browser apps: canvas rendering, IndexedDB, service workers and ES modules (Kanji Trainer, BG//SYS, verb trainer)." },
     { "id": "typescript", "name": "TypeScript", "group": "programming", "level": 3, "context": "PLACEHOLDER — this website and small React tools." },
     { "id": "kotlin", "name": "Kotlin", "group": "programming", "level": 3, "context": "Android apps in Jetpack Compose with MVVM, coroutines and navigation (Interactive Mobile Applications, summer 2026)." },
     { "id": "spring-boot", "name": "Spring Boot", "group": "programming", "level": 3, "context": "Microservices with REST, config server, inter-service calls and H2 / PostgreSQL / MongoDB Atlas (Software Architecture, summer 2026)." },
