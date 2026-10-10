@@ -8,7 +8,7 @@ import { useWorkspace } from './workspace';
 
 export type DocKind = 'projects' | 'knowhow' | 'articles';
 
-type Doc = {
+export type Doc = {
   path: string | null; // null = not saved yet
   slug: string;
   title: string;
@@ -50,7 +50,7 @@ const OPTIONAL = ['cover', 'tags', 'featured', 'draft', 'links'];
 const str = (v: unknown) => (typeof v === 'number' ? String(v) : typeof v === 'string' ? v : '');
 const list = (v: unknown) => (Array.isArray(v) ? v.map(String) : []);
 
-function toDoc(kind: DocKind, path: string, src: string): Doc {
+export function toDoc(kind: DocKind, path: string, src: string): Doc {
   const { data, body } = readMd(src);
   const file = path.slice(path.lastIndexOf('/') + 1, -3);
   const links = (data.links ?? {}) as Record<string, unknown>;
@@ -78,7 +78,7 @@ function toDoc(kind: DocKind, path: string, src: string): Doc {
   };
 }
 
-function emptyDoc(kind: DocKind, category: string): Doc {
+export function emptyDoc(kind: DocKind, category: string): Doc {
   return {
     path: null,
     slug: '',
@@ -139,7 +139,7 @@ function validate(kind: DocKind, d: Doc, existingPaths: Set<string>): string[] {
   return e;
 }
 
-function DocForm({ kind, doc, onDone }: { kind: DocKind; doc: Doc; onDone: () => void }) {
+export function DocForm({ kind, doc, onDone }: { kind: DocKind; doc: Doc; onDone: () => void }) {
   const ws = useWorkspace();
   const [d, setD] = useState(doc);
   const [slugTouched, setSlugTouched] = useState(doc.path !== null);

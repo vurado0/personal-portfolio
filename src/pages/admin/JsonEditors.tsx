@@ -1,6 +1,6 @@
-// Editors for the JSON content files: profile, CV, certificates and hobbies.
+// Whole-file editors for the JSON content files: profile, certificates and hobbies.
 import { useState } from 'react';
-import type { Certificate, Cv, Hobby, Profile, TimelineEntry } from '../../types/content';
+import type { Certificate, Hobby, Profile } from '../../types/content';
 import { Actions, ErrorList, Field, LinesField, RowsEditor, SelectField, SkillPicker, TextArea, TextField } from './ui';
 import { prettyJson, readJsonFile, slugify } from './serialize';
 import { useWorkspace } from './workspace';
@@ -31,7 +31,7 @@ function SavedNote({ saved }: { saved: boolean }) {
 
 // ---- Profile ---------------------------------------------------------------
 
-export function ProfileEditor() {
+export function ProfileEditor({ onDone }: { onDone?: () => void } = {}) {
   const f = useJsonFile<Profile>('content/profile.json', {
     name: '',
     handle: '',
@@ -53,7 +53,10 @@ export function ProfileEditor() {
     if (!/^\S+@\S+\.\S+$/.test(p.email)) e.push('Email looks invalid.');
     p.socials.forEach((s) => !/^(https?:|mailto:)/.test(s.url) && e.push(`Link "${s.label}" must start with https:// or mailto:`));
     setErrors(e);
-    if (!e.length) f.save();
+    if (!e.length) {
+      f.save();
+      onDone?.();
+    }
   };
   return (
     <div className="space-y-5">
@@ -80,67 +83,6 @@ export function ProfileEditor() {
               <TextField label="label" value={s.label} onChange={(label) => update({ label, id: slugify(label) })} placeholder="GitHub" />
               <TextField label="url" type="url" value={s.url} onChange={(url) => update({ url })} />
             </>
-          )}
-        />
-      </Field>
-      <ErrorList errors={errors} />
-      <SavedNote saved={f.saved} />
-      <Actions onSave={save} onCancel={f.dirty ? f.reset : undefined} dirty={f.dirty} />
-    </div>
-  );
-}
-
-// ---- CV --------------------------------------------------------------------
-
-const TIMELINE_TYPES = ['education', 'work', 'certificate'] as const;
-
-export function CvEditor() {
-  const f = useJsonFile<Cv>('content/cv.json', { summary: '', timeline: [], languages: [] });
-  const cv = f.value;
-  const set = (patch: Partial<Cv>) => f.setValue({ ...cv, ...patch });
-  const [errors, setErrors] = useState<string[]>([]);
-  const save = () => {
-    const e = cv.timeline.filter((t) => !t.title.trim() || !t.org.trim() || !/^\d{4}(-\d{2})?$/.test(t.start)).map((t) => `Timeline "${t.title || '(untitled)'}": title, organisation and start (YYYY or YYYY-MM) are required.`);
-    setErrors(e);
-    if (!e.length) f.save({ ...cv, timeline: cv.timeline.map((t) => ({ ...t, end: t.end || undefined, text: t.text || undefined })) });
-  };
-  return (
-    <div className="space-y-6">
-      <TextArea label="about text" value={cv.summary} onChange={(summary) => set({ summary })} rows={4} hint="Shown at the top of About / CV." />
-      <TextField label="cv pdf" value={cv.pdf ?? ''} onChange={(pdf) => set({ pdf: pdf || undefined })} hint="Path of the PDF in public/ (default /cv.pdf). Leave empty to hide the download button." />
-      <Field label="timeline">
-        <RowsEditor<TimelineEntry>
-          items={cv.timeline}
-          onChange={(timeline) => set({ timeline })}
-          create={() => ({ type: 'work', title: '', org: '', start: String(new Date().getFullYear()) })}
-          title={(t) => `${t.start} · ${t.title}`}
-          addLabel="Add entry"
-          render={(t, update) => (
-            <>
-              <SelectField label="type" value={t.type} onChange={(type) => update({ type })} options={TIMELINE_TYPES} />
-              <TextField label="title" required value={t.title} onChange={(title) => update({ title })} placeholder="BSc Information Technology" />
-              <TextField label="organisation" required value={t.org} onChange={(org) => update({ org })} />
-              <div className="grid grid-cols-2 gap-3">
-                <TextField label="start" required value={t.start} onChange={(start) => update({ start })} placeholder="2024-10" />
-                <TextField label="end" value={t.end ?? ''} onChange={(end) => update({ end })} placeholder="empty = now" />
-              </div>
-              <TextArea label="description" value={t.text ?? ''} onChange={(text) => update({ text })} rows={2} />
-            </>
-          )}
-        />
-      </Field>
-      <Field label="languages">
-        <RowsEditor
-          items={cv.languages}
-          onChange={(languages) => set({ languages })}
-          create={() => ({ name: '', level: '' })}
-          title={(l) => `${l.name} ${l.level}`}
-          addLabel="Add language"
-          render={(l, update) => (
-            <div className="grid grid-cols-2 gap-3">
-              <TextField label="language" value={l.name} onChange={(name) => update({ name })} />
-              <TextField label="level" value={l.level} onChange={(level) => update({ level })} placeholder="C1 / native" />
-            </div>
           )}
         />
       </Field>

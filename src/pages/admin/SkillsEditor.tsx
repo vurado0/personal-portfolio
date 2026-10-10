@@ -4,13 +4,13 @@ import { levelLabel } from '../../lib/content';
 import type { Skill, SkillGroup } from '../../types/content';
 import { Actions, ErrorList, LevelPicker, SelectField, TextArea, TextField } from './ui';
 import { prettyJson, readJsonFile, readMd, slugify, writeMd } from './serialize';
-import { useWorkspace } from './workspace';
+import { useWorkspace, type Workspace } from './workspace';
 
 const SKILLS = 'content/skills.json';
 const CERTS = 'content/certificates.json';
 
 /** Files (and certificates) that reference a skill id. */
-function findReferences(files: Record<string, string>, id: string): string[] {
+export function findReferences(files: Record<string, string>, id: string): string[] {
   const refs: string[] = [];
   for (const [path, src] of Object.entries(files)) {
     if (path.endsWith('.md') && (readMd(src).data.skills as string[] | undefined)?.includes(id)) refs.push(path);
@@ -20,7 +20,29 @@ function findReferences(files: Record<string, string>, id: string): string[] {
   return refs;
 }
 
-function SkillForm({ skill, isNew, onDone }: { skill: Skill; isNew: boolean; onDone: () => void }) {
+/** Deletes a skill (after confirmation) and removes it from every file that references it. */
+export function deleteSkill(ws: Workspace, id: string, name: string): boolean {
+  const refs = findReferences(ws.files, id);
+  const msg = refs.length ? `"${name}" is used in ${refs.length} place(s):\n${refs.join('\n')}\n\nDelete it and remove it from all of them?` : `Delete "${name}"?`;
+  if (!confirm(msg)) return false;
+  const edits: Record<string, string> = {
+    [SKILLS]: prettyJson({ groups: ws.groups, skills: ws.skills.filter((x) => x.id !== id) }),
+  };
+  for (const [path, src] of Object.entries(ws.files)) {
+    if (!path.endsWith('.md')) continue;
+    const { data, body } = readMd(src);
+    const list = data.skills as string[] | undefined;
+    if (list?.includes(id)) edits[path] = writeMd(src, { ...data, skills: list.filter((x) => x !== id) }, body, []);
+  }
+  const certs = readJsonFile<{ skills?: string[] }[]>(ws.files[CERTS], []);
+  if (certs.some((c) => c.skills?.includes(id))) {
+    edits[CERTS] = prettyJson(certs.map((c) => ({ ...c, skills: (c.skills ?? []).filter((x) => x !== id) })));
+  }
+  ws.write(edits);
+  return true;
+}
+
+export function SkillForm({ skill, isNew, onDone }: { skill: Skill; isNew: boolean; onDone: () => void }) {
   const ws = useWorkspace();
   const [s, setS] = useState(skill);
   const [idTouched, setIdTouched] = useState(!isNew);
@@ -41,26 +63,7 @@ function SkillForm({ skill, isNew, onDone }: { skill: Skill; isNew: boolean; onD
   };
 
   const remove = () => {
-    const refs = findReferences(ws.files, skill.id);
-    const msg = refs.length
-      ? `"${skill.name}" is used in ${refs.length} place(s):\n${refs.join('\n')}\n\nDelete it and remove it from all of them?`
-      : `Delete "${skill.name}"?`;
-    if (!confirm(msg)) return;
-    const edits: Record<string, string> = {
-      [SKILLS]: prettyJson({ groups: ws.groups, skills: ws.skills.filter((x) => x.id !== skill.id) }),
-    };
-    for (const [path, src] of Object.entries(ws.files)) {
-      if (!path.endsWith('.md')) continue;
-      const { data, body } = readMd(src);
-      const list = data.skills as string[] | undefined;
-      if (list?.includes(skill.id)) edits[path] = writeMd(src, { ...data, skills: list.filter((x) => x !== skill.id) }, body, []);
-    }
-    const certs = readJsonFile<{ skills?: string[] }[]>(ws.files[CERTS], []);
-    if (certs.some((c) => c.skills?.includes(skill.id))) {
-      edits[CERTS] = prettyJson(certs.map((c) => ({ ...c, skills: (c.skills ?? []).filter((x) => x !== skill.id) })));
-    }
-    ws.write(edits);
-    onDone();
+    if (deleteSkill(ws, skill.id, skill.name)) onDone();
   };
 
   return (
@@ -92,7 +95,7 @@ function SkillForm({ skill, isNew, onDone }: { skill: Skill; isNew: boolean; onD
   );
 }
 
-function GroupsForm({ onDone }: { onDone: () => void }) {
+export function GroupsForm({ onDone }: { onDone: () => void }) {
   const ws = useWorkspace();
   const [groups, setGroups] = useState<SkillGroup[]>(ws.groups);
   const [newLabel, setNewLabel] = useState('');
