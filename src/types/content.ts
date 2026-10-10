@@ -91,7 +91,20 @@ export type Certificate = {
   skills: string[];
 };
 
+export type Profile = {
+  name: string;
+  handle: string;
+  role: string;
+  tagline: string;
+  description: string;
+  location: string;
+  email: string;
+  currentFocus: string[];
+  socials: { id: string; label: string; url: string }[];
+};
+
 export type ContentBundle = {
+  profile: Profile;
   skillGroups: SkillGroup[];
   skills: Skill[];
   knowhow: KnowhowDoc[];

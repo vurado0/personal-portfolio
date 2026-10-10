@@ -1,4 +1,7 @@
-// Central site configuration: identity, socials and the menu.
+import profile from '../../content/profile.json';
+import type { Profile } from '../types/content';
+
+// Central site configuration: the menu and deployment settings.
 // Hiding a page = setting `enabled: false` (it disappears from the menu, sitemap and router).
 
 export type Side = 'portfolio' | 'personal';
@@ -13,30 +16,17 @@ export type NavItem = {
   enabled: boolean;
 };
 
+// Identity (name, role, socials, …) lives in content/profile.json so it can be edited from /admin.
 export const site = {
-  // TODO(content): replace the placeholders with your real details.
-  name: 'Your Name',
-  handle: 'vurado0',
-  role: 'IT student & developer',
-  tagline: 'Systems, cloud and code — brewed slowly.',
-  description:
-    'Personal IT portfolio, know-how base and blog: skills, projects, guides and a personal feed.',
+  ...(profile as Profile),
   url: 'https://personal-portfolio.vercel.app',
-  location: 'Graz, Austria',
-  email: 'hello@example.com',
   language: 'en',
-  currentFocus: ['Linux & networking fundamentals', 'Docker and CI/CD', 'Java backend development'],
-  socials: [
-    { id: 'github', label: 'GitHub', url: 'https://github.com/vurado0' },
-    { id: 'linkedin', label: 'LinkedIn', url: 'https://www.linkedin.com/in/your-profile' },
-    { id: 'email', label: 'Email', url: 'mailto:hello@example.com' },
-  ],
   fonts: {
     // Any self-hosted family works here; JetBrains Mono and Inter Tight ship via @fontsource.
     mono: '"JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace',
     blog: '"Raptor Text", "Inter Tight", system-ui, sans-serif',
   },
-} as const;
+};
 
 export const nav: NavItem[] = [
   { id: 'home', label: 'Home', path: '/', icon: '~', side: 'portfolio', order: 1, enabled: true },
