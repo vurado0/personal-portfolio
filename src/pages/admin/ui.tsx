@@ -128,7 +128,7 @@ export function MarkdownField({ value, onChange }: { value: string; onChange: (v
         </div>
       )}
       <p className="mt-1 text-xs text-muted">
-        ## Heading · **bold** · [link](/skills/docker) · ```bash code``` · ![alt](/images/…)
+        ## Heading · **bold** · [link](/projects) · ```bash code``` · ![alt](/images/…)
       </p>
     </div>
   );

@@ -4,7 +4,7 @@ import { useContent } from '../lib/content';
 export function SkillChip({ id }: { id: string }) {
   const skill = useContent().skillById.get(id);
   return (
-    <Link to={`/skills/${id}`} className="chip text-fg hover:border-accent hover:text-accent hover:no-underline">
+    <Link to={`/skills#skill-${id}`} className="chip text-fg hover:border-accent hover:text-accent hover:no-underline">
       <span className="text-accent" aria-hidden="true">
         #
       </span>

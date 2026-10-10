@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes, useParams } from 'react-router';
 import { Layout } from './components/Layout';
 import { isEnabled } from './config/site';
 import About from './pages/About';
@@ -13,12 +13,16 @@ import KnowhowArticle from './pages/KnowhowArticle';
 import { Datenschutz, Impressum } from './pages/Legal';
 import NotFound from './pages/NotFound';
 import { ProjectDetail, Projects } from './pages/Projects';
-import SkillDetail from './pages/SkillDetail';
 import Skills from './pages/Skills';
 
 // The admin area (and with it the upload code) is only downloaded when /admin is opened.
 const Admin = lazy(() => import('./pages/Admin'));
 const Login = lazy(() => import('./pages/Login'));
+
+function SkillRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/skills#skill-${id}`} replace />;
+}
 
 export function App() {
   return (
@@ -28,7 +32,8 @@ export function App() {
         {isEnabled('skills') && (
           <>
             <Route path="skills" element={<Skills />} />
-            <Route path="skills/:id" element={<SkillDetail />} />
+            {/* Old skill detail URLs → the skill's card on the skills page */}
+            <Route path="skills/:id" element={<SkillRedirect />} />
           </>
         )}
         {isEnabled('knowhow') && (
