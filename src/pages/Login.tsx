@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router';
 import backgrounds from '../generated/backgrounds.json';
 import { useContent } from '../lib/content';
+import { AuthError } from '../components/AuthError';
 import { signInWithGoogle, signOutUser, useAdminAuth } from '../lib/auth';
 import { Seo } from '../lib/head';
 
@@ -104,6 +105,8 @@ export default function Login() {
                 <p className="text-sm">Firebase is not configured yet (VITE_FIREBASE_* variables are missing).</p>
               ) : auth.status === 'loading' ? (
                 <p className="font-mono text-sm text-muted">Checking session…</p>
+              ) : auth.status === 'error' ? (
+                <AuthError message={auth.message} signedIn={Boolean(auth.user)} />
               ) : auth.status === 'denied' ? (
                 <>
                   <p className="font-mono text-sm">
