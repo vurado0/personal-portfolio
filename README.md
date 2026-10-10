@@ -1,5 +1,7 @@
 # ☕ Kaito Snezhko — Portfolio, Know-how & Blog
 
+🇬🇧 **English** · 🇩🇪 [Deutsch](README.de.md)
+
 **Live: [personal-portfolio-eta-ten-37.vercel.app](https://personal-portfolio-eta-ten-37.vercel.app)**
 
 My personal corner of the web: who I am as an IT student and developer, what I can do, what I've built — and a bit of everyday life on the side. The whole site is brewed in coffee tones: a dark *espresso* side for the professional part and a warm *latte* side for the personal one.
