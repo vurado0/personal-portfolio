@@ -11,7 +11,7 @@ export type { NavItem, Side } from './navigation';
 export const site = {
   ...(profile as Profile),
   siteTitle: (profile as Profile).siteTitle || 'Kaito Tech',
-  url: 'https://personal-portfolio.vercel.app',
+  url: 'https://www.kaito-tech.site',
   language: 'en',
   fonts: {
     // Any self-hosted family works here; JetBrains Mono and Inter Tight ship via @fontsource.

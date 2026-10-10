@@ -2,7 +2,7 @@
 
 🇬🇧 **English** · 🇩🇪 [Deutsch](README.de.md)
 
-**Live: [personal-portfolio-eta-ten-37.vercel.app](https://personal-portfolio-eta-ten-37.vercel.app)**
+**Live: [www.kaito-tech.site](https://www.kaito-tech.site)**
 
 My personal corner of the web: who I am as an IT student and developer, what I can do, what I've built — and a bit of everyday life on the side. The whole site is brewed in coffee tones: a dark *espresso* side for the professional part and a warm *latte* side for the personal one.
 
@@ -17,7 +17,7 @@ My personal corner of the web: who I am as an IT student and developer, what I c
 | **Blog** | A social-style feed (photos, daily wins, thoughts, the songs on repeat) and longer articles. |
 | **Certificates · Hobbies · Contact** | Where I'm heading, what I do off the clock, and how to reach me. |
 
-Recruiters and visitors can browse everything without an account — the [login page](https://personal-portfolio-eta-ten-37.vercel.app/login) has a one-click **guest view**.
+Recruiters and visitors can browse everything without an account — the [login page](https://www.kaito-tech.site/login) has a one-click **guest view**.
 
 ## Highlights
 
