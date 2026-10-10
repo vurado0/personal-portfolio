@@ -1,9 +1,9 @@
 ---
-title: "Web services: REST, auth, WebSockets and gRPC"
+title: "Web services: REST, auth, WebSockets, gRPC and GraphQL"
 category: web
-tags: [rest, jwt, websockets, grpc, nodejs]
+tags: [rest, jwt, websockets, grpc, graphql, nodejs]
 skills: [typescript, security, networking]
-summary: The four ways I built services in Web Service Development — REST with Basic Auth, bcrypt and JWT, real-time WebSockets, and typed gRPC contracts — and when to use which.
+summary: "The ways I built services in Web Service Development — REST with Basic Auth, bcrypt and JWT, real-time WebSockets, typed gRPC contracts and client-driven GraphQL — and when to use which."
 updated: 2026-06-03
 difficulty: intermediate
 ---
@@ -36,10 +36,24 @@ HTTP is request/response; a WebSocket stays open, so the server can **push**. In
 
 The contract is a `.proto` file; client and server stubs are generated from it, even in different languages. gRPC runs over HTTP/2 with binary Protobuf, so it's fast and strictly typed. That makes it good between services, but less handy for browsers.
 
+gRPC has four call types: unary (one request, one reply), server streaming, client streaming and bidirectional streaming.
+
+## GraphQL
+
+One endpoint (`POST /graphql`), and the **client** decides which fields it gets. A phone asks for little, an admin dashboard for everything, and nobody over-fetches.
+
+```graphql
+query { game(id: 42) { title sessions { score } } }
+mutation { addSession(gameId: 42, minutes: 30) { id } }
+```
+
+**Queries** read and **mutations** write. The schema is the contract. Watch out for expensive nested queries and caching, which is harder than with REST URLs.
+
 ## When to use which
 
 | Need | Choose |
 |---|---|
 | Public API, browsers, caching | REST |
+| Many clients that need different fields | GraphQL |
 | Live updates, chat, dashboards | WebSockets |
 | Fast typed calls between services | gRPC |
