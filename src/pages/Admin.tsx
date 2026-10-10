@@ -1,6 +1,7 @@
 // /admin — owner-only area: feed posts (phone friendly), site content and contact messages.
 import { lazy, Suspense, useEffect, useMemo, useState, type FormEvent } from 'react';
 import { Navigate, useSearchParams } from 'react-router';
+import { AuthError } from '../components/AuthError';
 import { signOutUser, useAdminAuth } from '../lib/auth';
 import { apiFetch, cldUrl, deleteFromCloudinary, uploadToCloudinary } from '../lib/cloudinary';
 import { parseMusicUrl, providerLabel } from '../lib/embeds';
@@ -505,6 +506,8 @@ export default function Admin() {
           <p className="mt-6">Firebase is not configured. Add the VITE_FIREBASE_* variables (see README).</p>
         ) : auth.status === 'loading' ? (
           <p className="mt-6 font-mono text-sm text-muted">Checking login…</p>
+        ) : auth.status === 'error' ? (
+          <AuthError message={auth.message} signedIn={Boolean(auth.user)} />
         ) : (
           <>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
