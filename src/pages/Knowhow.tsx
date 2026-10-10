@@ -3,7 +3,8 @@ import { Link, useParams, useSearchParams } from 'react-router';
 import { KnowhowRow } from '../components/Cards';
 import { TagChip } from '../components/Chips';
 import { PageHeader } from '../components/PageHeader';
-import { categoryLabel, content, knowhowCategories } from '../lib/content';
+import { categoryLabel, useContent } from '../lib/content';
+import { AddButton } from '../lib/edit';
 import { Seo } from '../lib/head';
 import type { KnowhowDoc } from '../types/content';
 
@@ -22,6 +23,7 @@ function score(doc: KnowhowDoc, terms: string[]): number {
 
 export default function Knowhow() {
   const { category } = useParams();
+  const { content, knowhowCategories } = useContent();
   const [params, setParams] = useSearchParams();
   const q = params.get('q') ?? '';
   const tag = params.get('tag');
@@ -97,6 +99,7 @@ export default function Knowhow() {
               <KnowhowRow key={d.url} doc={d} />
             ))}
           </div>
+          <AddButton target={{ kind: 'knowhow', category }} label="New know-how article" className="mt-6" />
         </div>
       </div>
     </>

@@ -63,19 +63,42 @@ export type Hobby = {
   links?: { label: string; url: string }[];
 };
 
-export type TimelineEntry = {
-  type: 'education' | 'work' | 'certificate';
-  title: string;
-  org: string;
-  start: string;
-  end?: string;
-  text?: string;
+/** Europass-style CV (content/cv.json). Empty personal fields are not shown. */
+export type CvPersonal = {
+  fullName: string;
+  headline: string;
+  email: string;
+  phone: string;
+  address: string;
+  website: string;
+  linkedin: string;
+  github: string;
+  nationality: string;
+  dateOfBirth: string;
+  drivingLicence: string;
+  photo: string;
 };
 
+export type CvEntry = { title: string; org: string; location?: string; start: string; end?: string; text?: string; link?: string };
+
+export const CEFR_LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] as const;
+export type Cefr = (typeof CEFR_LEVELS)[number];
+export type CvLanguage = { name: string; listening: Cefr; reading: Cefr; spokenInteraction: Cefr; spokenProduction: Cefr; writing: Cefr; certificate?: string };
+
+export type CvListItem = { name: string; detail?: string; level?: string };
+
+type SectionBase = { id: string; title: string; visible: boolean };
+export type CvSection =
+  | (SectionBase & { type: 'timeline'; items: CvEntry[] })
+  | (SectionBase & { type: 'languages'; motherTongues: string[]; items: CvLanguage[] })
+  | (SectionBase & { type: 'list'; items: CvListItem[] })
+  | (SectionBase & { type: 'text'; text: string });
+export type CvSectionType = CvSection['type'];
+
 export type Cv = {
+  personal: CvPersonal;
   summary: string;
-  timeline: TimelineEntry[];
-  languages: { name: string; level: string }[];
+  sections: CvSection[];
   pdf?: string;
 };
 
@@ -91,7 +114,23 @@ export type Certificate = {
   skills: string[];
 };
 
+export type Profile = {
+  name: string;
+  handle: string;
+  role: string;
+  tagline: string;
+  description: string;
+  location: string;
+  email: string;
+  currentFocus: string[];
+  socials: { id: string; label: string; url: string }[];
+};
+
+export type NavEntry = { id: string; label: string; enabled: boolean };
+
 export type ContentBundle = {
+  profile: Profile;
+  navigation: NavEntry[];
   skillGroups: SkillGroup[];
   skills: Skill[];
   knowhow: KnowhowDoc[];

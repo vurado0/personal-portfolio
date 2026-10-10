@@ -99,6 +99,13 @@ export type AsyncState<T> = { status: 'loading' } | { status: 'ready'; data: T }
 /** Published posts for public pages. Loads client-side only (feed is not prerendered). */
 export function usePublishedPosts(max = 100): AsyncState<Post[]> {
   const [state, setState] = useState<AsyncState<Post[]>>({ status: 'loading' });
+  const [version, setVersion] = useState(0);
+  useEffect(() => {
+    // Edit mode fires this after deleting a post so lists refresh.
+    const onChange = () => setVersion((v) => v + 1);
+    window.addEventListener('feed-changed', onChange);
+    return () => window.removeEventListener('feed-changed', onChange);
+  }, []);
   useEffect(() => {
     let alive = true;
     listPublishedPosts(max).then(
@@ -115,7 +122,7 @@ export function usePublishedPosts(max = 100): AsyncState<Post[]> {
     return () => {
       alive = false;
     };
-  }, [max]);
+  }, [max, version]);
   return state;
 }
 

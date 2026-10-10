@@ -1,7 +1,8 @@
 import { Link, useSearchParams } from 'react-router';
 import { PageHeader } from '../components/PageHeader';
 import { TagChip } from '../components/Chips';
-import { content, levelLabel, skillRefs } from '../lib/content';
+import { levelLabel, useContent } from '../lib/content';
+import { AddButton, EditButton, ItemTools, useEdit } from '../lib/edit';
 import { usePublishedPosts } from '../lib/feed';
 import { Seo } from '../lib/head';
 import type { Skill } from '../types/content';
@@ -23,7 +24,7 @@ export function LevelBar({ level }: { level: number }) {
 }
 
 function SkillCard({ skill, postCount }: { skill: Skill; postCount: number | null }) {
-  const refs = skillRefs.get(skill.id)!;
+  const refs = useContent().skillRefs.get(skill.id) ?? { projects: [], knowhow: [], articles: [] };
   const counts = [
     ['projects', refs.projects.length],
     ['know-how', refs.knowhow.length],
@@ -31,7 +32,8 @@ function SkillCard({ skill, postCount }: { skill: Skill; postCount: number | nul
     ...(postCount !== null ? [['posts', postCount] as const] : []),
   ] as const;
   return (
-    <article className="card relative flex flex-col gap-3 hover:border-accent/70">
+    <article className="card group relative flex flex-col gap-3 hover:border-accent/70">
+      <ItemTools target={{ kind: 'skill', id: skill.id }} label={skill.name} />
       <div className="flex items-start justify-between gap-3">
         <h3 className="font-mono font-bold">
           <Link to={`/skills/${skill.id}`} className="text-fg after:absolute after:inset-0 hover:text-accent hover:no-underline">
@@ -54,6 +56,8 @@ function SkillCard({ skill, postCount }: { skill: Skill; postCount: number | nul
 }
 
 export default function Skills() {
+  const { content } = useContent();
+  const editing = Boolean(useEdit());
   const [params, setParams] = useSearchParams();
   const group = params.get('group');
   const posts = usePublishedPosts(100);
@@ -72,10 +76,11 @@ export default function Skills() {
           {content.skillGroups.map((g) => (
             <TagChip key={g.id} tag={g.label} active={group === g.id} onClick={() => setParams({ group: g.id }, { replace: true })} />
           ))}
+          <EditButton target={{ kind: 'skill-groups' }} label="groups" />
         </div>
         {groups.map((g) => {
           const skills = content.skills.filter((s) => s.group === g.id).sort((a, b) => b.level - a.level);
-          if (!skills.length) return null;
+          if (!skills.length && !editing) return null;
           return (
             <section key={g.id} className="mt-8" aria-labelledby={`g-${g.id}`}>
               <h2 id={`g-${g.id}`} className="section-title">
@@ -85,6 +90,7 @@ export default function Skills() {
                 {skills.map((s) => (
                   <SkillCard key={s.id} skill={s} postCount={postCount(s.id)} />
                 ))}
+                <AddButton target={{ kind: 'skill', group: g.id }} label={`Add ${g.label.toLowerCase()} skill`} className="min-h-40" />
               </div>
             </section>
           );

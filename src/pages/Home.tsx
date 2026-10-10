@@ -3,8 +3,9 @@ import backgrounds from '../generated/backgrounds.json';
 import { ArticleRow, KnowhowRow, ProjectCard } from '../components/Cards';
 import { MusicCard } from '../components/feed/MusicCard';
 import { PostTile } from '../components/feed/PostCard';
-import { isEnabled, site } from '../config/site';
-import { content } from '../lib/content';
+import { isEnabled } from '../config/site';
+import { useContent } from '../lib/content';
+import { EditButton } from '../lib/edit';
 import { usePublishedPosts } from '../lib/feed';
 import { Seo } from '../lib/head';
 
@@ -41,6 +42,8 @@ function LatestFeed() {
 }
 
 export default function Home() {
+  const { content } = useContent();
+  const site = content.profile;
   const featured = content.projects.filter((p) => p.featured).slice(0, 3);
   const espresso = backgrounds['espresso-shot'];
   return (
@@ -49,9 +52,12 @@ export default function Home() {
       <section className="relative overflow-hidden border-b border-line/60">
         <div className="container-page grid items-center gap-10 py-14 sm:py-20 lg:grid-cols-[1.3fr_1fr]">
           <div>
-            <p className="font-mono text-sm text-muted">
-              <span className="text-accent">$</span> whoami
-            </p>
+            <div className="flex items-center justify-between gap-3">
+              <p className="font-mono text-sm text-muted">
+                <span className="text-accent">$</span> whoami
+              </p>
+              <EditButton target={{ kind: 'profile' }} label="edit profile" />
+            </div>
             <h1 className="mt-4 font-mono text-4xl font-bold leading-tight tracking-tight sm:text-6xl">
               {site.name}
               <span className="text-accent">.</span>

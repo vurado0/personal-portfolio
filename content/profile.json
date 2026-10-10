@@ -1,0 +1,15 @@
+{
+  "name": "Kaito Snezhko",
+  "handle": "vurado0",
+  "role": "IT student & developer",
+  "tagline": "Systems, cloud and code — brewed slowly.",
+  "description": "Personal IT portfolio, know-how base and blog: skills, projects, guides and a personal feed.",
+  "location": "Graz, Austria",
+  "email": "hello@example.com",
+  "currentFocus": ["Linux & networking fundamentals", "Docker and CI/CD", "Java backend development"],
+  "socials": [
+    { "id": "github", "label": "GitHub", "url": "https://github.com/vurado0" },
+    { "id": "linkedin", "label": "LinkedIn", "url": "https://www.linkedin.com/in/your-profile" },
+    { "id": "email", "label": "Email", "url": "mailto:hello@example.com" }
+  ]
+}

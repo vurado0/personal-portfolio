@@ -1,14 +1,14 @@
-// /admin — owner-only area: write/edit/delete feed posts (phone friendly) and read contact messages.
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import type { User } from 'firebase/auth';
-import { content } from '../lib/content';
+// /admin — owner-only area: feed posts (phone friendly), site content and contact messages.
+import { lazy, Suspense, useEffect, useMemo, useState, type FormEvent } from 'react';
+import { Navigate, useSearchParams } from 'react-router';
+import { signOutUser, useAdminAuth } from '../lib/auth';
 import { apiFetch, cldUrl, deleteFromCloudinary, uploadToCloudinary } from '../lib/cloudinary';
 import { parseMusicUrl, providerLabel } from '../lib/embeds';
-import { firebaseConfigured } from '../lib/env';
 import {
   createPost,
   deleteMessage,
   deletePostDoc,
+  getPost,
   listAllPosts,
   listMessages,
   POST_TYPES,
@@ -20,56 +20,14 @@ import {
   type PostInput,
   type PostType,
 } from '../lib/feed';
-import { getFirebase } from '../lib/firebase';
 import { formatDateTime } from '../lib/format';
 import { Seo } from '../lib/head';
 import { prepareImage } from '../lib/image';
 import { typeLabel } from '../components/feed/PostCard';
+import { SkillPicker } from './admin/SkillPicker';
 
-type AuthState = { status: 'loading' } | { status: 'signed-out' } | { status: 'denied'; user: User } | { status: 'admin'; user: User };
-
-function useAdminAuth() {
-  const [state, setState] = useState<AuthState>({ status: 'loading' });
-  useEffect(() => {
-    if (!firebaseConfigured) return;
-    let unsub = () => {};
-    (async () => {
-      const { auth, db } = await getFirebase();
-      const { onAuthStateChanged } = await import('firebase/auth');
-      const { doc, getDoc } = await import('firebase/firestore');
-      unsub = onAuthStateChanged(auth, async (user) => {
-        if (!user) return setState({ status: 'signed-out' });
-        try {
-          const snap = await getDoc(doc(db, 'admins', user.uid));
-          setState(snap.exists() ? { status: 'admin', user } : { status: 'denied', user });
-        } catch {
-          setState({ status: 'denied', user });
-        }
-      });
-    })();
-    return () => unsub();
-  }, []);
-  return state;
-}
-
-async function signIn() {
-  const { auth } = await getFirebase();
-  const { GoogleAuthProvider, signInWithPopup, signInWithRedirect } = await import('firebase/auth');
-  const provider = new GoogleAuthProvider();
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (e) {
-    const code = (e as { code?: string }).code;
-    if (code === 'auth/popup-blocked' || code === 'auth/operation-not-supported-in-this-environment') await signInWithRedirect(auth, provider);
-    else throw e;
-  }
-}
-
-async function signOutUser() {
-  const { auth } = await getFirebase();
-  const { signOut } = await import('firebase/auth');
-  await signOut(auth);
-}
+// The content editor (yaml, markdown, validation) only loads when its tab is opened.
+const ContentAdmin = lazy(() => import('./admin/ContentAdmin'));
 
 // ---------------------------------------------------------------------------
 
@@ -394,42 +352,6 @@ function PostEditor({ editing, onDone }: { editing: Post | null; onDone: () => v
   );
 }
 
-function SkillPicker({ value, onChange }: { value: string[]; onChange: (v: string[]) => void }) {
-  const [open, setOpen] = useState(false);
-  const toggle = (id: string) => onChange(value.includes(id) ? value.filter((x) => x !== id) : [...value, id]);
-  return (
-    <div>
-      <button type="button" className="label underline" onClick={() => setOpen((o) => !o)} aria-expanded={open}>
-        skills ({value.length}) {open ? '▴' : '▾'}
-      </button>
-      {open && (
-        <div className="mt-2 space-y-3">
-          {content.skillGroups.map((g) => (
-            <div key={g.id}>
-              <p className="mb-1 text-xs text-muted">{g.label}</p>
-              <div className="flex flex-wrap gap-1.5">
-                {content.skills
-                  .filter((s) => s.group === g.id)
-                  .map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      onClick={() => toggle(s.id)}
-                      aria-pressed={value.includes(s.id)}
-                      className={`chip min-h-9 ${value.includes(s.id) ? 'border-accent bg-accent text-on-accent' : 'text-fg'}`}
-                    >
-                      {s.name}
-                    </button>
-                  ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 // ---------------------------------------------------------------------------
 
 function PostList({ onEdit }: { onEdit: (p: Post) => void }) {
@@ -540,10 +462,11 @@ function Messages() {
 
 export default function Admin() {
   const auth = useAdminAuth();
-  const [tab, setTab] = useState<'posts' | 'editor' | 'messages'>('posts');
+  const [tab, setTab] = useState<'posts' | 'editor' | 'content' | 'messages'>('posts');
   const [editing, setEditing] = useState<Post | null>(null);
   const [editorKey, setEditorKey] = useState(0);
-  const [authError, setAuthError] = useState<string | null>(null);
+  const [params, setParams] = useSearchParams();
+  const postParam = params.get('post');
 
   const openEditor = (p: Post | null) => {
     setEditing(p);
@@ -552,52 +475,50 @@ export default function Admin() {
     window.scrollTo(0, 0);
   };
   const tabs = useMemo(
-    () => [
-      ['posts', 'Posts'],
-      ['editor', editing ? 'Edit post' : 'New post'],
-      ['messages', 'Messages'],
-    ] as const,
+    () =>
+      [
+        ['posts', 'Posts'],
+        ['editor', editing ? 'Edit post' : 'New post'],
+        ['content', 'Content'],
+        ['messages', 'Messages'],
+      ] as const,
     [editing],
   );
+
+  // "✎" on a feed post in edit mode links here with ?post=<id>.
+  useEffect(() => {
+    if (auth.status !== 'admin' || !postParam) return;
+    getPost(postParam).then((p) => {
+      if (p) openEditor(p);
+      setParams({}, { replace: true });
+    });
+  }, [auth.status, postParam]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (auth.status === 'signed-out' || auth.status === 'denied') return <Navigate to="/login?next=/admin" replace />;
 
   return (
     <>
       <Seo title="Admin" noindex />
       <div className="container-page max-w-4xl pt-10">
         <p className="section-title">admin</p>
-        {!firebaseConfigured ? (
+        {auth.status === 'unconfigured' ? (
           <p className="mt-6">Firebase is not configured. Add the VITE_FIREBASE_* variables (see README).</p>
         ) : auth.status === 'loading' ? (
-          <p className="mt-6 text-muted">Checking login…</p>
-        ) : auth.status === 'signed-out' ? (
-          <div className="mt-6 space-y-4">
-            <h1 className="font-mono text-3xl font-bold">Sign in</h1>
-            <p className="text-muted">Owner only.</p>
-            <button type="button" className="btn-primary" onClick={() => signIn().catch((e) => setAuthError((e as Error).message))}>
-              Sign in with Google
-            </button>
-            {authError && <p role="alert" className="text-sm">{authError}</p>}
-          </div>
-        ) : auth.status === 'denied' ? (
-          <div className="mt-6 space-y-4">
-            <h1 className="font-mono text-2xl font-bold">No admin access</h1>
-            <p className="text-sm text-muted">
-              Signed in as {auth.user.email}. To make this account the admin, create the Firestore document <code>admins/{auth.user.uid}</code> with{' '}
-              <code>role: "admin"</code> and set <code>ADMIN_UID={auth.user.uid}</code> in Vercel.
-            </p>
-            <button type="button" className="btn-ghost" onClick={signOutUser}>
-              Sign out
-            </button>
-          </div>
+          <p className="mt-6 font-mono text-sm text-muted">Checking login…</p>
         ) : (
           <>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
               <h1 className="font-mono text-2xl font-bold">Hi, {auth.user.displayName?.split(' ')[0] ?? 'admin'} ☕</h1>
-              <button type="button" className="chip min-h-9" onClick={signOutUser}>
-                sign out
-              </button>
+              <div className="flex gap-2">
+                <a href="/" className="chip min-h-9 text-fg">
+                  view site
+                </a>
+                <button type="button" className="chip min-h-9" onClick={signOutUser}>
+                  sign out
+                </button>
+              </div>
             </div>
-            <div className="mt-6 flex gap-1 border-b border-line/60" role="tablist">
+            <div className="-mx-4 mt-6 flex gap-1 overflow-x-auto border-b [scrollbar-width:none] [&::-webkit-scrollbar]:hidden border-line/60 px-4 sm:mx-0 sm:px-0" role="tablist">
               {tabs.map(([id, label]) => (
                 <button
                   key={id}
@@ -605,7 +526,7 @@ export default function Admin() {
                   role="tab"
                   aria-selected={tab === id}
                   onClick={() => (id === 'editor' && tab !== 'editor' ? openEditor(null) : setTab(id))}
-                  className={`-mb-px min-h-11 border-b-2 px-3 font-mono text-sm ${tab === id ? 'border-accent text-fg' : 'border-transparent text-muted'}`}
+                  className={`-mb-px min-h-11 flex-none border-b-2 px-3 font-mono text-sm ${tab === id ? 'border-accent text-fg' : 'border-transparent text-muted'}`}
                 >
                   {label}
                 </button>
@@ -622,6 +543,11 @@ export default function Admin() {
                     setTab('posts');
                   }}
                 />
+              )}
+              {tab === 'content' && (
+                <Suspense fallback={<p className="text-muted">Loading editor…</p>}>
+                  <ContentAdmin />
+                </Suspense>
               )}
               {tab === 'messages' && <Messages />}
             </div>

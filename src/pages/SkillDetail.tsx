@@ -1,7 +1,8 @@
 import { Link, useParams } from 'react-router';
 import { KnowhowRow, ProjectCard } from '../components/Cards';
 import { PostCard } from '../components/feed/PostCard';
-import { content, getSkill, skillRefs } from '../lib/content';
+import { useContent } from '../lib/content';
+import { EditButton } from '../lib/edit';
 import { usePublishedPosts } from '../lib/feed';
 import { formatDate } from '../lib/format';
 import { Seo } from '../lib/head';
@@ -10,7 +11,8 @@ import { LevelBar } from './Skills';
 
 export default function SkillDetail() {
   const { id = '' } = useParams();
-  const skill = getSkill(id);
+  const { content, skillById, skillRefs } = useContent();
+  const skill = skillById.get(id);
   const posts = usePublishedPosts(100);
   if (!skill) return <NotFound />;
   const refs = skillRefs.get(skill.id)!;
@@ -24,7 +26,10 @@ export default function SkillDetail() {
         <Link to="/skills" className="font-mono text-xs">
           ← all skills
         </Link>
-        <p className="section-title mt-6">{group?.label ?? skill.group}</p>
+        <div className="mt-6 flex items-center justify-between gap-3">
+          <p className="section-title">{group?.label ?? skill.group}</p>
+          <EditButton target={{ kind: 'skill', id: skill.id }} />
+        </div>
         <h1 className="mt-3 font-mono text-3xl font-bold sm:text-4xl">{skill.name}</h1>
         <div className="mt-4">
           <LevelBar level={skill.level} />

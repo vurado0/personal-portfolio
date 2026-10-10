@@ -53,8 +53,11 @@ Then create `.env.development.local` (git-ignored) with `VITE_FIREBASE_API_KEY=d
 | Project | `content/projects/<slug>.md` — `title, summary, stack, skills, role, status, period, links, cover, featured` |
 | Blog article | `content/blog/<yyyy-mm-dd>-<slug>.md` — `title, date, tags, skills, summary, cover, draft` |
 | Hobbies / CV / certificates | `content/hobbies.json`, `content/cv.json`, `content/certificates.json` |
-| Menu | `src/config/site.ts` (`enabled`, `order`, `side`, label, icon) + name, socials, fonts |
+| Name, role, socials | `content/profile.json` |
+| Menu labels, order, visibility | `content/navigation.json` (paths/icons/sides in `src/config/navigation.ts`) |
 | Feed post | `/admin` on the live site — no deploy needed |
+
+Everything in `content/` can also be edited in the browser — directly on the pages in edit mode, or under **`/admin` → Content** (see below).
 
 Projects, articles, know-how, certificates and feed posts reference skills via `skills: [...]`; each skill page lists everything that links to it. `npm run validate:content` (also part of `npm run build`) fails on unknown skill ids and broken internal links. `draft: true` articles show in `npm run dev` only.
 
@@ -69,6 +72,24 @@ Projects, articles, know-how, certificates and feed posts reference skills via `
    firebase deploy --only firestore:rules,firestore:indexes --project <project-id>
    ```
 6. Open `/admin` on the site and sign in once. The page shows your **UID**. Create the document **`admins/<uid>`** with field `role: "admin"` (Firestore → Data), and set the same UID as `ADMIN_UID` in Vercel.
+
+## Login, edit mode & content editor
+
+- **`/login`** has two ways in: **Continue as guest** (visitors/recruiters, read-only, no account) and **Sign in to edit** (owner, Google). The header shows "login" for visitors and "admin" for you.
+- **Edit mode:** once you're signed in as the owner, every page becomes editable in place: hover an element for ~0.3 s to get **✎ edit / ✕ delete** (and ↑↓ where order matters) in its top-right corner; dashed **+ Add …** tiles create new skills, projects, know-how, articles, certificates, hobbies and CV entries/sections. **✎ menu** renames, reorders and shows/hides pages; **profile** edits name, role and links. Changes show up immediately on the page and collect in the floating bar; **Publish** validates them (same rules as the build) and commits them to `main` through `/api/content` — Vercel redeploys in ~1 min and the bar shows the deploy status. **preview** shows the published site as visitors see it. The editor code is only downloaded for the owner.
+- **`/admin`** keeps the feed (posts, photos, music), contact messages and a **Content** tab with the same editors as lists.
+- Deleting a skill also removes it from every project/article/certificate that references it. IDs and slugs cannot be changed after creation (they are URLs). Feed posts are deleted immediately (they live in Firestore, not in the repo).
+- **CV** (`content/cv.json`) follows the Europass structure: personal information (contact, nationality, date of birth, driving licence, photo — empty fields stay hidden), a profile text, and any number of sections of type *timeline* (work, education, certifications, volunteering…), *languages* (mother tongues + CEFR levels for listening, reading, spoken production/interaction, writing), *list* (digital skills, awards, interests…) or *text*. Sections can be added from Europass presets, renamed, hidden, reordered and deleted.
+
+### GitHub token (once)
+
+1. GitHub → **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**
+2. Repository access: **Only select repositories** → `vurado0/personal-portfolio`
+3. Permissions → Repository permissions → **Contents: Read and write** (nothing else)
+4. Set an expiry you're comfortable with (e.g. 1 year) and copy the token.
+5. Vercel → Settings → Environment Variables → `GITHUB_TOKEN` = the token (Production; mark it **Sensitive**) → redeploy.
+
+Optional: `GITHUB_REPO` (default `vurado0/personal-portfolio`) and `GITHUB_BRANCH` (default `main`).
 
 ## Cloudinary setup (once)
 
@@ -90,6 +111,8 @@ See [`.env.example`](.env.example). Locally in `.env.local` (never committed); o
 | `FIREBASE_PROJECT_ID` | server | used by `firebase-admin` to verify ID tokens |
 | `ADMIN_UID` | server | the only UID allowed to upload/delete |
 | `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | server | signing — **never** give these a `VITE_` prefix |
+| `GITHUB_TOKEN` | server | fine-grained token (Contents read/write on this repo) for the content editor |
+| `GITHUB_REPO`, `GITHUB_BRANCH` | server (optional) | defaults `vurado0/personal-portfolio`, `main` |
 | `SITE_URL` | build (optional) | canonical URL for sitemap, RSS and Open Graph |
 
 `VITE_*` values are baked in at build time: after changing them on Vercel, **redeploy**.

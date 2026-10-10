@@ -1,6 +1,10 @@
+// Markdown → HTML (heading ids, code blocks with copy button, lazy images).
+// Pure: runs at build time (with highlight.js injected) and in the admin preview (without).
 import { Marked, type Tokens } from 'marked';
-import hljs from 'highlight.js';
-import type { Heading } from '../../src/types/content.ts';
+import type { Heading } from '../../types/content.ts';
+
+/** Returns highlighted HTML for a code block, or null to fall back to escaped text. */
+export type Highlighter = (code: string, lang: string) => string | null;
 
 export function slugify(text: string): string {
   return text
@@ -22,7 +26,7 @@ function escapeHtml(s: string): string {
 export type RenderedMarkdown = { html: string; headings: Heading[]; links: string[]; text: string };
 
 /** Renders Markdown to HTML with heading ids, highlighted code blocks (with copy button) and lazy images. */
-export function renderMarkdown(source: string): RenderedMarkdown {
+export function renderMarkdown(source: string, highlight?: Highlighter): RenderedMarkdown {
   const headings: Heading[] = [];
   const links: string[] = [];
   const used = new Map<string, number>();
@@ -42,10 +46,7 @@ export function renderMarkdown(source: string): RenderedMarkdown {
       },
       code(token: Tokens.Code) {
         const lang = (token.lang ?? '').split(/\s/)[0];
-        const highlighted =
-          lang && hljs.getLanguage(lang)
-            ? hljs.highlight(token.text, { language: lang }).value
-            : escapeHtml(token.text);
+        const highlighted = (lang && highlight?.(token.text, lang)) || escapeHtml(token.text);
         const label = lang ? `<span class="code-lang">${escapeHtml(lang)}</span>` : '';
         return `<div class="code-block">${label}<button type="button" class="copy-btn" data-copy aria-label="Copy code">copy</button><pre><code class="hljs${lang ? ` language-${escapeHtml(lang)}` : ''}">${highlighted}</code></pre></div>\n`;
       },

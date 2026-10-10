@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
-import { enabledNav, site, type NavItem } from '../config/site';
+import { buildNav, type NavItem } from '../config/navigation';
+import { useContent } from '../lib/content';
+import { EditButton } from '../lib/edit';
 import { t } from '../i18n';
+import { adminHint } from '../lib/auth';
 import { ThemeToggle } from './ThemeToggle';
 
 function Item({ item, onClick }: { item: NavItem; onClick?: () => void }) {
@@ -30,19 +33,25 @@ function Item({ item, onClick }: { item: NavItem; onClick?: () => void }) {
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const { pathname } = useLocation();
   useEffect(() => setOpen(false), [pathname]);
+  // Read after mount so prerendered HTML and hydration match.
+  useEffect(() => setIsAdmin(adminHint()), [pathname]);
 
-  const portfolio = enabledNav.filter((i) => i.side === 'portfolio');
-  const personal = enabledNav.filter((i) => i.side === 'personal');
+  const { content } = useContent();
+  const items = buildNav(content.navigation).filter((i) => i.enabled);
+  const portfolio = items.filter((i) => i.side === 'portfolio');
+  const personal = items.filter((i) => i.side === 'personal');
 
   return (
     <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/90 backdrop-blur supports-[backdrop-filter]:bg-bg/75">
       <div className="container-page flex h-16 items-center justify-between gap-4">
-        <Link to="/" className="font-mono text-sm font-bold text-fg no-underline hover:no-underline" aria-label={`${site.name} — home`}>
-          <span className="text-accent">~/</span>
-          {site.handle}
-          <span className="ml-0.5 inline-block w-2 animate-pulse text-accent">_</span>
+        <Link to="/" className="whitespace-nowrap font-mono text-sm font-bold text-fg no-underline hover:no-underline" aria-label={`${content.profile.name} — home`}>
+          {content.profile.name}
+          <span className="ml-0.5 inline-block w-2 animate-pulse text-accent" aria-hidden="true">
+            _
+          </span>
         </Link>
 
         <nav aria-label="Main" className="hidden items-center whitespace-nowrap font-mono xl:flex">
@@ -56,6 +65,17 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <EditButton target={{ kind: 'nav' }} label="menu" />
+          {isAdmin && !pathname.startsWith('/admin') ? (
+            <Link to="/admin" className="chip min-h-11 border-accent px-3 text-accent hover:no-underline">
+              admin
+            </Link>
+          ) : null}
+          {!isAdmin && pathname !== '/login' ? (
+            <Link to="/login" className="chip hidden min-h-11 px-3 text-fg hover:border-accent hover:no-underline sm:inline-flex" rel="nofollow">
+              login
+            </Link>
+          ) : null}
           <ThemeToggle />
           <button
             type="button"
