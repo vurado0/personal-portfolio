@@ -14,8 +14,8 @@ Always run `npm run build` before committing; fix all errors.
 
 ## Architecture
 
-- `content/` → loaded by `scripts/lib/content.ts` (shared by the Vite plugin `virtual:content`, the validator and the prerenderer). Markdown is rendered at build time (`scripts/lib/markdown.ts`, highlight.js, heading ids, copy buttons).
-- `src/config/site.ts` — menu (`enabled`/`order`/`side`), identity, socials, fonts. `side` decides the default theme (portfolio = dark, personal = light).
+- `content/` → parsed and validated by the pure `src/lib/content-core/` (no Node APIs). `scripts/lib/content.ts` feeds it files from disk (+ highlight.js) for the Vite plugin `virtual:content`, the validator and the prerenderer; the admin content editor (`src/pages/admin/`) runs the same validation in the browser before committing through `api/content.ts` (GitHub API).
+- `src/config/site.ts` — menu (`enabled`/`order`/`side`), fonts; identity comes from `content/profile.json`. `side` decides the default theme (portfolio = dark, personal = light).
 - `src/lib/firebase.ts` loads Firebase lazily; never import `firebase/*` statically in components (keeps it out of the main bundle and out of prerendering).
 - Feed (`src/lib/feed.ts`): public queries **must** filter `where('published', '==', true)` or the rules reject them.
 - `api/` — Vercel functions; imports use `.js` extensions (NodeNext). Admin check: `api/_lib/auth.ts` (`verifyIdToken` + `ADMIN_UID`).

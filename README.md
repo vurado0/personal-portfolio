@@ -53,8 +53,11 @@ Then create `.env.development.local` (git-ignored) with `VITE_FIREBASE_API_KEY=d
 | Project | `content/projects/<slug>.md` — `title, summary, stack, skills, role, status, period, links, cover, featured` |
 | Blog article | `content/blog/<yyyy-mm-dd>-<slug>.md` — `title, date, tags, skills, summary, cover, draft` |
 | Hobbies / CV / certificates | `content/hobbies.json`, `content/cv.json`, `content/certificates.json` |
-| Menu | `src/config/site.ts` (`enabled`, `order`, `side`, label, icon) + name, socials, fonts |
+| Name, role, socials | `content/profile.json` (or `/admin` → Content → Profile) |
+| Menu | `src/config/site.ts` (`enabled`, `order`, `side`, label, icon), fonts |
 | Feed post | `/admin` on the live site — no deploy needed |
+
+Everything in `content/` can also be edited in the browser under **`/admin` → Content** (see below).
 
 Projects, articles, know-how, certificates and feed posts reference skills via `skills: [...]`; each skill page lists everything that links to it. `npm run validate:content` (also part of `npm run build`) fails on unknown skill ids and broken internal links. `draft: true` articles show in `npm run dev` only.
 
@@ -69,6 +72,22 @@ Projects, articles, know-how, certificates and feed posts reference skills via `
    firebase deploy --only firestore:rules,firestore:indexes --project <project-id>
    ```
 6. Open `/admin` on the site and sign in once. The page shows your **UID**. Create the document **`admins/<uid>`** with field `role: "admin"` (Firestore → Data), and set the same UID as `ADMIN_UID` in Vercel.
+
+## Login & content editor
+
+- **`/login`** is the owner's sign-in page (Google). After signing in you land on **`/admin`**; a small "Login" link sits in the footer, and an "admin" shortcut appears in the header on devices where you are signed in.
+- **`/admin` → Content** edits everything in `content/`: profile, skills (and skill groups), projects, know-how, articles, CV, certificates and hobbies. Edits are collected locally (kept across reloads), validated with the same rules as the build, and **Publish** commits them to `main` on GitHub through `/api/content`. Vercel redeploys automatically (~1 min); the admin page shows the deploy status. If a build ever fails, the previous version stays online.
+- Deleting a skill also removes it from every project/article/certificate that references it. IDs and slugs cannot be changed after creation (they are URLs).
+
+### GitHub token (once)
+
+1. GitHub → **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**
+2. Repository access: **Only select repositories** → `vurado0/personal-portfolio`
+3. Permissions → Repository permissions → **Contents: Read and write** (nothing else)
+4. Set an expiry you're comfortable with (e.g. 1 year) and copy the token.
+5. Vercel → Settings → Environment Variables → `GITHUB_TOKEN` = the token (Production; mark it **Sensitive**) → redeploy.
+
+Optional: `GITHUB_REPO` (default `vurado0/personal-portfolio`) and `GITHUB_BRANCH` (default `main`).
 
 ## Cloudinary setup (once)
 
@@ -90,6 +109,8 @@ See [`.env.example`](.env.example). Locally in `.env.local` (never committed); o
 | `FIREBASE_PROJECT_ID` | server | used by `firebase-admin` to verify ID tokens |
 | `ADMIN_UID` | server | the only UID allowed to upload/delete |
 | `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` | server | signing — **never** give these a `VITE_` prefix |
+| `GITHUB_TOKEN` | server | fine-grained token (Contents read/write on this repo) for the content editor |
+| `GITHUB_REPO`, `GITHUB_BRANCH` | server (optional) | defaults `vurado0/personal-portfolio`, `main` |
 | `SITE_URL` | build (optional) | canonical URL for sitemap, RSS and Open Graph |
 
 `VITE_*` values are baked in at build time: after changing them on Vercel, **redeploy**.
