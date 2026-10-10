@@ -1,10 +1,11 @@
 // /login — the owner's sign-in page (Google). Visitors never need an account.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router';
 import backgrounds from '../generated/backgrounds.json';
 import { useContent } from '../lib/content';
 import { AuthError } from '../components/AuthError';
 import { signInWithGoogle, signOutUser, useAdminAuth } from '../lib/auth';
+import { setEditMode } from '../lib/edit';
 import { Seo } from '../lib/head';
 
 function GoogleIcon() {
@@ -28,6 +29,12 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
   const bg = backgrounds['espresso-shot'];
   const site = useContent().content.profile;
+
+  // "Sign in" in the header asks to come back to the same page with edit mode on.
+  const wantEdit = params.get('edit') === '1';
+  useEffect(() => {
+    if (auth.status === 'admin' && wantEdit) setEditMode(true);
+  }, [auth.status, wantEdit]);
 
   if (auth.status === 'admin') return <Navigate to={next} replace />;
 

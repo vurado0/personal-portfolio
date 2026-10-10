@@ -137,5 +137,10 @@ export async function signOutUser(): Promise<void> {
   const { auth } = await getFirebase();
   const { signOut } = await import('firebase/auth');
   setAdminHint(false);
+  try {
+    sessionStorage.removeItem('edit-mode');
+  } catch {
+    /* ignore */
+  }
   await signOut(auth);
 }

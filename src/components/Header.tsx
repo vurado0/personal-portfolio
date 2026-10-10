@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
 import { buildNav, type NavItem } from '../config/navigation';
 import { useContent } from '../lib/content';
-import { EditButton } from '../lib/edit';
+import { EditButton, setEditMode, useEditModeOn } from '../lib/edit';
 import { t } from '../i18n';
 import { adminHint } from '../lib/auth';
 import { ThemeToggle } from './ThemeToggle';
@@ -34,10 +34,11 @@ function Item({ item, onClick }: { item: NavItem; onClick?: () => void }) {
 export function Header() {
   const [open, setOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const editing = useEditModeOn();
   const { pathname } = useLocation();
   useEffect(() => setOpen(false), [pathname]);
   // Read after mount so prerendered HTML and hydration match.
-  useEffect(() => setIsAdmin(adminHint()), [pathname]);
+  useEffect(() => setIsAdmin(adminHint()), [pathname, editing]);
 
   const { content } = useContent();
   const items = buildNav(content.navigation).filter((i) => i.enabled);
@@ -66,14 +67,23 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <EditButton target={{ kind: 'nav' }} label="menu" />
-          {isAdmin && !pathname.startsWith('/admin') ? (
-            <Link to="/admin" className="chip min-h-11 border-accent px-3 text-accent hover:no-underline">
-              admin
-            </Link>
-          ) : null}
-          {!isAdmin && pathname !== '/login' ? (
-            <Link to="/login" className="chip hidden min-h-11 px-3 text-fg hover:border-accent hover:no-underline sm:inline-flex" rel="nofollow">
-              login
+          {isAdmin ? (
+            pathname.startsWith('/admin') ? null : editing ? (
+              <button type="button" onClick={() => setEditMode(false)} className="chip min-h-11 border-accent bg-accent px-3 text-on-accent">
+                ✓ Done
+              </button>
+            ) : (
+              <button type="button" onClick={() => setEditMode(true)} className="chip min-h-11 border-accent px-3 text-accent" title="Switch to edit mode">
+                ✎ Edit
+              </button>
+            )
+          ) : pathname !== '/login' ? (
+            <Link
+              to={`/login?next=${encodeURIComponent(pathname)}&edit=1`}
+              className="chip min-h-11 px-3 text-fg hover:border-accent hover:no-underline"
+              rel="nofollow"
+            >
+              Sign in
             </Link>
           ) : null}
           <ThemeToggle />

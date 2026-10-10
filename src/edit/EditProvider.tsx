@@ -2,12 +2,12 @@
 // Provides the live content (published + unpublished edits) to every page, a drawer with the
 // right form for whatever ✎ / + was clicked, delete/move actions and a floating publish bar.
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import hljs from 'highlight.js/lib/common';
 import { useAdminAuth } from '../lib/auth';
 import { deleteFromCloudinary } from '../lib/cloudinary';
 import { buildContent } from '../lib/content-core/build';
-import { EditContextProvider, type EditApi, type EditTarget } from '../lib/edit';
+import { EditContextProvider, setEditMode, type EditApi, type EditTarget } from '../lib/edit';
 import { deletePostDoc, getPost } from '../lib/feed';
 import { loadSnapshot, type Snapshot } from '../pages/admin/contentApi';
 import { DocForm, emptyDoc, toDoc, type DocKind } from '../pages/admin/DocsEditor';
@@ -192,7 +192,6 @@ function LiveEdit({ children, onPublished, published, onDismiss }: { children: R
   const ws = useWorkspace();
   const navigate = useNavigate();
   const [target, setTarget] = useState<EditTarget | null>(null);
-  const [preview, setPreview] = useState(false);
   const bundle = useMemo(() => buildContent(ws.files, { includeDrafts: true, publicFiles: new Set(ws.publicFiles), highlight }).bundle, [ws.files, ws.publicFiles]);
   const close = useCallback(() => setTarget(null), []);
 
@@ -210,31 +209,27 @@ function LiveEdit({ children, onPublished, published, onDismiss }: { children: R
   );
 
   return (
-    <EditContextProvider value={preview ? null : api}>
+    <EditContextProvider value={api}>
       <div className="pb-36">{children}</div>
-      {target && !preview ? <Drawer target={target} onClose={close} /> : null}
+      {target ? <Drawer target={target} onClose={close} /> : null}
       <div className="fixed inset-x-0 bottom-0 z-50 space-y-2 p-2 sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-[28rem] sm:p-0">
         {published ? <DeployNotice published={published} onDismiss={onDismiss} /> : null}
         <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-line bg-bg/95 px-3 py-2 font-mono text-xs shadow-warm backdrop-blur">
-          <span className="mr-auto font-bold text-accent">{preview ? '👁 visitor view (published)' : '✎ edit mode'}</span>
-          {!preview && (
-            <>
-              <button type="button" className="chip min-h-9" onClick={() => setTarget({ kind: 'nav' })}>
-                menu
-              </button>
-              <button type="button" className="chip min-h-9" onClick={() => setTarget({ kind: 'profile' })}>
-                profile
-              </button>
-            </>
-          )}
-          <button type="button" className="chip min-h-9" onClick={() => setPreview((p) => !p)} aria-pressed={preview}>
-            {preview ? 'back to editing' : 'preview'}
+          <span className="mr-auto font-bold text-accent">✎ edit mode</span>
+          <button type="button" className="chip min-h-9" onClick={() => setTarget({ kind: 'nav' })}>
+            menu
+          </button>
+          <button type="button" className="chip min-h-9" onClick={() => setTarget({ kind: 'profile' })}>
+            profile
+          </button>
+          <button type="button" className="chip min-h-9" onClick={() => setEditMode(false)} title="Back to the visitor view (unpublished changes are kept)">
+            done
           </button>
           <Link to="/admin" className="chip min-h-9 text-fg">
             admin
           </Link>
         </div>
-        {!preview ? <PublishBar section={target ? 'drawer' : 'page'} onPublished={onPublished} floating /> : null}
+        <PublishBar section={target ? 'drawer' : 'page'} onPublished={onPublished} floating />
       </div>
     </EditContextProvider>
   );
@@ -283,5 +278,19 @@ function EditSession({ children }: { children: ReactNode }) {
 /** Checks the login; only a verified admin gets edit mode, everyone else sees the plain page. */
 export function EditProvider({ children }: { children: ReactNode }) {
   const auth = useAdminAuth();
-  return auth.status === 'admin' ? <EditSession>{children}</EditSession> : <>{children}</>;
+  const { pathname } = useLocation();
+  if (auth.status === 'admin') return <EditSession>{children}</EditSession>;
+  if (auth.status === 'loading') return <>{children}</>;
+  return (
+    <>
+      {children}
+      <p role="status" className="fixed bottom-4 right-4 z-50 max-w-xs rounded-md border border-accent/60 bg-bg/95 px-3 py-2 font-mono text-xs shadow-warm">
+        ✎ Edit mode needs a fresh login.{' '}
+        <Link to={`/login?next=${encodeURIComponent(pathname)}&edit=1`}>Sign in</Link> ·{' '}
+        <button type="button" className="underline" onClick={() => setEditMode(false)}>
+          cancel
+        </button>
+      </p>
+    </>
+  );
 }
