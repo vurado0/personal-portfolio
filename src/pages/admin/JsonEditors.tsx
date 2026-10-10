@@ -63,6 +63,7 @@ export function ProfileEditor({ onDone }: { onDone?: () => void } = {}) {
       <p className="text-sm text-muted">Shown on the home page, in the header, footer, page titles and the legal pages.</p>
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField label="name" required value={p.name} onChange={(name) => set({ name })} placeholder="Kaito …" />
+        <TextField label="site title (browser tab)" value={p.siteTitle ?? ''} onChange={(siteTitle) => set({ siteTitle: siteTitle || undefined })} placeholder="Kaito Tech" />
         <TextField label="handle (logo)" value={p.handle} onChange={(handle) => set({ handle })} hint="Shown as ~/handle in the header." />
         <TextField label="role" required value={p.role} onChange={(role) => set({ role })} placeholder="IT student & developer" />
         <TextField label="location" value={p.location} onChange={(location) => set({ location })} placeholder="Graz, Austria" />
