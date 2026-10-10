@@ -13,7 +13,7 @@
     "drivingLicence": "B, C1",
     "photo": ""
   },
-  "summary": "Software Design student at FH JOANNEUM in Graz, currently on Erasmus at the Universidad de Alcalá in Spain. I enjoy building complete products, from the backend and database to a clean, fast interface, and shipping them with Docker, Kubernetes and CI/CD pipelines. Right now I'm going deeper into C and C++, data structures and operating systems, because I want to understand what happens under the hood. In my bachelor thesis I compare Japanese and European web design with automated, data-driven measurements. Outside of uni I build my own tools, mostly language-learning apps for Japanese and Spanish. I speak German, English, Russian, Spanish and Japanese, and I'm looking for opportunities where I can keep learning and get out of my comfort zone.",
+  "summary": "Software Design student at FH JOANNEUM in Graz, currently on Erasmus at the Universidad de Alcalá in Spain. I enjoy building complete products, from the backend and database to a clean, fast interface, and shipping them with Docker, Kubernetes and CI/CD pipelines. Right now I'm going deeper into C and C++, data structures and operating systems, because I want to understand what happens under the hood. In my bachelor thesis I compare Japanese and European web design with automated, data-driven measurements. Outside of uni I build my own tools, mostly language-learning apps for Japanese and Spanish, used daily by at least one very demanding user: me. I speak German, English, Russian, Spanish and Japanese, and I'm looking for opportunities where I can keep learning and get out of my comfort zone.",
   "sections": [
     {
       "id": "work",
