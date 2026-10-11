@@ -27,7 +27,15 @@ if (!entryFile) throw new Error('dist-ssr/entry-server.js not found — run `vit
 const { render, headToHtml } = (await import(pathToFileURL(entryFile).href)) as ServerEntry;
 
 const { bundle } = loadContent({ root, includeDrafts: false });
-const template = fs.readFileSync(path.join(dist, 'index.html'), 'utf8');
+// Preload the body font (JetBrains Mono, latin 400/700) so text renders in its final font without a swap.
+const fontPreloads = fs
+  .readdirSync(path.join(dist, 'assets'))
+  .filter((f) => /^jetbrains-mono-latin-(400|700)-normal-[\w-]+\.woff2$/.test(f))
+  .map((f) => `<link rel="preload" href="/assets/${f}" as="font" type="font/woff2" crossorigin>`)
+  .join('\n    ');
+const template = fs
+  .readFileSync(path.join(dist, 'index.html'), 'utf8')
+  .replace('<!--app-head-->', `${fontPreloads}\n    <!--app-head-->`);
 
 // ---- Routes ---------------------------------------------------------------
 const routes = new Set<string>(['/', '/impressum', '/datenschutz']);

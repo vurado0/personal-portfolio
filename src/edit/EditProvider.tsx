@@ -7,7 +7,7 @@ import hljs from 'highlight.js/lib/common';
 import { logOut, useAdminAuth } from '../lib/auth';
 import { deleteFromCloudinary } from '../lib/cloudinary';
 import { buildContent } from '../lib/content-core/build';
-import { EditContextProvider, setEditMode, type EditApi, type EditTarget } from '../lib/edit';
+import { EditContextProvider, EditStatus, setEditMode, type EditApi, type EditTarget } from '../lib/edit';
 import { deletePostDoc, getPost, type Post } from '../lib/feed';
 import { PostEditor } from '../pages/admin/PostEditor';
 import { PageTextForm } from '../pages/admin/ItemForms';
@@ -269,18 +269,29 @@ function EditSession({ children }: { children: ReactNode }) {
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [published, setPublished] = useState<Published | null>(null);
-  useEffect(() => {
-    loadSnapshot().then(setSnapshot, (e) => setError((e as Error).message));
+  const load = useCallback((fresh = false) => {
+    setError(null);
+    loadSnapshot({ fresh }).then(setSnapshot, (e) => setError((e as Error).message));
   }, []);
+  useEffect(() => load(), [load]);
   useDeployPolling(published, setPublished);
 
   if (!snapshot)
     return (
       <>
         {children}
-        <p role="status" className="fixed bottom-4 right-4 z-50 rounded-md border border-line bg-bg/95 px-3 py-2 font-mono text-xs shadow-warm">
-          {error ? `✎ edit mode unavailable: ${error}` : '✎ loading editor…'}
-        </p>
+        <EditStatus>
+          {error ? (
+            <>
+              ✎ edit mode unavailable: {error} ·{' '}
+              <button type="button" className="underline" onClick={() => load(true)}>
+                retry
+              </button>
+            </>
+          ) : (
+            '✎ loading editor…'
+          )}
+        </EditStatus>
       </>
     );
 
@@ -296,7 +307,7 @@ function EditSession({ children }: { children: ReactNode }) {
           } catch {
             /* ignore */
           }
-          loadSnapshot().then(setSnapshot, (e) => setError((e as Error).message));
+          loadSnapshot({ fresh: true }).then(setSnapshot, (e) => setError((e as Error).message));
         }}
       >
         {children}
@@ -310,7 +321,26 @@ export function EditProvider({ children }: { children: ReactNode }) {
   const auth = useAdminAuth();
   const { pathname } = useLocation();
   if (auth.status === 'admin') return <EditSession>{children}</EditSession>;
-  if (auth.status === 'loading') return <>{children}</>;
+  if (auth.status === 'loading')
+    return (
+      <>
+        {children}
+        <EditStatus>✎ loading editor…</EditStatus>
+      </>
+    );
+  // A network problem is not a missing login: show the reason instead of sending the owner to /login.
+  if (auth.status === 'error' && auth.user)
+    return (
+      <>
+        {children}
+        <EditStatus>
+          ✎ edit mode unavailable: {auth.message} ·{' '}
+          <button type="button" className="underline" onClick={() => location.reload()}>
+            retry
+          </button>
+        </EditStatus>
+      </>
+    );
   return (
     <>
       {children}

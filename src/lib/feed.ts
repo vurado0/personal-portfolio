@@ -1,7 +1,10 @@
 // Firestore access for feed posts and contact messages.
 import { useEffect, useState } from 'react';
 import type { DocumentData, QueryDocumentSnapshot, DocumentSnapshot } from 'firebase/firestore';
+import { adminHint } from './auth';
+import { firebaseConfigured } from './env';
 import { getFirebase, NotConfiguredError } from './firebase';
+import { getPostDoc, queryPublishedPosts } from './firestore-rest';
 
 export type PostType = 'photo' | 'text' | 'achievement' | 'music';
 export const POST_TYPES: PostType[] = ['photo', 'text', 'achievement', 'music'];
@@ -41,15 +44,19 @@ export type Message = { id: string; name: string; email: string; message: string
 type Snap = QueryDocumentSnapshot<DocumentData> | DocumentSnapshot<DocumentData>;
 
 function toDate(v: unknown): Date {
+  if (v instanceof Date) return v;
   if (v && typeof v === 'object' && 'toDate' in v && typeof (v as { toDate: unknown }).toDate === 'function')
     return (v as { toDate: () => Date }).toDate();
   return new Date();
 }
 
 function toPost(snap: Snap): Post {
-  const d = snap.data() ?? {};
+  return fromData(snap.id, snap.data() ?? {});
+}
+
+function fromData(id: string, d: DocumentData): Post {
   return {
-    id: snap.id,
+    id,
     type: (d.type as PostType) ?? 'text',
     text: d.text ?? '',
     images: d.images ?? [],
@@ -70,11 +77,10 @@ let publishedCache: { at: number; promise: Promise<Post[]> } | null = null;
 
 export function listPublishedPosts(max = 100): Promise<Post[]> {
   if (publishedCache && Date.now() - publishedCache.at < 60_000) return publishedCache.promise;
+  // REST instead of the SDK: visitors never download Firestore just to read the feed.
   const promise = (async () => {
-    const { db } = await getFirebase();
-    const { collection, query, where, orderBy, limit, getDocs } = await import('firebase/firestore');
-    const q = query(collection(db, 'posts'), where('published', '==', true), orderBy('createdAt', 'desc'), limit(max));
-    return (await getDocs(q)).docs.map(toPost);
+    if (!firebaseConfigured) throw new NotConfiguredError();
+    return (await queryPublishedPosts(max)).map((d) => fromData(d.id, d.data));
   })();
   publishedCache = { at: Date.now(), promise };
   promise.catch(() => (publishedCache = null));
@@ -82,6 +88,15 @@ export function listPublishedPosts(max = 100): Promise<Post[]> {
 }
 
 export async function getPost(id: string): Promise<Post | null> {
+  if (!firebaseConfigured) throw new NotConfiguredError();
+  const doc = await getPostDoc(id);
+  if (doc) return fromData(doc.id, doc.data);
+  // Unpublished posts are only readable with the owner's login (SDK); visitors get "not found".
+  if (!adminHint()) return null;
+  return getPostWithLogin(id);
+}
+
+async function getPostWithLogin(id: string): Promise<Post | null> {
   const { db } = await getFirebase();
   const { doc, getDoc } = await import('firebase/firestore');
   try {

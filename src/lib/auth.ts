@@ -31,6 +31,29 @@ function setAdminHint(on: boolean) {
   }
 }
 
+// The admin check (Firestore admins/{uid}) is remembered for the browser session, so opening the
+// editor or another tab does not wait for the database again. It is still re-checked in the
+// background; the server (ADMIN_UID) and the Firestore rules enforce access on every request anyway.
+const VERIFIED_KEY = 'admin-verified-uid';
+let verifiedUid: string | null = null;
+function knownAdmin(uid: string): 'memory' | 'session' | null {
+  if (verifiedUid === uid) return 'memory';
+  try {
+    return sessionStorage.getItem(VERIFIED_KEY) === uid ? 'session' : null;
+  } catch {
+    return null;
+  }
+}
+function rememberAdmin(uid: string | null) {
+  verifiedUid = uid;
+  try {
+    if (uid) sessionStorage.setItem(VERIFIED_KEY, uid);
+    else sessionStorage.removeItem(VERIFIED_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 const REDIRECT_KEY = 'auth-redirect-pending';
 const AUTH_TIMEOUT = 15_000;
 const ADMIN_CHECK_TIMEOUT = 12_000;
@@ -85,14 +108,22 @@ export function useAdminAuth(): AuthState {
         clearTimeout(authTimer);
         if (!user) {
           setAdminHint(false);
+          rememberAdmin(null);
           return set({ status: 'signed-out' });
         }
-        set({ status: 'loading' });
+        const known = knownAdmin(user.uid);
+        if (known) {
+          setAdminHint(true);
+          set({ status: 'admin', user });
+          if (known === 'memory') return; // already checked during this page view
+        } else set({ status: 'loading' });
         try {
           const snap = await withTimeout(getDoc(doc(db, 'admins', user.uid)), ADMIN_CHECK_TIMEOUT, 'admin check');
           setAdminHint(snap.exists());
-          set(snap.exists() ? { status: 'admin', user } : { status: 'denied', user });
+          rememberAdmin(snap.exists() ? user.uid : null);
+          if (!known || !snap.exists()) set(snap.exists() ? { status: 'admin', user } : { status: 'denied', user });
         } catch (e) {
+          if (known) return console.warn('Background admin check failed', e);
           console.error('Admin check failed', e);
           set({ status: 'error', user, message: explain(e, 'admin') });
         }
@@ -137,6 +168,7 @@ export async function signOutUser(): Promise<void> {
   const { auth } = await getFirebase();
   const { signOut } = await import('firebase/auth');
   setAdminHint(false);
+  rememberAdmin(null);
   try {
     sessionStorage.removeItem('edit-mode');
   } catch {

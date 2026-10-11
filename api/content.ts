@@ -2,6 +2,7 @@
 // (prerendered, versioned); edits from /admin become one commit on main, which Vercel deploys.
 //
 //   GET  /api/content             → { headSha, files: { "content/…": text }, publicFiles: ["/cv.pdf", …] }
+//   GET  /api/content?since=SHA   → { headSha, unchanged: true } when SHA is still the head (client cache)
 //   GET  /api/content?status=SHA  → { state: "pending" | "success" | "failure" | "error", url? }
 //   POST /api/content { baseSha, message, changes: [{ path, content | null }] } → { commitSha, commitUrl }
 import type { VercelRequest, VercelResponse } from '@vercel/node';
@@ -13,16 +14,25 @@ const MAX_FILE = 500_000;
 
 type TreeEntry = { path: string; type: 'blob' | 'tree'; sha: string; size?: number };
 
-async function readAll(env: GitHubEnv) {
+// Blobs are content-addressed (sha = content), so a warm function instance can keep them.
+const blobCache = new Map<string, string>();
+
+async function readAll(env: GitHubEnv, since: string) {
   const head = await headCommit(env);
+  if (since && since === head.sha) return { headSha: head.sha, unchanged: true };
   const tree = await gh<{ tree: TreeEntry[]; truncated: boolean }>(env, `/git/trees/${head.tree}?recursive=1`);
   const blobs = tree.tree.filter((e) => e.type === 'blob');
   const contentEntries = blobs.filter((e) => PATH_RE.test(e.path));
   const files: Record<string, string> = {};
   await Promise.all(
     contentEntries.map(async (e) => {
-      const blob = await gh<{ content: string; encoding: string }>(env, `/git/blobs/${e.sha}`);
-      files[e.path] = Buffer.from(blob.content, blob.encoding === 'base64' ? 'base64' : 'utf8').toString('utf8');
+      let text = blobCache.get(e.sha);
+      if (text === undefined) {
+        const blob = await gh<{ content: string; encoding: string }>(env, `/git/blobs/${e.sha}`);
+        text = Buffer.from(blob.content, blob.encoding === 'base64' ? 'base64' : 'utf8').toString('utf8');
+        blobCache.set(e.sha, text);
+      }
+      files[e.path] = text;
     }),
   );
   const publicFiles = blobs.filter((e) => e.path.startsWith('public/')).map((e) => e.path.slice('public'.length));
@@ -66,7 +76,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         if (!/^[0-9a-f]{40}$/.test(status)) return res.status(400).json({ error: 'invalid sha' });
         return res.status(200).json(await commitStatus(env, status));
       }
-      return res.status(200).json(await readAll(env));
+      const since = typeof req.query.since === 'string' && /^[0-9a-f]{40}$/.test(req.query.since) ? req.query.since : '';
+      return res.status(200).json(await readAll(env, since));
     }
 
     const parsed = parseChanges(req.body);
