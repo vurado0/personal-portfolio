@@ -4,7 +4,7 @@ import { Link, Navigate, useSearchParams } from 'react-router';
 import backgrounds from '../generated/backgrounds.json';
 import { useContent } from '../lib/content';
 import { AuthError } from '../components/AuthError';
-import { signInWithGoogle, signOutUser, useAdminAuth } from '../lib/auth';
+import { adminHint, signInWithGoogle, signOutUser, useAdminAuth } from '../lib/auth';
 import { setEditMode } from '../lib/edit';
 import { Seo } from '../lib/head';
 
@@ -32,6 +32,9 @@ export default function Login() {
 
   // "Sign in" in the header asks to come back to the same page with edit mode on.
   const wantEdit = params.get('edit') === '1';
+  // Without an owner session on this device there is nothing to wait for: show the Google button at once.
+  const [knownOwner, setKnownOwner] = useState(true);
+  useEffect(() => setKnownOwner(adminHint()), []);
   useEffect(() => {
     if (auth.status === 'admin' && wantEdit) setEditMode(true);
   }, [auth.status, wantEdit]);
@@ -110,7 +113,7 @@ export default function Login() {
               </div>
               {auth.status === 'unconfigured' ? (
                 <p className="text-sm">Firebase is not configured yet (VITE_FIREBASE_* variables are missing).</p>
-              ) : auth.status === 'loading' ? (
+              ) : auth.status === 'loading' && knownOwner ? (
                 <p className="font-mono text-sm text-muted">Checking session…</p>
               ) : auth.status === 'error' ? (
                 <AuthError message={auth.message} signedIn={Boolean(auth.user)} />

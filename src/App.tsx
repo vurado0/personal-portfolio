@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react';
+import { loadAdmin, loadLogin } from './lib/prefetch';
 import { Navigate, Route, Routes, useParams } from 'react-router';
 import { Layout } from './components/Layout';
 import { isEnabled } from './config/site';
@@ -16,8 +17,8 @@ import { ProjectDetail, Projects } from './pages/Projects';
 import Skills from './pages/Skills';
 
 // The admin area (and with it the upload code) is only downloaded when /admin is opened.
-const Admin = lazy(() => import('./pages/Admin'));
-const Login = lazy(() => import('./pages/Login'));
+const Admin = lazy(loadAdmin);
+const Login = lazy(loadLogin);
 
 function SkillRedirect() {
   const { id } = useParams();

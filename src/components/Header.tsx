@@ -5,6 +5,7 @@ import { useContent } from '../lib/content';
 import { EditButton, setEditMode, useEditModeOn } from '../lib/edit';
 import { t } from '../i18n';
 import { adminHint, logOut } from '../lib/auth';
+import { loginPrefetchProps } from '../lib/prefetch';
 import { ThemeToggle } from './ThemeToggle';
 
 function Item({ item, onClick }: { item: NavItem; onClick?: () => void }) {
@@ -91,6 +92,7 @@ export function Header() {
               to={`/login?next=${encodeURIComponent(pathname)}&edit=1`}
               className="chip min-h-11 px-3 text-fg hover:border-accent hover:no-underline"
               rel="nofollow"
+              {...loginPrefetchProps}
             >
               Sign in
             </Link>
