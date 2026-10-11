@@ -1,7 +1,7 @@
 {
   "blog": {
-    "title": "Daily grind.",
-    "intro": "Photos, small wins, thoughts and the songs on repeat — plus longer articles.",
+    "title": "BLOG",
+    "intro": "Photos, wins, thoughts and the songs on repeat — plus longer articles.",
     "meta": [
       { "label": "Blog", "value": "Personal" },
       { "label": "Style", "value": "Feed & Articles" }
