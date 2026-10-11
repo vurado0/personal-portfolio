@@ -9,6 +9,7 @@ import { getFirebase } from './firebase';
 export type EditTarget =
   | { kind: 'profile' }
   | { kind: 'nav' }
+  | { kind: 'translations' }
   | { kind: 'skill'; id?: string; group?: string }
   | { kind: 'skill-groups' }
   | { kind: 'project'; slug?: string }

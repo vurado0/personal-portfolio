@@ -135,6 +135,11 @@ export type PageText = { label?: string; title: string; intro?: string; meta?: {
 
 export type NavEntry = { id: string; label: string; enabled: boolean };
 
+/** Languages besides English; their files (content/i18n/<lang>.json) map English text → translation. */
+export type TranslationLocale = 'de' | 'ja';
+export const TRANSLATION_LOCALES: TranslationLocale[] = ['de', 'ja'];
+export type Translations = Record<TranslationLocale, Record<string, string>>;
+
 export type ContentBundle = {
   profile: Profile;
   navigation: NavEntry[];
@@ -147,4 +152,5 @@ export type ContentBundle = {
   hobbies: Hobby[];
   cv: Cv;
   certificates: Certificate[];
+  translations: Translations;
 };

@@ -15,6 +15,7 @@ import { loadSnapshot, type Snapshot } from '../pages/admin/contentApi';
 import { DocForm, emptyDoc, toDoc, type DocKind } from '../pages/admin/DocsEditor';
 import { CERTS, CertificateForm, CV, CvEntryForm, CvPdfForm, CvPersonalForm, CvSectionForm, HOBBIES, HobbyForm, NavEditor, readCv } from '../pages/admin/ItemForms';
 import { ProfileEditor } from '../pages/admin/JsonEditors';
+import { TranslationsForm } from '../pages/admin/TranslationsEditor';
 import { DeployNotice, PublishBar, useDeployPolling, type Published } from '../pages/admin/publish';
 import { prettyJson, readJsonFile } from '../pages/admin/serialize';
 import { deleteSkill, GroupsForm, SkillForm } from '../pages/admin/SkillsEditor';
@@ -126,6 +127,8 @@ function FormFor({ target, onDone, onPublished }: { target: EditTarget; onDone: 
       return <ProfileEditor onDone={onDone} />;
     case 'nav':
       return <NavEditor onDone={onDone} />;
+    case 'translations':
+      return <TranslationsForm onDone={onDone} />;
     case 'skill-groups':
       return <GroupsForm onDone={onDone} />;
     case 'skill': {
@@ -248,6 +251,9 @@ function LiveEdit({ children, onPublished, published, onDismiss }: { children: R
           </button>
           <button type="button" className="chip min-h-9" onClick={() => setTarget({ kind: 'profile' })}>
             profile
+          </button>
+          <button type="button" className="chip min-h-9" onClick={() => setTarget({ kind: 'translations' })} title="German and Japanese translations">
+            languages
           </button>
           <button type="button" className="chip min-h-9" onClick={() => setEditMode(false)} title="Back to the visitor view (unpublished changes are kept)">
             done

@@ -18,7 +18,9 @@ import type {
   ProjectStatus,
   Skill,
   SkillGroup,
+  Translations,
 } from '../../types/content.ts';
+import { TRANSLATION_LOCALES } from '../../types/content.ts';
 import { NAV_DEFAULTS } from '../../config/navigation.ts';
 
 export type Issue = { level: 'error' | 'warn'; file: string; message: string };
@@ -430,6 +432,22 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
     checkSkills(certFile, cert.skills ?? []);
   }
 
+  // ---- Translations (optional) ---------------------------------------------
+  const translations = { de: {}, ja: {} } as Translations;
+  for (const lang of TRANSLATION_LOCALES) {
+    const file = `content/i18n/${lang}.json`;
+    if (!(file in files)) continue;
+    const dict = readJson<Record<string, unknown>>(files, file, issues, {});
+    if (!dict || typeof dict !== 'object' || Array.isArray(dict)) {
+      issues.push({ level: 'error', file, message: 'must be an object { "English text": "translation" }' });
+      continue;
+    }
+    for (const [source, text] of Object.entries(dict)) {
+      if (typeof text !== 'string') issues.push({ level: 'error', file, message: `translation of "${source.slice(0, 40)}" must be a string` });
+      else if (text.trim()) translations[lang][source] = text;
+    }
+  }
+
   // ---- Unique slugs -------------------------------------------------------
   const seen = new Map<string, string>();
   for (const d of [...knowhow, ...projects, ...articles]) {
@@ -459,7 +477,7 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
   }
 
   return {
-    bundle: { profile, navigation: Array.isArray(navigation) ? navigation : [], pages: pages && typeof pages === 'object' ? pages : {}, skillGroups, skills, knowhow, projects, articles, hobbies, cv, certificates },
+    bundle: { profile, navigation: Array.isArray(navigation) ? navigation : [], pages: pages && typeof pages === 'object' ? pages : {}, skillGroups, skills, knowhow, projects, articles, hobbies, cv, certificates, translations },
     issues,
   };
 }
