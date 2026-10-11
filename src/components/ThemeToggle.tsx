@@ -1,8 +1,9 @@
-import { t } from '../i18n';
+import { useT } from '../i18n';
 import { useTheme } from '../lib/theme';
 
 export function ThemeToggle() {
   const { theme, toggle } = useTheme();
+  const t = useT();
   return (
     <button
       type="button"

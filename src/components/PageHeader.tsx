@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { usePageText } from '../lib/content';
+import { useContentText, usePageText } from '../lib/content';
 import { EditButton } from '../lib/edit';
 
 /**
@@ -8,7 +8,9 @@ import { EditButton } from '../lib/edit';
  */
 export function PageHeader({ pageId, label, title, children }: { pageId?: string; label: string; title: string; children?: ReactNode }) {
   const text = usePageText(pageId ?? '', { label, title });
+  const tr = useContentText();
   const intro = pageId && text.intro !== undefined ? text.intro : null;
+  const fallback = typeof children === 'string' ? tr(children) : children;
   return (
     <header className="container-page border-b border-line/60 pb-8 pt-12 sm:pt-16">
       <div className="flex items-center justify-between gap-3">
@@ -16,7 +18,7 @@ export function PageHeader({ pageId, label, title, children }: { pageId?: string
         {pageId ? <EditButton target={{ kind: 'page', id: pageId }} label="page text" /> : null}
       </div>
       <h1 className="mt-3 font-mono text-3xl font-bold tracking-tight sm:text-4xl">{text.title}</h1>
-      {intro || children ? <div className="mt-4 max-w-2xl whitespace-pre-line text-muted">{intro || children}</div> : null}
+      {intro || fallback ? <div className="mt-4 max-w-2xl whitespace-pre-line text-muted">{intro || fallback}</div> : null}
     </header>
   );
 }

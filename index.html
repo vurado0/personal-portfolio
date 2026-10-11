@@ -17,6 +17,8 @@
         var d = document.documentElement;
         d.dataset.side = side;
         d.dataset.theme = saved === 'light' ? 'light' : 'dark';
+        // Interface language (texts switch right after the app starts; lang helps fonts and screen readers now).
+        try { var lang = localStorage.getItem('lang'); if (lang === 'de' || lang === 'ja') d.lang = lang; } catch (e) {}
       })();
     </script>
     <!--app-head-->

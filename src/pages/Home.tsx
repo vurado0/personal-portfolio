@@ -8,10 +8,12 @@ import { useContent } from '../lib/content';
 import { AddButton, EditButton, useEdit } from '../lib/edit';
 import { usePublishedPosts } from '../lib/feed';
 import { Seo } from '../lib/head';
+import { useT } from '../i18n';
 
 function LatestFeed() {
   const state = usePublishedPosts(100);
   const editing = Boolean(useEdit());
+  const t = useT();
   const posts = state.status === 'ready' ? state.data : [];
   if (!posts.length && !editing) return null;
   // The newest music post gets the "now playing" card; the grid shows the other posts (no duplicates).
@@ -22,12 +24,12 @@ function LatestFeed() {
     <section className="container-page mt-20" aria-labelledby="feed-title">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <h2 id="feed-title" className="section-title">
-          latest from the feed
+          {t('home.latestFeed')}
         </h2>
         <div className="flex items-center gap-3">
           <EditButton target={{ kind: 'post-new' }} label="new post" />
           <Link to="/blog" className="font-mono text-xs">
-            open feed →
+            {t('home.openFeed')}
           </Link>
         </div>
       </div>
@@ -41,7 +43,7 @@ function LatestFeed() {
         )}
         {music?.music ? (
           <div className={`font-blog ${both ? '' : 'max-w-xl'}`}>
-            <p className="section-title mb-3">now playing / current mood</p>
+            <p className="section-title mb-3">{t('home.nowPlaying')}</p>
             <MusicCard music={music.music} comment={music.text} mood={music.mood} />
           </div>
         ) : null}
@@ -54,6 +56,7 @@ function LatestFeed() {
 export default function Home() {
   const { content } = useContent();
   const site = content.profile;
+  const t = useT();
   const featured = content.projects.filter((p) => p.featured).slice(0, 3);
   const espresso = backgrounds['espresso-shot'];
   return (
@@ -76,7 +79,7 @@ export default function Home() {
             <p className="mt-6 max-w-xl text-lg">{site.tagline}</p>
 
             <div className="mt-8 font-mono text-sm">
-              <p className="section-title">current focus</p>
+              <p className="section-title">{t('home.focus')}</p>
               <ul className="mt-3 space-y-1.5">
                 {site.currentFocus.map((f) => (
                   <li key={f}>
@@ -88,14 +91,14 @@ export default function Home() {
 
             <div className="mt-10 flex flex-wrap gap-3">
               <Link to="/projects" className="btn-primary">
-                View projects
+                {t('home.viewProjects')}
               </Link>
               <Link to="/skills" className="btn-ghost">
-                Skills
+                {t('home.skills')}
               </Link>
               {isEnabled('about') && (
                 <Link to="/about" className="btn-ghost">
-                  CV
+                  {t('home.cv')}
                 </Link>
               )}
             </div>
@@ -108,7 +111,7 @@ export default function Home() {
                 src={site.photo}
                 width={886}
                 height={886}
-                alt={`Portrait of ${site.name}`}
+                alt={t('home.portraitAlt', { name: site.name })}
                 fetchPriority="high"
                 className="relative aspect-square w-full rounded-lg border border-line/60 bg-dark-roast object-cover shadow-warm"
               />
@@ -131,10 +134,10 @@ export default function Home() {
         <section className="container-page mt-16" aria-labelledby="featured-title">
           <div className="flex items-baseline justify-between">
             <h2 id="featured-title" className="section-title">
-              featured projects
+              {t('home.featured')}
             </h2>
             <Link to="/projects" className="font-mono text-xs">
-              all projects →
+              {t('home.allProjects')}
             </Link>
           </div>
           <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -148,9 +151,9 @@ export default function Home() {
       <section className="container-page mt-20 grid gap-12 lg:grid-cols-2">
         <div>
           <div className="flex items-baseline justify-between">
-            <h2 className="section-title">recent know-how</h2>
+            <h2 className="section-title">{t('home.recentKnowhow')}</h2>
             <Link to="/knowhow" className="font-mono text-xs">
-              knowledge base →
+              {t('home.knowledgeBase')}
             </Link>
           </div>
           <div className="mt-2">
@@ -162,9 +165,9 @@ export default function Home() {
         {content.articles.length > 0 && (
           <div data-side="personal" className="font-blog">
             <div className="flex items-baseline justify-between">
-              <h2 className="section-title">latest article</h2>
+              <h2 className="section-title">{t('home.latestArticle')}</h2>
               <Link to="/blog/articles" className="font-mono text-xs">
-                all articles →
+                {t('home.allArticles')}
               </Link>
             </div>
             <div className="mt-2 [&_h3]:text-3xl sm:[&_h3]:text-4xl [&_article]:md:grid-cols-1">

@@ -6,6 +6,7 @@ import { Markdown } from '../components/Markdown';
 import { useContent, usePageText } from '../lib/content';
 import { AddButton, EditButton } from '../lib/edit';
 import { Seo } from '../lib/head';
+import { useT } from '../i18n';
 import NotFound from './NotFound';
 
 export function Projects() {
@@ -43,6 +44,7 @@ export function Projects() {
 export function ProjectDetail() {
   const { slug } = useParams();
   const { content } = useContent();
+  const t = useT();
   const p = content.projects.find((x) => x.slug === slug);
   if (!p) return <NotFound />;
   const links = Object.entries(p.links).filter((e): e is [string, string] => Boolean(e[1]));
@@ -52,7 +54,7 @@ export function ProjectDetail() {
       <article className="container-page max-w-4xl pt-10">
         <div className="flex items-center justify-between gap-3">
           <Link to="/projects" className="font-mono text-xs">
-            ← all projects
+            {t('projects.back')}
           </Link>
           <EditButton target={{ kind: 'project', slug: p.slug }} />
         </div>
@@ -65,15 +67,15 @@ export function ProjectDetail() {
 
         <dl className="mt-8 grid gap-4 border-y border-line/60 py-6 font-mono text-sm sm:grid-cols-3">
           <div>
-            <dt className="label">role</dt>
+            <dt className="label">{t('projects.role')}</dt>
             <dd className="mt-1">{p.role}</dd>
           </div>
           <div>
-            <dt className="label">stack</dt>
+            <dt className="label">{t('projects.stack')}</dt>
             <dd className="mt-1">{p.stack.join(' · ')}</dd>
           </div>
           <div>
-            <dt className="label">links</dt>
+            <dt className="label">{t('projects.links')}</dt>
             <dd className="mt-1 flex flex-wrap gap-3">
               {links.length
                 ? links.map(([k, url]) => (
@@ -86,7 +88,7 @@ export function ProjectDetail() {
           </div>
         </dl>
         <SkillChips ids={p.skills} className="mt-6" />
-        {p.cover ? <img src={p.cover} alt={`${p.title} cover`} className="mt-8 w-full rounded-lg border border-line/60" /> : null}
+        {p.cover ? <img src={p.cover} alt={t('projects.coverAlt', { title: p.title })} className="mt-8 w-full rounded-lg border border-line/60" /> : null}
         <Markdown html={p.html} className="mt-10" />
       </article>
     </>

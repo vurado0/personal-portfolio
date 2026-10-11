@@ -6,6 +6,12 @@ declare module 'virtual:content' {
   export default content;
 }
 
+declare module 'virtual:translations/*' {
+  // content/i18n/<lang>.json: English text → translation (loaded only when that language is picked)
+  const dict: Record<string, string>;
+  export default dict;
+}
+
 declare const __HAS_RAPTOR__: boolean;
 
 interface ImportMetaEnv {

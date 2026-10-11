@@ -1,4 +1,6 @@
 import raw from 'virtual:content';
+import { contentDictionary, useLocale, type Locale } from '../i18n';
+import { localizeBundle } from './content-core/localize';
 import type { ArticleDoc, ContentBundle, KnowhowDoc, PageText, ProjectDoc, Skill } from '../types/content';
 import { useEdit } from './edit';
 
@@ -34,16 +36,44 @@ export function derive(bundle: ContentBundle): DerivedContent {
   return d;
 }
 
+const localized = new WeakMap<ContentBundle, Map<Locale, ContentBundle>>();
+
+/** Translations for a bundle: the live files in edit mode, otherwise the lazily loaded language pack. */
+function dictionary(bundle: ContentBundle, locale: Exclude<Locale, 'en'>): Record<string, string> {
+  const own = bundle.translations?.[locale];
+  return own && Object.keys(own).length ? own : (contentDictionary(locale) ?? {});
+}
+
+/** The bundle in the visitor's language (short texts only; English stays the source). */
+export function localize(bundle: ContentBundle, locale: Locale): ContentBundle {
+  if (locale === 'en') return bundle;
+  let byLocale = localized.get(bundle);
+  if (!byLocale) localized.set(bundle, (byLocale = new Map()));
+  let hit = byLocale.get(locale);
+  if (!hit) byLocale.set(locale, (hit = localizeBundle(bundle, dictionary(bundle, locale))));
+  return hit;
+}
+
 /** Content for rendering: the live, unpublished state in edit mode, otherwise the built content. */
 export function useContent(): DerivedContent {
   const edit = useEdit();
-  return derive(edit?.bundle ?? content);
+  return derive(localize(edit?.bundle ?? content, useLocale()));
+}
+
+/** Translates one English content text (e.g. a code default) with the content dictionary. */
+export function useContentText(): (s: string) => string {
+  const locale = useLocale();
+  const edit = useEdit();
+  const dict = locale === 'en' ? null : dictionary(edit?.bundle ?? content, locale);
+  return (s) => dict?.[s] ?? s;
 }
 
 /** Editable texts of a page, with a fallback so a missing entry never breaks the page. */
 export function usePageText(id: string, fallback: PageText): PageText {
   const page = useContent().content.pages[id];
-  return page ? { ...fallback, ...page } : fallback;
+  const tr = useContentText();
+  const base = { ...fallback, title: tr(fallback.title), label: fallback.label && tr(fallback.label), intro: fallback.intro && tr(fallback.intro) };
+  return page ? { ...base, ...page } : base;
 }
 
 export const LEVEL_LABELS = ['', 'learning', 'learning', 'working', 'advanced', 'advanced'] as const;
@@ -51,6 +81,8 @@ export const LEVEL_LABELS = ['', 'learning', 'learning', 'working', 'advanced', 
 export function levelLabel(level: number): string {
   return LEVEL_LABELS[level] ?? 'working';
 }
+
+export const levelKey = (level: number) => `level.${levelLabel(level)}` as 'level.learning' | 'level.working' | 'level.advanced';
 
 export function categoryLabel(category: string): string {
   const special: Record<string, string> = { macos: 'macOS', c: 'C', cpp: 'C++', git: 'Git', ci: 'CI', 'machine-learning': 'Machine learning' };

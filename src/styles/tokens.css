@@ -22,8 +22,9 @@
   --on-accent: var(--espresso);
   --link: var(--mocha);
 
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --font-blog: "Raptor Text", "Inter Tight", system-ui, sans-serif;
+  /* Japanese glyphs fall back to the system's gothic fonts (nothing extra is downloaded). */
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", monospace;
+  --font-blog: "Raptor Text", "Inter Tight", system-ui, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
 
   color-scheme: light;
 }

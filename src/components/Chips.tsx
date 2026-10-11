@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { useContent } from '../lib/content';
+import { useT } from '../i18n';
 
 export function SkillChip({ id }: { id: string }) {
   const skill = useContent().skillById.get(id);
@@ -14,9 +15,10 @@ export function SkillChip({ id }: { id: string }) {
 }
 
 export function SkillChips({ ids, className = '' }: { ids: string[]; className?: string }) {
+  const t = useT();
   if (!ids.length) return null;
   return (
-    <ul className={`flex flex-wrap gap-1.5 ${className}`} aria-label="Skills">
+    <ul className={`flex flex-wrap gap-1.5 ${className}`} aria-label={t('chips.skills')}>
       {ids.map((id) => (
         <li key={id}>
           <SkillChip id={id} />

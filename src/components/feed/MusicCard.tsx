@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { t } from '../../i18n';
+import { useT } from '../../i18n';
 import { cldUrl } from '../../lib/cloudinary';
 import { providerLabel } from '../../lib/embeds';
 import type { MusicInfo } from '../../lib/feed';
@@ -11,6 +11,7 @@ import { Background } from '../Background';
  */
 export function MusicCard({ music, comment, mood }: { music: MusicInfo; comment?: string; mood?: string }) {
   const [loaded, setLoaded] = useState(false);
+  const t = useT();
   const provider = providerLabel[music.provider];
   const height = music.provider === 'spotify' ? 152 : 166;
 
@@ -19,7 +20,7 @@ export function MusicCard({ music, comment, mood }: { music: MusicInfo; comment?
       <div className="p-4 sm:p-5">
         {loaded ? (
           // The provider's player already shows cover, title and artist.
-          <p className="label">{mood ? `Mood: ${mood}` : `Now playing · ${provider}`}</p>
+          <p className="label">{mood ? t('music.mood', { mood }) : t('music.nowPlaying', { provider })}</p>
         ) : (
           <div className="flex gap-4">
             {music.coverUrl ? (
@@ -30,8 +31,8 @@ export function MusicCard({ music, comment, mood }: { music: MusicInfo; comment?
               </div>
             )}
             <div className="min-w-0 flex-1">
-              <p className="label">{mood ? `Mood: ${mood}` : `Now playing · ${provider}`}</p>
-              <p className="blog-headline mt-1 truncate text-2xl">{music.title || 'Untitled track'}</p>
+              <p className="label">{mood ? t('music.mood', { mood }) : t('music.nowPlaying', { provider })}</p>
+              <p className="blog-headline mt-1 truncate text-2xl">{music.title || t('music.untitled')}</p>
               {music.artist ? <p className="truncate text-muted">{music.artist}</p> : null}
               {comment ? <p className="mt-2 line-clamp-3 text-sm">{comment}</p> : null}
             </div>
@@ -59,7 +60,7 @@ export function MusicCard({ music, comment, mood }: { music: MusicInfo; comment?
           )}
           <p className="mt-2 text-xs">
             <a href={music.url} target="_blank" rel="noopener noreferrer">
-              Open in {provider} ↗
+              {t('music.open', { provider })}
             </a>
           </p>
         </div>
