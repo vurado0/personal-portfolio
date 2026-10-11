@@ -82,21 +82,20 @@ export function Header() {
           <EditButton target={{ kind: 'nav' }} label="menu" />
           {isAdmin ? (
             pathname.startsWith('/admin') ? null : editing ? (
-              <button type="button" onClick={() => setEditMode(false)} className="chip min-h-11 min-w-11 justify-center border-accent bg-accent px-3 text-on-accent" aria-label={t('header.done')}>
+              <button type="button" onClick={() => setEditMode(false)} className="chip min-h-11 min-w-11 justify-center whitespace-nowrap border-accent bg-accent px-3 text-on-accent" aria-label={t('header.done')}>
                 {/* Phones only get the symbol, so the language button still fits next to it. */}
                 <span className="sm:hidden" aria-hidden="true">✓</span>
                 <span className="hidden sm:inline">{t('header.done')}</span>
               </button>
             ) : (
               <button type="button" onClick={() => setEditMode(true)} className="chip min-h-11 min-w-11 justify-center border-accent px-3 text-accent" title={t('header.editTitle')} aria-label={t('header.edit')}>
-                <span className="sm:hidden" aria-hidden="true">✎</span>
-                <span className="hidden sm:inline">{t('header.edit')}</span>
+                <span aria-hidden="true">✎</span>
               </button>
             )
           ) : pathname !== '/login' ? (
             <Link
               to={`/login?next=${encodeURIComponent(pathname)}&edit=1`}
-              className="chip hidden min-h-11 px-3 text-fg hover:border-accent hover:no-underline sm:inline-flex"
+              className="chip hidden min-h-11 whitespace-nowrap px-3 text-fg hover:border-accent hover:no-underline sm:inline-flex"
               rel="nofollow"
               {...loginPrefetchProps}
             >
@@ -104,7 +103,7 @@ export function Header() {
             </Link>
           ) : null}
           {isAdmin ? (
-            <button type="button" onClick={logOut} className="chip hidden min-h-11 px-3 text-fg hover:border-accent sm:inline-flex" title={t('header.logoutTitle')}>
+            <button type="button" onClick={logOut} className="chip hidden min-h-11 whitespace-nowrap px-3 text-fg hover:border-accent sm:inline-flex" title={t('header.logoutTitle')}>
               {t('header.logout')}
             </button>
           ) : null}
