@@ -94,7 +94,7 @@ export default function ContentAdmin() {
             } catch {
               /* ignore */
             }
-            loadSnapshot().then(setSnapshot, (e) => setError((e as Error).message));
+            loadSnapshot({ fresh: true }).then(setSnapshot, (e) => setError((e as Error).message));
           }}
         />
       </WorkspaceProvider>

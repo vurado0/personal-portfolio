@@ -7,6 +7,8 @@ export type UploadResult = { secure_url: string; public_id: string; width: numbe
 
 async function idToken(): Promise<string> {
   const { auth } = await getFirebase();
+  // Wait for the saved login to be restored (right after a page load currentUser is still null).
+  await auth.authStateReady();
   if (!auth.currentUser) throw new Error('Not signed in');
   return auth.currentUser.getIdToken();
 }

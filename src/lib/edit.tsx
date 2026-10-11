@@ -3,6 +3,8 @@
 import { createContext, useContext, useEffect, useState, useSyncExternalStore, type ComponentType, type ReactNode } from 'react';
 import { useLocation } from 'react-router';
 import type { ContentBundle } from '../types/content';
+import { loadSnapshot } from '../pages/admin/contentApi';
+import { getFirebase } from './firebase';
 
 export type EditTarget =
   | { kind: 'profile' }
@@ -74,6 +76,17 @@ export function useEditModeOn(): boolean {
   );
 }
 
+const loadEditor = () => import('../edit/EditProvider');
+
+/** Small status pill bottom-right while the editor starts (same look as the editor's own). */
+export function EditStatus({ children }: { children: ReactNode }) {
+  return (
+    <p role="status" className="fixed bottom-4 right-4 z-50 rounded-md border border-line bg-bg/95 px-3 py-2 font-mono text-xs shadow-warm">
+      {children}
+    </p>
+  );
+}
+
 /** Loads the editor once the owner switches edit mode on, and wraps the app with it. */
 export function EditRoot({ children }: { children: ReactNode }) {
   const [Provider, setProvider] = useState<ComponentType<{ children: ReactNode }> | null>(null);
@@ -81,9 +94,35 @@ export function EditRoot({ children }: { children: ReactNode }) {
   // /admin has its own editor (and /login no content): keep a single draft owner at a time.
   const off = /^\/(admin|login)(\/|$)/.test(useLocation().pathname);
   useEffect(() => {
-    if (on && !Provider) import('../edit/EditProvider').then((m) => setProvider(() => m.EditProvider));
+    if (!on || Provider) return;
+    // Start everything at once instead of one after the other: editor code, Firebase and the content snapshot.
+    getFirebase().catch(() => {});
+    loadSnapshot().catch(() => {});
+    loadEditor().then((m) => setProvider(() => m.EditProvider));
   }, [on, Provider]);
-  return Provider && on && !off ? <Provider>{children}</Provider> : <>{children}</>;
+  useEffect(() => {
+    // On the owner's device, fetch the editor code in idle time so "✎ Edit" opens right away.
+    // (No content request here: that only starts when edit mode is switched on.)
+    let owner = false;
+    try {
+      owner = localStorage.getItem('is-admin') === '1';
+    } catch {
+      /* storage blocked */
+    }
+    if (on || !owner) return;
+    const idle = window.requestIdleCallback ?? ((fn: () => void) => window.setTimeout(fn, 1500));
+    idle(() => {
+      loadEditor().catch(() => {});
+      getFirebase().catch(() => {});
+    });
+  }, [on]);
+  if (Provider && on && !off) return <Provider>{children}</Provider>;
+  return (
+    <>
+      {children}
+      {on && !off ? <EditStatus>✎ loading editor…</EditStatus> : null}
+    </>
+  );
 }
 
 const toolBtn =
