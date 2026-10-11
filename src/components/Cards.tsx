@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { categoryLabel } from '../lib/content';
 import { ItemTools } from '../lib/edit';
 import { formatDate } from '../lib/format';
+import { useLocale, useT } from '../i18n';
 import type { ArticleDoc, KnowhowDoc, ProjectDoc } from '../types/content';
 import { SkillChips } from './Chips';
 
@@ -12,10 +13,12 @@ const statusStyle: Record<ProjectDoc['status'], string> = {
 };
 
 export function StatusBadge({ status }: { status: ProjectDoc['status'] }) {
-  return <span className={`chip ${statusStyle[status]}`}>{status === 'in progress' ? '● in progress' : status === 'done' ? '✓ done' : '○ idea'}</span>;
+  const t = useT();
+  return <span className={`chip ${statusStyle[status]}`}>{t(status === 'in progress' ? 'status.inProgress' : status === 'done' ? 'status.done' : 'status.idea')}</span>;
 }
 
 export function ProjectCard({ project }: { project: ProjectDoc }) {
+  const t = useT();
   return (
     <article className="card group relative flex flex-col gap-3 transition-colors hover:border-accent/70">
       <ItemTools target={{ kind: 'project', slug: project.slug }} label={project.title} />
@@ -33,7 +36,7 @@ export function ProjectCard({ project }: { project: ProjectDoc }) {
       </h3>
       <p className="text-sm text-muted">{project.summary}</p>
       <p className="mt-auto font-mono text-xs text-muted">
-        <span className="text-accent">stack:</span> {project.stack.join(' · ')}
+        <span className="text-accent">{t('card.stack')}</span> {project.stack.join(' · ')}
       </p>
       <div className="relative z-10">
         <SkillChips ids={project.skills.slice(0, 5)} />
@@ -43,6 +46,8 @@ export function ProjectCard({ project }: { project: ProjectDoc }) {
 }
 
 export function KnowhowRow({ doc }: { doc: KnowhowDoc }) {
+  const t = useT();
+  const locale = useLocale();
   return (
     <article className="group relative grid gap-1 border-b border-line/50 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
       <ItemTools target={{ kind: 'knowhow', path: `content/knowhow/${doc.category}/${doc.slug}.md` }} label={doc.title} />
@@ -55,7 +60,7 @@ export function KnowhowRow({ doc }: { doc: KnowhowDoc }) {
         </h3>
         <p className="mt-1 text-sm text-muted">{doc.summary}</p>
         <p className="mt-2 font-mono text-[11px] text-muted">
-          {doc.difficulty} · {doc.readingMinutes} min · updated {formatDate(doc.updated)}
+          {t(`difficulty.${doc.difficulty}`)} · {t('card.minutes', { n: doc.readingMinutes })} · {t('card.updated')} {formatDate(doc.updated, locale)}
         </p>
       </div>
     </article>
@@ -63,20 +68,22 @@ export function KnowhowRow({ doc }: { doc: KnowhowDoc }) {
 }
 
 export function ArticleRow({ article }: { article: ArticleDoc }) {
+  const t = useT();
+  const locale = useLocale();
   return (
     <article className="group relative grid gap-x-8 gap-y-2 border-t border-ink/20 py-8 dark:border-cream/15 md:grid-cols-[9rem_1fr]">
       <ItemTools target={{ kind: 'article', path: `content/blog/${article.date}-${article.slug}.md` }} label={article.title} />
       <dl className="meta-grid content-start md:grid-cols-[3.5rem_1fr]">
-        <dt>Date:</dt>
+        <dt>{t('meta.date')}</dt>
         <dd className="text-fg">
-          <time dateTime={article.date}>{formatDate(article.date)}</time>
+          <time dateTime={article.date}>{formatDate(article.date, locale)}</time>
         </dd>
-        <dt>Read:</dt>
-        <dd>{article.readingMinutes} min</dd>
+        <dt>{t('meta.read')}</dt>
+        <dd>{t('card.minutes', { n: article.readingMinutes })}</dd>
         {article.draft ? (
           <>
-            <dt>State:</dt>
-            <dd className="font-bold text-fg">Draft</dd>
+            <dt>{t('meta.state')}</dt>
+            <dd className="font-bold text-fg">{t('meta.draft')}</dd>
           </>
         ) : null}
       </dl>

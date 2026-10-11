@@ -6,6 +6,7 @@ import { PageHeader } from '../components/PageHeader';
 import { categoryLabel, useContent } from '../lib/content';
 import { AddButton } from '../lib/edit';
 import { Seo } from '../lib/head';
+import { useT } from '../i18n';
 import type { KnowhowDoc } from '../types/content';
 
 function score(doc: KnowhowDoc, terms: string[]): number {
@@ -27,6 +28,7 @@ export default function Knowhow() {
   const [params, setParams] = useSearchParams();
   const q = params.get('q') ?? '';
   const tag = params.get('tag');
+  const t = useT();
 
   const update = (next: Record<string, string | null>) => {
     const p = new URLSearchParams(params);
@@ -48,16 +50,17 @@ export default function Knowhow() {
   return (
     <>
       <Seo title={title} description="My IT knowledge base: guides, cheat sheets and setups." path={category ? `/knowhow/${category}` : '/knowhow'} />
-      <PageHeader pageId={category ? undefined : 'knowhow'} label="know-how" title={category ? `${categoryLabel(category)}` : 'Knowledge base'}>
+      <PageHeader pageId={category ? undefined : 'knowhow'} label={t('knowhow.crumb')} title={category ? `${categoryLabel(category)}` : 'Knowledge base'}>
         Guides, cheat sheets and setups I keep coming back to.
       </PageHeader>
       <div className="container-page grid gap-10 pt-8 lg:grid-cols-[13rem_1fr]">
         <aside className="font-mono text-sm lg:sticky lg:top-24 lg:self-start">
-          <p className="section-title mb-3">categories</p>
+          <p className="section-title mb-3">{t('knowhow.categories')}</p>
           <ul className="flex flex-wrap gap-x-4 gap-y-1 lg:block lg:space-y-1">
             <li>
               <Link to="/knowhow" className={!category ? 'text-accent' : 'text-fg'}>
-                {!category ? '> ' : ''}all ({content.knowhow.length})
+                {!category ? '> ' : ''}
+                {t('filter.allLower')} ({content.knowhow.length})
               </Link>
             </li>
             {knowhowCategories.map((c) => (
@@ -72,7 +75,7 @@ export default function Knowhow() {
         </aside>
         <div>
           <label className="relative block">
-            <span className="sr-only">Search know-how</span>
+            <span className="sr-only">{t('knowhow.search')}</span>
             <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 font-mono text-accent" aria-hidden="true">
               /
             </span>
@@ -80,19 +83,19 @@ export default function Knowhow() {
               type="search"
               value={q}
               onChange={(e) => update({ q: e.target.value || null })}
-              placeholder="grep the knowledge base…"
+              placeholder={t('knowhow.placeholder')}
               className="input pl-8 font-mono"
             />
           </label>
           {tags.length > 0 && (
-            <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label="Filter by tag">
-              {tags.map((t) => (
-                <TagChip key={t} tag={`#${t}`} active={tag === t} onClick={() => update({ tag: tag === t ? null : t })} />
+            <div className="mt-4 flex flex-wrap gap-1.5" role="group" aria-label={t('filter.byTag')}>
+              {tags.map((tg) => (
+                <TagChip key={tg} tag={`#${tg}`} active={tag === tg} onClick={() => update({ tag: tag === tg ? null : tg })} />
               ))}
             </div>
           )}
           <p className="mt-6 font-mono text-xs text-muted" aria-live="polite">
-            {results.length} result{results.length === 1 ? '' : 's'}
+            {t(results.length === 1 ? 'knowhow.result' : 'knowhow.results', { n: results.length })}
           </p>
           <div className="mt-2">
             {results.map((d) => (

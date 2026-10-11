@@ -2,23 +2,25 @@ import { useEffect } from 'react';
 import { useLocation, useSearchParams } from 'react-router';
 import { PageHeader } from '../components/PageHeader';
 import { TagChip } from '../components/Chips';
-import { levelLabel, useContent } from '../lib/content';
+import { levelKey, useContent } from '../lib/content';
+import { useT } from '../i18n';
 import { AddButton, EditButton, ItemTools, useEdit } from '../lib/edit';
 import { usePublishedPosts } from '../lib/feed';
 import { Seo } from '../lib/head';
 import type { Skill } from '../types/content';
 
 export function LevelBar({ level }: { level: number }) {
+  const t = useT();
   return (
-    <span className="inline-flex items-center gap-2" title={`Level ${level} of 5`}>
+    <span className="inline-flex items-center gap-2" title={t('level.of', { n: level })}>
       <span className="flex gap-0.5" aria-hidden="true">
         {[1, 2, 3, 4, 5].map((i) => (
           <span key={i} className={`h-2 w-4 rounded-[1px] ${i <= level ? 'bg-accent' : 'bg-line/50'}`} />
         ))}
       </span>
       <span className="font-mono text-[11px] uppercase tracking-label text-muted">
-        {levelLabel(level)}
-        <span className="sr-only"> (level {level} of 5)</span>
+        {t(levelKey(level))}
+        <span className="sr-only"> ({t('level.of', { n: level })})</span>
       </span>
     </span>
   );
@@ -26,11 +28,12 @@ export function LevelBar({ level }: { level: number }) {
 
 function SkillCard({ skill, postCount, highlight }: { skill: Skill; postCount: number | null; highlight: boolean }) {
   const refs = useContent().skillRefs.get(skill.id) ?? { projects: [], knowhow: [], articles: [] };
+  const t = useT();
   // Only show what is actually linked to this skill.
   const counts = (
     [
       ['project', refs.projects.length],
-      ['know-how', refs.knowhow.length],
+      ['knowhow', refs.knowhow.length],
       ['article', refs.articles.length],
       ['post', postCount ?? 0],
     ] as const
@@ -48,7 +51,7 @@ function SkillCard({ skill, postCount, highlight }: { skill: Skill; postCount: n
           {counts.map(([label, n], i) => (
             <span key={label}>
               {i > 0 ? ' · ' : ''}
-              <span className="text-fg">{n}</span> {label === 'know-how' || n === 1 ? label : `${label}s`}
+              <span className="text-fg">{n}</span> {t(label === 'knowhow' ? 'count.knowhow' : n === 1 ? `count.${label}` : `count.${label}s`)}
             </span>
           ))}
         </p>
@@ -60,6 +63,7 @@ function SkillCard({ skill, postCount, highlight }: { skill: Skill; postCount: n
 export default function Skills() {
   const { content } = useContent();
   const editing = Boolean(useEdit());
+  const t = useT();
   const { hash } = useLocation();
   // Skill chips elsewhere link to /skills#skill-<id>: scroll to and highlight that card.
   useEffect(() => {
@@ -78,8 +82,8 @@ export default function Skills() {
         Every skill links to the projects, know-how articles and posts where it shows up.
       </PageHeader>
       <div className="container-page">
-        <div className="flex flex-wrap gap-1.5 py-6" role="group" aria-label="Filter by group">
-          <TagChip tag="all" active={!group} onClick={() => setParams({}, { replace: true })} />
+        <div className="flex flex-wrap gap-1.5 py-6" role="group" aria-label={t('filter.byGroup')}>
+          <TagChip tag={t('filter.allLower')} active={!group} onClick={() => setParams({}, { replace: true })} />
           {content.skillGroups.map((g) => (
             <TagChip key={g.id} tag={g.label} active={group === g.id} onClick={() => setParams({ group: g.id }, { replace: true })} />
           ))}

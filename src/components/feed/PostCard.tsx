@@ -3,6 +3,7 @@ import { cldUrl } from '../../lib/cloudinary';
 import { ItemTools } from '../../lib/edit';
 import type { Post, PostType } from '../../lib/feed';
 import { formatDateTime, relativeTime } from '../../lib/format';
+import { useLocale, useT, type MessageKey } from '../../i18n';
 import { SkillChips, TagChip } from '../Chips';
 import { ImageCarousel } from './ImageCarousel';
 import { MusicCard } from './MusicCard';
@@ -14,30 +15,41 @@ export const typeLabel: Record<PostType, string> = {
   music: 'Music',
 };
 
+const typeKey: Record<PostType, MessageKey> = { photo: 'type.photo', text: 'type.text', achievement: 'type.achievement', music: 'type.music' };
+
+/** Post type in the current language (`typeLabel` stays English for the owner's admin page). */
+export function useTypeLabel(): (type: PostType) => string {
+  const t = useT();
+  return (type) => t(typeKey[type]);
+}
+
 /** Timeline (X-style) post: meta labels left, content right, thin rules between posts. */
 export function PostCard({ post, detail = false }: { post: Post; detail?: boolean }) {
+  const t = useT();
+  const locale = useLocale();
+  const label = useTypeLabel();
   return (
     <article className="group relative grid gap-x-8 gap-y-3 border-t border-ink/20 py-8 dark:border-cream/15 md:grid-cols-[9rem_1fr]">
       <ItemTools target={{ kind: 'post', id: post.id }} label={post.music?.title || post.text.slice(0, 40) || 'post'} />
       <dl className="meta-grid content-start md:grid-cols-[3.5rem_1fr]">
-        <dt>Type:</dt>
-        <dd className="text-fg">{typeLabel[post.type]}</dd>
-        <dt>Date:</dt>
+        <dt>{t('meta.type')}</dt>
+        <dd className="text-fg">{label(post.type)}</dd>
+        <dt>{t('meta.date')}</dt>
         <dd>
-          <time dateTime={post.createdAt.toISOString()} title={formatDateTime(post.createdAt)}>
-            {relativeTime(post.createdAt)}
+          <time dateTime={post.createdAt.toISOString()} title={formatDateTime(post.createdAt, locale)}>
+            {relativeTime(post.createdAt, locale)}
           </time>
         </dd>
         {post.mood && post.type !== 'music' ? (
           <>
-            <dt>Mood:</dt>
+            <dt>{t('meta.mood')}</dt>
             <dd>{post.mood}</dd>
           </>
         ) : null}
         {!post.published ? (
           <>
-            <dt>State:</dt>
-            <dd className="font-bold text-fg">Draft</dd>
+            <dt>{t('meta.state')}</dt>
+            <dd className="font-bold text-fg">{t('meta.draft')}</dd>
           </>
         ) : null}
       </dl>
@@ -67,7 +79,7 @@ export function PostCard({ post, detail = false }: { post: Post; detail?: boolea
         )}
         {!detail ? (
           <Link to={`/blog/p/${post.id}`} className="inline-block text-sm">
-            Open post →
+            {t('post.open')}
           </Link>
         ) : null}
       </div>
@@ -77,9 +89,11 @@ export function PostCard({ post, detail = false }: { post: Post; detail?: boolea
 
 /** Photo grid (Instagram/VSCO-style) tile. */
 export function PostTile({ post }: { post: Post }) {
+  const t = useT();
+  const label = useTypeLabel();
   const img = post.images[0] ?? (post.music?.coverUrl ? { url: post.music.coverUrl, alt: post.music.title } : null);
   return (
-    <Link to={`/blog/p/${post.id}`} className="group relative block aspect-square overflow-hidden bg-latte/40 no-underline hover:no-underline" aria-label={`${typeLabel[post.type]}: ${post.text.slice(0, 80) || post.music?.title || 'post'}`}>
+    <Link to={`/blog/p/${post.id}`} className="group relative block aspect-square overflow-hidden bg-latte/40 no-underline hover:no-underline" aria-label={`${label(post.type)}: ${post.text.slice(0, 80) || post.music?.title || t('post.fallbackTitle')}`}>
       {img ? (
         <img src={cldUrl(img.url, 480)} alt={img.alt} loading="lazy" decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
       ) : post.type === 'music' && post.music ? (
@@ -88,7 +102,7 @@ export function PostTile({ post }: { post: Post }) {
             ♪
           </span>
           <span>
-            <span className="blog-headline line-clamp-2 block text-lg">{post.music.title || 'Untitled track'}</span>
+            <span className="blog-headline line-clamp-2 block text-lg">{post.music.title || t('music.untitled')}</span>
             {post.music.artist ? <span className="block truncate text-xs text-latte">{post.music.artist}</span> : null}
           </span>
         </div>

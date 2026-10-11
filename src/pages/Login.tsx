@@ -7,6 +7,7 @@ import { AuthError } from '../components/AuthError';
 import { adminHint, signInWithGoogle, signOutUser, useAdminAuth } from '../lib/auth';
 import { setEditMode } from '../lib/edit';
 import { Seo } from '../lib/head';
+import { useT } from '../i18n';
 
 function GoogleIcon() {
   return (
@@ -29,6 +30,7 @@ export default function Login() {
   const [busy, setBusy] = useState(false);
   const bg = backgrounds['espresso-shot'];
   const site = useContent().content.profile;
+  const t = useT();
 
   // "Sign in" in the header asks to come back to the same page with edit mode on.
   const wantEdit = params.get('edit') === '1';
@@ -73,32 +75,32 @@ export default function Login() {
               <span className="text-accent">$</span> sudo login
             </p>
             <h1 className="mt-4 font-mono text-4xl font-bold leading-tight sm:text-5xl">
-              Welcome<span className="text-accent">.</span>
+              {t('login.welcome')}<span className="text-accent">.</span>
             </h1>
             <p className="mt-3 text-muted">
-              Portfolio of <span className="text-fg">{site.name}</span> — {site.role}.
+              {t('login.portfolioOf')} <span className="text-fg">{site.name}</span> — {site.role}.
             </p>
 
             <section className="card mt-8 space-y-4" aria-labelledby="guest-title">
               <div>
-                <p className="label">visitor · recruiter</p>
+                <p className="label">{t('login.visitor')}</p>
                 <h2 id="guest-title" className="mt-1 font-mono text-lg font-bold">
-                  View as guest
+                  {t('login.guestTitle')}
                 </h2>
-                <p className="mt-1 text-sm text-muted">No account needed. See the CV, projects and skills — read-only.</p>
+                <p className="mt-1 text-sm text-muted">{t('login.guestText')}</p>
               </div>
               <Link to="/about" className="btn-primary w-full hover:no-underline">
-                Continue as guest →
+                {t('login.continue')}
               </Link>
               <div className="flex flex-wrap gap-2 font-mono text-xs">
                 <Link to="/projects" className="chip text-fg hover:no-underline">
-                  projects
+                  {t('login.projects')}
                 </Link>
                 <Link to="/skills" className="chip text-fg hover:no-underline">
-                  skills
+                  {t('login.skills')}
                 </Link>
                 <Link to="/contact" className="chip text-fg hover:no-underline">
-                  contact
+                  {t('login.contact')}
                 </Link>
                 <a href="/cv.pdf" className="chip text-fg hover:no-underline" download>
                   ↓ cv.pdf
@@ -108,13 +110,13 @@ export default function Login() {
 
             <div className="card mt-4 space-y-5">
               <div>
-                <p className="label">owner</p>
-                <h2 className="mt-1 font-mono text-lg font-bold">Sign in to edit</h2>
+                <p className="label">{t('login.owner')}</p>
+                <h2 className="mt-1 font-mono text-lg font-bold">{t('login.signInTitle')}</h2>
               </div>
               {auth.status === 'unconfigured' ? (
                 <p className="text-sm">Firebase is not configured yet (VITE_FIREBASE_* variables are missing).</p>
               ) : auth.status === 'loading' && knownOwner ? (
-                <p className="font-mono text-sm text-muted">Checking session…</p>
+                <p className="font-mono text-sm text-muted">{t('login.checking')}</p>
               ) : auth.status === 'error' ? (
                 <AuthError message={auth.message} signedIn={Boolean(auth.user)} />
               ) : auth.status === 'denied' ? (
@@ -136,9 +138,9 @@ export default function Login() {
                 <>
                   <button type="button" className="btn-ghost w-full gap-3" onClick={signIn} disabled={busy}>
                     <GoogleIcon />
-                    {busy ? 'Opening Google…' : 'Continue with Google'}
+                    {busy ? t('login.opening') : t('login.google')}
                   </button>
-                  <p className="text-center font-mono text-[11px] uppercase tracking-label text-muted">owner only · no visitor accounts</p>
+                  <p className="text-center font-mono text-[11px] uppercase tracking-label text-muted">{t('login.ownerOnly')}</p>
                 </>
               )}
               {error && (
@@ -148,7 +150,7 @@ export default function Login() {
               )}
             </div>
             <p className="mt-6 font-mono text-xs">
-              <Link to="/">← back to the website</Link>
+              <Link to="/">{t('login.back')}</Link>
             </p>
           </div>
         </div>
