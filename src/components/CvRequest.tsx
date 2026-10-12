@@ -1,16 +1,18 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router';
-import { useT } from '../i18n';
+import { useLocale, useT } from '../i18n';
 import { firebaseConfigured } from '../lib/env';
 import { sendMessage } from '../lib/feed';
 import { recordSend, sendLimitReached } from '../lib/send-limit';
 
 /**
  * The CV (PDF with phone and address) is not public: visitors request it and the owner answers by
- * email. Requests are stored like contact messages (same Firestore rules), marked "[CV request]".
+ * email. Requests are stored like contact messages (same Firestore rules), marked "[CV request · EN]"
+ * (or DE) so the owner knows which PDF to send; the language follows the page and can be changed.
  */
 export function CvRequest({ email }: { email: string }) {
   const t = useT();
+  const locale = useLocale();
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error' | 'limited'>('idle');
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -20,12 +22,13 @@ export function CvRequest({ email }: { email: string }) {
     if (sendLimitReached()) return setStatus('limited');
     const company = String(form.get('company') ?? '').trim().slice(0, 200);
     const note = String(form.get('note') ?? '').trim().slice(0, 4000);
+    const lang = form.get('cvLang') === 'de' ? 'DE' : 'EN';
     setStatus('sending');
     try {
       await sendMessage({
         name: String(form.get('name') ?? '').trim().slice(0, 200),
         email: String(form.get('email') ?? '').trim().slice(0, 200),
-        message: `[CV request]${company ? ` · ${company}` : ''}\n\n${note || '—'}`,
+        message: `[CV request · ${lang}]${company ? ` · ${company}` : ''}\n\n${note || '—'}`,
       });
       recordSend();
       setStatus('sent');
@@ -55,6 +58,14 @@ export function CvRequest({ email }: { email: string }) {
           <input name="name" required maxLength={200} autoComplete="name" placeholder={t('cvreq.name')} aria-label={t('cvreq.name')} className="input" />
           <input name="email" type="email" required maxLength={200} autoComplete="email" placeholder={t('cvreq.email')} aria-label={t('cvreq.email')} className="input" />
           <input name="company" maxLength={200} autoComplete="organization" placeholder={t('cvreq.company')} aria-label={t('cvreq.company')} className="input" />
+          <label className="flex items-center justify-between gap-3 font-mono text-sm text-muted">
+            {t('cvreq.language')}
+            {/* Keyed by language so switching the page language also switches the default. */}
+            <select key={locale} name="cvLang" defaultValue={locale === 'de' ? 'de' : 'en'} className="input w-auto py-2">
+              <option value="en">{t('cvreq.langEn')}</option>
+              <option value="de">{t('cvreq.langDe')}</option>
+            </select>
+          </label>
           <textarea name="note" maxLength={4000} rows={2} placeholder={t('cvreq.note')} aria-label={t('cvreq.note')} className="input" />
           <div className="hidden" aria-hidden="true">
             <input name="website" tabIndex={-1} autoComplete="off" />

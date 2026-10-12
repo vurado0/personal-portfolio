@@ -10,6 +10,7 @@
   "email": "kaitosnezhko@gmail.com",
   "photo": "/images/me.webp",
   "currentFocus": ["Bachelor Thesis", "Japanese language", "C and C++ backend development", "Data structures / Algorithms"],
+  "highlights": ["5 languages", "Erasmus in Spain", "{projects} projects", "Kubernetes & CI/CD"],
   "socials": [
     { "id": "github", "label": "GitHub", "url": "https://github.com/vurado0" },
     { "id": "linkedin", "label": "LinkedIn", "url": "https://www.linkedin.com/in/kaito-snezhko-68a883348" },
