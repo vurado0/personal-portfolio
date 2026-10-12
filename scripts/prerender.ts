@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { loadEnv } from 'vite';
 import { enabledNav, isEnabled, sideForPath, site } from '../src/config/site.ts';
-import type { HeadData } from '../src/types/head.ts';
+import type { HeadData, HeadLanguages } from '../src/types/head.ts';
 import { loadContent } from './lib/content.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -20,7 +20,7 @@ const siteUrl = (
 
 type ServerEntry = {
   render: (url: string) => Promise<{ html: string; head: HeadData }>;
-  headToHtml: (data: HeadData, baseUrl: string) => string;
+  headToHtml: (data: HeadData, baseUrl: string, languages?: HeadLanguages) => string;
 };
 const entryFile = ['entry-server.js', 'entry-server.mjs'].map((f) => path.join(root, 'dist-ssr', f)).find((f) => fs.existsSync(f));
 if (!entryFile) throw new Error('dist-ssr/entry-server.js not found — run `vite build --ssr src/entry-server.tsx --outDir dist-ssr` first');
@@ -36,6 +36,13 @@ const fontPreloads = fs
 const template = fs
   .readFileSync(path.join(dist, 'index.html'), 'utf8')
   .replace('<!--app-head-->', `${fontPreloads}\n    <!--app-head-->`);
+// German / Japanese pages hydrate only after their language chunks loaded: fetch them right away.
+const packPreloads = (locale: string) =>
+  fs
+    .readdirSync(path.join(dist, 'assets'))
+    .filter((f) => new RegExp(`^${locale}-[\\w-]+\\.js$`).test(f))
+    .map((f) => `<link rel="modulepreload" href="/assets/${f}">`)
+    .join('\n    ');
 
 // ---- Routes ---------------------------------------------------------------
 const routes = new Set<string>(['/', '/impressum', '/datenschutz']);
@@ -52,11 +59,25 @@ if (isEnabled('blog')) {
   bundle.articles.forEach((a) => routes.add(a.url));
 }
 
-function page(html: string, head: string, pathname: string): string {
-  return template
-    .replace('<!--app-head-->', head)
+// Every page also exists in German and Japanese (/de/…, /ja/…). Only pages whose texts are translated
+// are offered to search engines in those languages; know-how, project and article pages (English
+// text) and the legal pages point to their English URL as the canonical one.
+const LOCALES = ['en', 'de', 'ja'] as const;
+type Locale = (typeof LOCALES)[number];
+const OG_LOCALE: Record<Locale, string> = { en: 'en_GB', de: 'de_AT', ja: 'ja_JP' };
+const translatedRoutes = new Set(['/', '/blog/articles', ...enabledNav.map((i) => i.path)]);
+const prefixed = (url: string, locale: Locale) => (locale === 'en' ? url : url === '/' ? `/${locale}` : `/${locale}${url}`);
+const alternates = (url: string) => [
+  ...LOCALES.map((l) => ({ hreflang: l, path: prefixed(url, l) })),
+  { hreflang: 'x-default', path: url },
+];
+
+function page(html: string, head: string, pathname: string, locale: Locale = 'en'): string {
+  const out = template
+    .replace('<!--app-head-->', locale === 'en' ? head : `${packPreloads(locale)}\n    ${head}`)
     .replace('<!--app-html-->', html)
     .replace('data-side="portfolio"', `data-side="${sideForPath(pathname)}"`);
+  return locale === 'en' ? out : out.replace('<html lang="en"', `<html lang="${locale}"`);
 }
 
 // SPA fallback for runtime-only routes (/blog/p/:id, /admin, unknown URLs): empty root, generic head.
@@ -64,11 +85,19 @@ fs.writeFileSync(path.join(dist, 'spa.html'), page('', headToHtml({ path: '/' },
 
 let count = 0;
 for (const url of routes) {
-  const { html, head } = await render(url);
-  const file = url === '/' ? path.join(dist, 'index.html') : path.join(dist, `${url.slice(1)}.html`);
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  fs.writeFileSync(file, page(html, headToHtml({ ...head, path: url }, siteUrl), url));
-  count++;
+  const translated = translatedRoutes.has(url);
+  for (const locale of LOCALES) {
+    const target = prefixed(url, locale);
+    const { html, head } = await render(target);
+    const dict = bundle.translations[locale as 'de' | 'ja'] ?? {};
+    const data: HeadData = { ...head, description: head.description ?? dict[site.description] ?? site.description };
+    const canonical = translated ? target : url;
+    const file = target === '/' ? path.join(dist, 'index.html') : path.join(dist, `${target.slice(1)}.html`);
+    fs.mkdirSync(path.dirname(file), { recursive: true });
+    const languages: HeadLanguages = { locale, ogLocale: OG_LOCALE[locale], alternates: translated ? alternates(url) : undefined };
+    fs.writeFileSync(file, page(html, headToHtml({ ...data, path: canonical }, siteUrl, languages), url, locale));
+    count++;
+  }
 }
 const notFound = await render('/__not-found__');
 fs.writeFileSync(path.join(dist, '404.html'), page(notFound.html, headToHtml({ ...notFound.head, path: '/404' }, siteUrl), '/404'));
@@ -77,15 +106,23 @@ fs.writeFileSync(path.join(dist, '404.html'), page(notFound.html, headToHtml({ .
 const lastmod: Record<string, string> = {};
 bundle.knowhow.forEach((d) => (lastmod[d.url] = d.updated));
 bundle.articles.forEach((a) => (lastmod[a.url] = a.date));
+const loc = (u: string) => `${siteUrl}${u === '/' ? '' : u}`;
+const sitemapEntries = [...routes].flatMap((u) => {
+  const date = lastmod[u] ? `<lastmod>${lastmod[u]}</lastmod>` : '';
+  if (!translatedRoutes.has(u)) return [`  <url><loc>${loc(u)}</loc>${date}</url>`];
+  const links = alternates(u)
+    .map((a) => `<xhtml:link rel="alternate" hreflang="${a.hreflang}" href="${loc(a.path)}"/>`)
+    .join('');
+  return LOCALES.map((l) => `  <url><loc>${loc(prefixed(u, l))}</loc>${date}${links}</url>`);
+});
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...routes]
-  .map((u) => `  <url><loc>${siteUrl}${u === '/' ? '' : u}</loc>${lastmod[u] ? `<lastmod>${lastmod[u]}</lastmod>` : ''}</url>`)
-  .join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+${sitemapEntries.join('\n')}
 </urlset>
 `;
 fs.writeFileSync(path.join(dist, 'sitemap.xml'), sitemap);
-fs.writeFileSync(path.join(dist, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /login\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
+const disallow = LOCALES.flatMap((l) => [`Disallow: ${prefixed('/admin', l)}`, `Disallow: ${prefixed('/login', l)}`]).join('\n');
+fs.writeFileSync(path.join(dist, 'robots.txt'), `User-agent: *\nAllow: /\n${disallow}\n\nSitemap: ${siteUrl}/sitemap.xml\n`);
 
 // ---- rss.xml: articles + published feed posts (best effort via Firestore REST) ----
 type RssItem = { title: string; link: string; date: Date; description: string };
@@ -164,4 +201,4 @@ ${items
 `;
 fs.writeFileSync(path.join(dist, 'rss.xml'), rss);
 
-console.log(`prerendered ${count} pages + spa.html, 404.html, sitemap.xml, robots.txt, rss.xml (${items.length} RSS items) for ${siteUrl}`);
+console.log(`prerendered ${count} pages (en, de, ja) + spa.html, 404.html, sitemap.xml, robots.txt, rss.xml (${items.length} RSS items) for ${siteUrl}`);
