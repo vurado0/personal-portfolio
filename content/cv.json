@@ -3,13 +3,13 @@
     "fullName": "Kaito Snezhko",
     "headline": "Software Design & Cloud Computing student",
     "email": "kaito.snezhko@edu.fh-joanneum.at",
-    "phone": "+4367761711671",
+    "phone": "",
     "address": "Graz, Austria",
     "website": "",
     "linkedin": "https://www.linkedin.com/in/kaito-snezhko-68a883348",
     "github": "https://github.com/vurado0",
     "nationality": "Austrian",
-    "dateOfBirth": "2003-11-25",
+    "dateOfBirth": "",
     "drivingLicence": "B, C1",
     "photo": ""
   },
@@ -97,6 +97,5 @@
     },
     { "id": "awards", "type": "list", "title": "Honours and awards", "visible": false, "items": [] },
     { "id": "interests", "type": "list", "title": "Hobbies and interests", "visible": true, "items": [{ "name": "Languages" }, { "name": "Japan and Japanese culture" }] }
-  ],
-  "pdf": "/cv.pdf"
+  ]
 }

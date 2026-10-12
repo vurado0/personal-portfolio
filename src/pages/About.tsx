@@ -1,4 +1,5 @@
 // About / CV — Europass-style CV from content/cv.json. Every part is editable in edit mode.
+import { CvRequest } from '../components/CvRequest';
 import { PageHeader } from '../components/PageHeader';
 import { useContent } from '../lib/content';
 import { AddButton, EditButton, ItemTools, useEdit } from '../lib/edit';
@@ -190,12 +191,7 @@ export default function About() {
               ))}
             </dl>
           </section>
-          {cv.pdf ? (
-            <a href={cv.pdf} className="btn-primary w-full" download>
-              {t('cv.download')}
-            </a>
-          ) : null}
-          <EditButton target={{ kind: 'cv-pdf' }} label="upload CV (PDF)" />
+          <CvRequest email={p.email || profile.email} />
         </aside>
       </div>
     </>

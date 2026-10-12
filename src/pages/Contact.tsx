@@ -6,19 +6,7 @@ import { firebaseConfigured } from '../lib/env';
 import { sendMessage } from '../lib/feed';
 import { Seo } from '../lib/head';
 import { useT } from '../i18n';
-
-const RATE_KEY = 'contact-sent';
-const MAX_PER_HOUR = 3;
-
-/** Simple client-side rate limit: max 3 messages per hour per browser. */
-function recentSends(): number[] {
-  try {
-    const list = JSON.parse(localStorage.getItem(RATE_KEY) ?? '[]') as number[];
-    return list.filter((t) => Date.now() - t < 3_600_000);
-  } catch {
-    return [];
-  }
-}
+import { recordSend, sendLimitReached } from '../lib/send-limit';
 
 export default function Contact() {
   const site = useContent().content.profile;
@@ -33,8 +21,7 @@ export default function Contact() {
       setStatus('sent');
       return;
     }
-    const sends = recentSends();
-    if (sends.length >= MAX_PER_HOUR) {
+    if (sendLimitReached()) {
       setStatus('limited');
       return;
     }
@@ -45,11 +32,7 @@ export default function Contact() {
         email: String(form.get('email') ?? '').trim().slice(0, 200),
         message: String(form.get('message') ?? '').trim().slice(0, 4900),
       });
-      try {
-        localStorage.setItem(RATE_KEY, JSON.stringify([...sends, Date.now()]));
-      } catch {
-        /* ignore */
-      }
+      recordSend();
       setStatus('sent');
       (e.target as HTMLFormElement).reset();
     } catch (err) {

@@ -159,6 +159,16 @@ export const en = {
 
   // about / cv
   'cv.pageLabel': 'about / cv',
+  'cvreq.title': 'request my cv',
+  'cvreq.text': 'The full CV (PDF, incl. phone and address) is sent on request. Leave your details and I\'ll email it to you.',
+  'cvreq.byEmail': 'Request CV by email',
+  'cvreq.sent': '✓ Thanks! I\'ll send you my CV by email.',
+  'cvreq.name': 'Name',
+  'cvreq.email': 'Email',
+  'cvreq.company': 'Company (optional)',
+  'cvreq.note': 'Message (optional)',
+  'cvreq.send': 'Request CV',
+  'login.requestCv': 'request CV',
   'cv.profile': 'profile',
   'cv.personal': 'personal information',
   'cv.email': 'Email',
