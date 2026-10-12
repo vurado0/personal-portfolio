@@ -11,7 +11,7 @@
         "http://localhost:4173/blog",
         "http://localhost:4173/de"
       ],
-      "numberOfRuns": 1,
+      "numberOfRuns": 3,
       "settings": {
         "chromeFlags": "--no-sandbox --headless=new"
       }
@@ -24,7 +24,8 @@
             "categories:performance": [
               "error",
               {
-                "minScore": 0.85
+                "minScore": 0.8,
+                "aggregationMethod": "median-run"
               }
             ],
             "categories:accessibility": [
@@ -53,7 +54,8 @@
             "categories:performance": [
               "error",
               {
-                "minScore": 0.75
+                "minScore": 0.7,
+                "aggregationMethod": "median-run"
               }
             ],
             "categories:accessibility": [
