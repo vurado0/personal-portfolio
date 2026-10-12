@@ -34,11 +34,11 @@ export function Footer() {
             {t('footer.privacy')}
           </Link>
           {isAdmin ? (
-            <button type="button" onClick={logOut} className="text-muted/70 hover:text-accent" title={t('header.logoutTitle')}>
+            <button type="button" onClick={logOut} className="text-muted hover:text-accent" title={t('header.logoutTitle')}>
               {t('footer.logout')}
             </button>
           ) : (
-            <Link to="/login" className="text-muted/70 hover:text-accent" rel="nofollow" {...loginPrefetchProps}>
+            <Link to="/login" className="text-muted hover:text-accent" rel="nofollow" {...loginPrefetchProps}>
               {t('footer.login')}
             </Link>
           )}
