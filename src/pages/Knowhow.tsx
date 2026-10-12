@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { KnowhowRow } from '../components/Cards';
 import { TagChip } from '../components/Chips';
@@ -8,6 +8,20 @@ import { AddButton } from '../lib/edit';
 import { Seo } from '../lib/head';
 import { useT } from '../i18n';
 import type { KnowhowDoc } from '../types/content';
+
+/** The decode effect plays the first time the know-how page is opened in a visit, for the rows shown then. */
+function useDecodeOnce(): (index: number) => { delay: number } | undefined {
+  const [until] = useState(() => {
+    try {
+      if (sessionStorage.getItem('knowhow-decoded')) return 0;
+      sessionStorage.setItem('knowhow-decoded', '1');
+    } catch {
+      return 0;
+    }
+    return performance.now() + 1000;
+  });
+  return (index) => (until && performance.now() < until && index < 12 ? { delay: 120 + index * 45 } : undefined);
+}
 
 function score(doc: KnowhowDoc, terms: string[]): number {
   const title = doc.title.toLowerCase();
@@ -29,6 +43,7 @@ export default function Knowhow() {
   const q = params.get('q') ?? '';
   const tag = params.get('tag');
   const t = useT();
+  const decode = useDecodeOnce();
 
   const update = (next: Record<string, string | null>) => {
     const p = new URLSearchParams(params);
@@ -98,8 +113,8 @@ export default function Knowhow() {
             {t(results.length === 1 ? 'knowhow.result' : 'knowhow.results', { n: results.length })}
           </p>
           <div className="mt-2">
-            {results.map((d) => (
-              <KnowhowRow key={d.url} doc={d} />
+            {results.map((d, i) => (
+              <KnowhowRow key={d.url} doc={d} decode={decode(i)} />
             ))}
           </div>
           <AddButton target={{ kind: 'knowhow', category }} label="New know-how article" className="mt-6" />
