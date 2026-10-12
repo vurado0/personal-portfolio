@@ -31,6 +31,30 @@
   color-scheme: light;
 }
 
+/* Japanese pages: IBM Plex Sans JP for Japanese glyphs. The files are cut to the characters the site
+   uses at build time (scripts/lib/japanese-font.ts; not there in `npm run dev`, which then shows the
+   system font). Only Japanese pages list the family, so other pages never download it. */
+@font-face {
+  font-family: "IBM Plex Sans JP";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-sans-jp-400.woff2") format("woff2");
+  unicode-range: U+2E80-2FDF, U+3000-30FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FF00-FFEF;
+}
+@font-face {
+  font-family: "IBM Plex Sans JP";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/ibm-plex-sans-jp-700.woff2") format("woff2");
+  unicode-range: U+2E80-2FDF, U+3000-30FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FF00-FFEF;
+}
+html[lang="ja"] {
+  --font-mono: "JetBrains Mono", "IBM Plex Sans JP", ui-monospace, SFMono-Regular, Menlo, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", monospace;
+  --font-blog: "Raptor Text", "Inter Tight", "IBM Plex Sans JP", system-ui, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+}
+
 [data-theme="dark"] {
   /* Dark ("espresso") — default for the portfolio side */
   --bg: var(--espresso);

@@ -7,6 +7,7 @@ import { loadEnv } from 'vite';
 import { enabledNav, isEnabled, sideForPath, site } from '../src/config/site.ts';
 import type { HeadData, HeadLanguages } from '../src/types/head.ts';
 import { loadContent } from './lib/content.ts';
+import { japaneseFontFiles, writeJapaneseFont } from './lib/japanese-font.ts';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -37,12 +38,15 @@ const template = fs
   .readFileSync(path.join(dist, 'index.html'), 'utf8')
   .replace('<!--app-head-->', `${fontPreloads}\n    <!--app-head-->`);
 // German / Japanese pages hydrate only after their language chunks loaded: fetch them right away.
+// Japanese pages also preload their font (written by writeJapaneseFont below).
 const packPreloads = (locale: string) =>
-  fs
-    .readdirSync(path.join(dist, 'assets'))
-    .filter((f) => new RegExp(`^${locale}-[\\w-]+\\.js$`).test(f))
-    .map((f) => `<link rel="modulepreload" href="/assets/${f}">`)
-    .join('\n    ');
+  [
+    ...fs
+      .readdirSync(path.join(dist, 'assets'))
+      .filter((f) => new RegExp(`^${locale}-[\\w-]+\\.js$`).test(f))
+      .map((f) => `<link rel="modulepreload" href="/assets/${f}">`),
+    ...(locale === 'ja' ? japaneseFontFiles.map((f) => `<link rel="preload" href="${f}" as="font" type="font/woff2" crossorigin>`) : []),
+  ].join('\n    ');
 
 // ---- Routes ---------------------------------------------------------------
 const routes = new Set<string>(['/', '/impressum', '/datenschutz']);
@@ -101,6 +105,8 @@ for (const url of routes) {
 }
 const notFound = await render('/__not-found__');
 fs.writeFileSync(path.join(dist, '404.html'), page(notFound.html, headToHtml({ ...notFound.head, path: '/404' }, siteUrl), '/404'));
+
+const jaFont = await writeJapaneseFont(root, dist);
 
 // ---- sitemap.xml / robots.txt --------------------------------------------
 const lastmod: Record<string, string> = {};
@@ -201,4 +207,5 @@ ${items
 `;
 fs.writeFileSync(path.join(dist, 'rss.xml'), rss);
 
+console.log(`Japanese font: ${jaFont.chars} characters, ${Math.round(jaFont.bytes / 1024)} kB`);
 console.log(`prerendered ${count} pages (en, de, ja) + spa.html, 404.html, sitemap.xml, robots.txt, rss.xml (${items.length} RSS items) for ${siteUrl}`);
