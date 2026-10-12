@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { KnowhowRow } from '../components/Cards';
 import { TagChip } from '../components/Chips';
@@ -6,22 +6,9 @@ import { PageHeader } from '../components/PageHeader';
 import { categoryLabel, useContent } from '../lib/content';
 import { AddButton } from '../lib/edit';
 import { Seo } from '../lib/head';
+import { firstVisit, usePageDecode } from '../lib/decode';
 import { useT } from '../i18n';
 import type { KnowhowDoc } from '../types/content';
-
-/** The decode effect plays the first time the know-how page is opened in a visit, for the rows shown then. */
-function useDecodeOnce(): (index: number) => { delay: number } | undefined {
-  const [until] = useState(() => {
-    try {
-      if (sessionStorage.getItem('knowhow-decoded')) return 0;
-      sessionStorage.setItem('knowhow-decoded', '1');
-    } catch {
-      return 0;
-    }
-    return performance.now() + 1000;
-  });
-  return (index) => (until && performance.now() < until && index < 12 ? { delay: 120 + index * 45 } : undefined);
-}
 
 function score(doc: KnowhowDoc, terms: string[]): number {
   const title = doc.title.toLowerCase();
@@ -43,7 +30,10 @@ export default function Knowhow() {
   const q = params.get('q') ?? '';
   const tag = params.get('tag');
   const t = useT();
-  const decode = useDecodeOnce();
+  // The whole page appears in a terminal "decode" style the first time it is opened in a visit.
+  const anchor = useRef<HTMLDivElement>(null);
+  const [decode] = useState(() => firstVisit('knowhow-decoded'));
+  usePageDecode(anchor, decode);
 
   const update = (next: Record<string, string | null>) => {
     const p = new URLSearchParams(params);
@@ -68,7 +58,7 @@ export default function Knowhow() {
       <PageHeader pageId={category ? undefined : 'knowhow'} label={t('knowhow.crumb')} title={category ? `${categoryLabel(category)}` : 'Knowledge base'}>
         Guides, cheat sheets and setups I keep coming back to.
       </PageHeader>
-      <div className="container-page grid gap-10 pt-8 lg:grid-cols-[13rem_1fr]">
+      <div ref={anchor} className="container-page grid gap-10 pt-8 lg:grid-cols-[13rem_1fr]">
         <aside className="font-mono text-sm lg:sticky lg:top-24 lg:self-start">
           <p className="section-title mb-3">{t('knowhow.categories')}</p>
           <ul className="flex flex-wrap gap-x-4 gap-y-1 lg:block lg:space-y-1">
@@ -113,8 +103,8 @@ export default function Knowhow() {
             {t(results.length === 1 ? 'knowhow.result' : 'knowhow.results', { n: results.length })}
           </p>
           <div className="mt-2">
-            {results.map((d, i) => (
-              <KnowhowRow key={d.url} doc={d} decode={decode(i)} />
+            {results.map((d) => (
+              <KnowhowRow key={d.url} doc={d} />
             ))}
           </div>
           <AddButton target={{ kind: 'knowhow', category }} label="New know-how article" className="mt-6" />

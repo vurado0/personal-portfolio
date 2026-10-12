@@ -5,7 +5,6 @@ import { formatDate } from '../lib/format';
 import { useLocale, useT } from '../i18n';
 import type { ArticleDoc, KnowhowDoc, ProjectDoc } from '../types/content';
 import { SkillChips } from './Chips';
-import { DecodeText } from './DecodeText';
 
 const statusStyle: Record<ProjectDoc['status'], string> = {
   idea: 'border-line text-muted',
@@ -46,20 +45,17 @@ export function ProjectCard({ project }: { project: ProjectDoc }) {
   );
 }
 
-/** `decode` plays the terminal decode effect on the category and title (know-how page, first visit). */
-export function KnowhowRow({ doc, decode }: { doc: KnowhowDoc; decode?: { delay: number } }) {
+export function KnowhowRow({ doc }: { doc: KnowhowDoc }) {
   const t = useT();
   const locale = useLocale();
   return (
     <article className="reveal group relative grid gap-1 border-b border-line/50 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
       <ItemTools target={{ kind: 'knowhow', path: `content/knowhow/${doc.category}/${doc.slug}.md` }} label={doc.title} />
-      <p className="label pt-1">
-        <DecodeText text={categoryLabel(doc.category)} play={Boolean(decode)} delay={decode?.delay} />
-      </p>
+      <p className="label pt-1">{categoryLabel(doc.category)}</p>
       <div>
         <h3 className="font-mono font-bold">
           <Link to={doc.url} className="text-fg after:absolute after:inset-0 hover:text-accent hover:no-underline">
-            <DecodeText text={doc.title} play={Boolean(decode)} delay={decode?.delay} />
+            {doc.title}
           </Link>
         </h3>
         <p className="mt-1 text-sm text-muted">{doc.summary}</p>
