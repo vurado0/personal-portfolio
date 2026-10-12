@@ -124,6 +124,8 @@ export type Profile = {
   description: string;
   location: string;
   email: string;
+  /** Postal address for Impressum and Datenschutz (one line per line of the address) */
+  legalAddress?: string;
   /** Portrait on the home page (file in public/ or URL) */
   photo?: string;
   currentFocus: string[];

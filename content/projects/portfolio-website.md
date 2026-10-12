@@ -35,4 +35,9 @@ I wanted one place for my CV, my IT notes and a personal feed — without paying
 
 ## Lessons learned
 
-TBE
+- **Content as files beats a CMS for a portfolio.** Markdown and JSON in Git give me versioning, reviews and free hosting. Editing in the browser still works, because every change is just a commit through the GitHub API.
+- **Prerendering matters.** Rendering every page to static HTML at build time made the site fast and readable for search engines. It also forced me to keep server and client output identical, so no `localStorage` during render.
+- **Security rules are part of the code.** Firestore rules, a server-side admin check (`ADMIN_UID`) and signed Cloudinary uploads mean the UI can be wrong without anything leaking.
+- **Measure before optimising.** The slow edit mode wasn't React; it was steps running one after another (code, login, database, GitHub). Running them in parallel and caching made it feel instant.
+- **Privacy by design is easy at the start.** No trackers, self-hosted fonts, click-to-load embeds and EXIF removal were simple to build in from day one; adding them later would have been much harder.
+- **Small details make it feel professional.** Three languages, calm animations and a working mobile layout took longer than the core features, but they're what visitors notice first.

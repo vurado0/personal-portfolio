@@ -70,6 +70,13 @@ export function ProfileEditor({ onDone }: { onDone?: () => void } = {}) {
         <TextField label="email" type="email" required value={p.email} onChange={(email) => set({ email })} />
         <TextField label="photo (home page)" value={p.photo ?? ''} onChange={(photo) => set({ photo: photo || undefined })} placeholder="/images/me.webp or https://…" />
       </div>
+      <TextArea
+        label="postal address (Impressum, Datenschutz)"
+        value={p.legalAddress ?? ''}
+        onChange={(legalAddress) => set({ legalAddress: legalAddress || undefined })}
+        rows={2}
+        hint="Required by Austrian law for the Impressum. One line per address line."
+      />
       <TextField label="tagline" value={p.tagline} onChange={(tagline) => set({ tagline })} hint="One line on the home page." />
       <TextArea label="description" value={p.description} onChange={(description) => set({ description })} rows={2} hint="Used for search engines and link previews." />
       <LinesField label="current focus (one per line)" value={p.currentFocus} onChange={(currentFocus) => set({ currentFocus })} rows={4} />

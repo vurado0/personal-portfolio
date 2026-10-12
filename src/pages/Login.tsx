@@ -102,9 +102,9 @@ export default function Login() {
                 <Link to="/contact" className="chip text-fg hover:no-underline">
                   {t('login.contact')}
                 </Link>
-                <a href="/cv.pdf" className="chip text-fg hover:no-underline" download>
-                  ↓ cv.pdf
-                </a>
+                <Link to="/about#cv-request" className="chip text-fg hover:no-underline">
+                  {t('login.requestCv')}
+                </Link>
               </div>
             </section>
 

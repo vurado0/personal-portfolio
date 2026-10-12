@@ -12,7 +12,21 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-// TODO(legal): replace every placeholder in [brackets] with your real details before going live.
+/** The postal address from content/profile.json, one line per line. */
+function Address({ text }: { text?: string }) {
+  const lines = (text ?? '').split('\n').filter(Boolean);
+  return (
+    <>
+      {lines.map((l, i) => (
+        <span key={i}>
+          <br />
+          {l}
+        </span>
+      ))}
+    </>
+  );
+}
+
 export function Impressum() {
   const site = useContent().content.profile;
   return (
@@ -25,10 +39,7 @@ export function Impressum() {
         <Section title="Medieninhaber & Herausgeber">
           <p>
             {site.name}
-            <br />
-            [Straße Hausnummer]
-            <br />
-            [PLZ] {site.location.split(',')[0]}, Österreich
+            <Address text={site.legalAddress} />
           </p>
           <p>
             E-Mail: <a href={`mailto:${site.email}`}>{site.email}</a>
@@ -62,7 +73,7 @@ export function Datenschutz() {
       <div className="container-page max-w-3xl space-y-8 pt-10">
         <Section title="Verantwortlicher">
           <p>
-            {site.name}, [Adresse], E-Mail: <a href={`mailto:${site.email}`}>{site.email}</a>
+            {site.name}, {(site.legalAddress ?? '').split('\n').filter(Boolean).join(', ')}, E-Mail: <a href={`mailto:${site.email}`}>{site.email}</a>
           </p>
         </Section>
         <Section title="Keine Tracking-Cookies">
@@ -101,7 +112,7 @@ export function Datenschutz() {
         </Section>
         <Section title="Kontaktformular">
           <p>
-            Wenn Sie das Kontaktformular nutzen, werden Name, E-Mail-Adresse und Nachricht in Cloud Firestore gespeichert, um Ihre Anfrage zu beantworten
+            Wenn Sie das Kontaktformular nutzen oder den Lebenslauf anfordern, werden Name, E-Mail-Adresse, optional Firma und Nachricht in Cloud Firestore gespeichert, um Ihre Anfrage zu beantworten
             (Art. 6 Abs. 1 lit. b bzw. f DSGVO). Die Daten werden gelöscht, sobald die Anfrage erledigt ist.
           </p>
         </Section>
