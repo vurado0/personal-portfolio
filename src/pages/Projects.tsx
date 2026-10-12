@@ -31,7 +31,7 @@ export function Projects() {
           {text.intro ? <p className="mt-4 max-w-xl whitespace-pre-line text-muted">{text.intro}</p> : null}
         </div>
       </header>
-      <div className="container-page mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      <div className="stagger container-page mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {content.projects.map((p) => (
           <ProjectCard key={p.slug} project={p} />
         ))}

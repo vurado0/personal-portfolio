@@ -35,7 +35,7 @@ export default function Certificates() {
               <h2 id={`c-${status}`} className="section-title">
                 {statusLabel(status)}
               </h2>
-              <div className="mt-4 grid gap-4 md:grid-cols-2">
+              <div className="stagger mt-4 grid gap-4 md:grid-cols-2">
                 {list.map((c) => (
                   <article key={c.id} className="card group relative flex flex-col gap-2">
                     <ItemTools target={{ kind: 'certificate', id: c.id }} label={c.title} />

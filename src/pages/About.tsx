@@ -29,7 +29,7 @@ function SectionBody({ section }: { section: CvSection }) {
       return (
         <ol className="mt-6 border-l border-line/70">
           {section.items.map((e, i) => (
-            <li key={`${e.title}-${i}`} className="group relative pb-8 pl-6 pr-24">
+            <li key={`${e.title}-${i}`} className="reveal group relative pb-8 pl-6 pr-24">
               <span className="absolute -left-[5px] top-2 h-2.5 w-2.5 rounded-full bg-accent" aria-hidden="true" />
               <ItemTools target={entry(i)} label={e.title} className="top-0" />
               <p className="font-mono text-xs text-muted">

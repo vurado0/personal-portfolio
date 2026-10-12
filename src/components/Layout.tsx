@@ -9,7 +9,8 @@ export function Layout() {
   useSideTheme();
   const { pathname, hash } = useLocation();
   useEffect(() => {
-    if (!hash) window.scrollTo(0, 0);
+    // Jump (not smooth-scroll) to the top on a new page; in-page anchors still scroll smoothly.
+    if (!hash) window.scrollTo({ top: 0, behavior: 'instant' });
   }, [pathname, hash]);
 
   return (
@@ -17,7 +18,10 @@ export function Layout() {
       <div className="flex min-h-screen flex-col">
         <Header />
         <main id="main" className="flex-1">
-          <Outlet />
+          {/* Keyed by path so the staggered entrance (see .page-enter in index.css) replays on every page. */}
+          <div key={pathname} className="page-enter">
+            <Outlet />
+          </div>
         </main>
         <Footer />
       </div>

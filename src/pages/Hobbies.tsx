@@ -29,7 +29,7 @@ export default function Hobbies() {
       </Background>
       <div className="container-page grid gap-0 pt-6">
         {content.hobbies.map((h) => (
-          <article key={h.id} className="group relative grid gap-6 border-t border-ink/20 py-10 dark:border-cream/15 md:grid-cols-[1fr_1.2fr]">
+          <article key={h.id} className="reveal group relative grid gap-6 border-t border-ink/20 py-10 dark:border-cream/15 md:grid-cols-[1fr_1.2fr]">
             <ItemTools target={{ kind: 'hobby', id: h.id }} label={h.title} />
             <div>
               <h2 className="blog-headline text-4xl sm:text-5xl">{h.title}</h2>

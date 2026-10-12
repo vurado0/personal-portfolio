@@ -42,7 +42,7 @@ export function LanguageSwitcher() {
         <ul
           role="listbox"
           aria-label={t('lang.button')}
-          className="absolute right-0 top-full z-50 mt-2 min-w-[9.5rem] overflow-hidden rounded-md border border-line bg-bg py-1 font-mono text-sm shadow-warm"
+          className="menu-enter absolute right-0 top-full z-50 mt-2 min-w-[9.5rem] overflow-hidden rounded-md border border-line bg-bg py-1 font-mono text-sm shadow-warm"
         >
           {LOCALES.map((l) => (
             <li key={l.id} role="option" aria-selected={l.id === locale} lang={l.id}>

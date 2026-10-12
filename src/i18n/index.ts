@@ -3,6 +3,8 @@
 // prerendered HTML and the first client render match). German and Japanese (interface strings plus
 // the content dictionary) are separate chunks, loaded only when that language is picked.
 import { useCallback, useSyncExternalStore } from 'react';
+import { flushSync } from 'react-dom';
+import { withViewTransition } from '../lib/view-transition';
 import { en, type MessageKey } from './en';
 
 export type { MessageKey };
@@ -40,13 +42,22 @@ let wanted: Locale | null = null;
 const listeners = new Set<() => void>();
 const notify = () => listeners.forEach((fn) => fn());
 
-function activate(locale: Locale) {
+/** Switches the visible language; `fade` cross-fades it (a click), the initial restore does not. */
+function show(locale: Locale, fade: boolean) {
+  const swap = () => {
+    active = locale;
+    notify();
+  };
+  if (fade) withViewTransition(() => flushSync(swap));
+  else swap();
+}
+
+function activate(locale: Locale, fade = false) {
   wanted = locale;
   loadPack(locale).then(
     () => {
       if (wanted !== locale) return;
-      active = locale;
-      notify();
+      show(locale, fade);
     },
     () => {
       /* offline or blocked chunk: stay in English */
@@ -76,9 +87,9 @@ export function setLocale(next: Locale) {
   }
   document.documentElement.lang = next;
   if (next === 'en') {
-    wanted = active = 'en';
-    notify();
-  } else activate(next);
+    wanted = 'en';
+    show('en', true);
+  } else activate(next, true);
 }
 
 /** Warm the pack on hover so switching feels instant. */
