@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router';
 import { KnowhowRow } from '../components/Cards';
 import { TagChip } from '../components/Chips';
@@ -6,6 +6,7 @@ import { PageHeader } from '../components/PageHeader';
 import { categoryLabel, useContent } from '../lib/content';
 import { AddButton } from '../lib/edit';
 import { Seo } from '../lib/head';
+import { firstVisit, usePageDecode } from '../lib/decode';
 import { useT } from '../i18n';
 import type { KnowhowDoc } from '../types/content';
 
@@ -29,6 +30,10 @@ export default function Knowhow() {
   const q = params.get('q') ?? '';
   const tag = params.get('tag');
   const t = useT();
+  // The whole page appears in a terminal "decode" style the first time it is opened in a visit.
+  const anchor = useRef<HTMLDivElement>(null);
+  const [decode] = useState(() => firstVisit('knowhow-decoded'));
+  usePageDecode(anchor, decode);
 
   const update = (next: Record<string, string | null>) => {
     const p = new URLSearchParams(params);
@@ -53,7 +58,7 @@ export default function Knowhow() {
       <PageHeader pageId={category ? undefined : 'knowhow'} label={t('knowhow.crumb')} title={category ? `${categoryLabel(category)}` : 'Knowledge base'}>
         Guides, cheat sheets and setups I keep coming back to.
       </PageHeader>
-      <div className="container-page grid gap-10 pt-8 lg:grid-cols-[13rem_1fr]">
+      <div ref={anchor} className="container-page grid gap-10 pt-8 lg:grid-cols-[13rem_1fr]">
         <aside className="font-mono text-sm lg:sticky lg:top-24 lg:self-start">
           <p className="section-title mb-3">{t('knowhow.categories')}</p>
           <ul className="flex flex-wrap gap-x-4 gap-y-1 lg:block lg:space-y-1">

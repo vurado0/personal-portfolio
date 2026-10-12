@@ -140,7 +140,7 @@ export default function Home() {
               {t('home.allProjects')}
             </Link>
           </div>
-          <div className="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="stagger mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {featured.map((p) => (
               <ProjectCard key={p.slug} project={p} />
             ))}

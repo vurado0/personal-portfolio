@@ -125,7 +125,7 @@ export function Header() {
       </div>
 
       {open && (
-        <nav id="mobile-nav" aria-label="Main" className="border-t border-line/60 bg-bg font-mono xl:hidden">
+        <nav id="mobile-nav" aria-label="Main" className="menu-enter border-t border-line/60 bg-bg font-mono xl:hidden">
           <div className="container-page grid gap-1 py-3 sm:grid-cols-2">
             <p className="label col-span-full px-2.5 pt-1">{t('nav.portfolio')}</p>
             {portfolio.map((i) => (

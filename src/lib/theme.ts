@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
 import { useLocation } from 'react-router';
 import { sideForPath } from '../config/site';
+import { withViewTransition } from './view-transition';
 
 export type Theme = 'light' | 'dark';
 
@@ -48,7 +49,7 @@ export function useTheme() {
     } catch {
       /* private mode: theme still switches for this visit */
     }
-    apply(next);
+    withViewTransition(() => apply(next));
   }, []);
   return { theme, toggle };
 }

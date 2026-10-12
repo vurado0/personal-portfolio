@@ -203,8 +203,8 @@ function Drawer({ target, onClose, onPublished }: { target: EditTarget; onClose:
   }, [onClose]);
   return (
     <div className="fixed inset-0 z-[60] flex justify-end" role="dialog" aria-modal="true" aria-label="Edit">
-      <button type="button" className="absolute inset-0 bg-espresso/60 backdrop-blur-[2px]" onClick={onClose} aria-label="Close editor" tabIndex={-1} />
-      <div ref={panel} className="relative h-full w-full overflow-y-auto border-l border-line bg-bg px-4 pb-28 pt-4 font-mono text-[15px] shadow-warm sm:w-[36rem] sm:px-6">
+      <button type="button" className="backdrop-enter absolute inset-0 bg-espresso/60 backdrop-blur-[2px]" onClick={onClose} aria-label="Close editor" tabIndex={-1} />
+      <div ref={panel} className="drawer-enter relative h-full w-full overflow-y-auto border-l border-line bg-bg px-4 pb-28 pt-4 font-mono text-[15px] shadow-warm sm:w-[36rem] sm:px-6">
         <div className="mb-4 flex items-center justify-between">
           <p className="section-title">edit</p>
           <button type="button" className="chip min-h-9" onClick={onClose} aria-label="Close">

@@ -29,7 +29,7 @@ export function PostCard({ post, detail = false }: { post: Post; detail?: boolea
   const locale = useLocale();
   const label = useTypeLabel();
   return (
-    <article className="group relative grid gap-x-8 gap-y-3 border-t border-ink/20 py-8 dark:border-cream/15 md:grid-cols-[9rem_1fr]">
+    <article className="reveal group relative grid gap-x-8 gap-y-3 border-t border-ink/20 py-8 dark:border-cream/15 md:grid-cols-[9rem_1fr]">
       <ItemTools target={{ kind: 'post', id: post.id }} label={post.music?.title || post.text.slice(0, 40) || 'post'} />
       <dl className="meta-grid content-start md:grid-cols-[3.5rem_1fr]">
         <dt>{t('meta.type')}</dt>

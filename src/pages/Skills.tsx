@@ -39,7 +39,7 @@ function SkillCard({ skill, postCount, highlight }: { skill: Skill; postCount: n
     ] as const
   ).filter(([, n]) => n > 0);
   return (
-    <article id={`skill-${skill.id}`} className={`card group relative flex scroll-mt-24 flex-col gap-3 transition-shadow ${highlight ? 'border-accent ring-2 ring-accent/40' : ''}`}>
+    <article id={`skill-${skill.id}`} className={`reveal card group relative flex scroll-mt-24 flex-col gap-3 transition-shadow ${highlight ? 'border-accent ring-2 ring-accent/40' : ''}`}>
       <ItemTools target={{ kind: 'skill', id: skill.id }} label={skill.name} />
       <div className="flex items-start justify-between gap-3">
         <h3 className="font-mono font-bold">{skill.name}</h3>

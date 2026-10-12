@@ -20,7 +20,7 @@ export function StatusBadge({ status }: { status: ProjectDoc['status'] }) {
 export function ProjectCard({ project }: { project: ProjectDoc }) {
   const t = useT();
   return (
-    <article className="card group relative flex flex-col gap-3 transition-colors hover:border-accent/70">
+    <article className="card group relative flex flex-col gap-3 transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-accent/70">
       <ItemTools target={{ kind: 'project', slug: project.slug }} label={project.title} />
       {project.cover ? (
         <img src={project.cover} alt="" loading="lazy" className="-mx-5 -mt-5 mb-1 aspect-[16/9] w-[calc(100%+2.5rem)] max-w-none rounded-t-lg object-cover" />
@@ -49,7 +49,7 @@ export function KnowhowRow({ doc }: { doc: KnowhowDoc }) {
   const t = useT();
   const locale = useLocale();
   return (
-    <article className="group relative grid gap-1 border-b border-line/50 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
+    <article className="reveal group relative grid gap-1 border-b border-line/50 py-4 sm:grid-cols-[8rem_1fr] sm:gap-4">
       <ItemTools target={{ kind: 'knowhow', path: `content/knowhow/${doc.category}/${doc.slug}.md` }} label={doc.title} />
       <p className="label pt-1">{categoryLabel(doc.category)}</p>
       <div>
@@ -71,7 +71,7 @@ export function ArticleRow({ article }: { article: ArticleDoc }) {
   const t = useT();
   const locale = useLocale();
   return (
-    <article className="group relative grid gap-x-8 gap-y-2 border-t border-ink/20 py-8 dark:border-cream/15 md:grid-cols-[9rem_1fr]">
+    <article className="reveal group relative grid gap-x-8 gap-y-2 border-t border-ink/20 py-8 dark:border-cream/15 md:grid-cols-[9rem_1fr]">
       <ItemTools target={{ kind: 'article', path: `content/blog/${article.date}-${article.slug}.md` }} label={article.title} />
       <dl className="meta-grid content-start md:grid-cols-[3.5rem_1fr]">
         <dt>{t('meta.date')}</dt>
