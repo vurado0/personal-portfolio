@@ -4,6 +4,7 @@ import { EditRoot } from '../lib/edit';
 import { useSideTheme } from '../lib/theme';
 import { Footer } from './Footer';
 import { Header } from './Header';
+import { SearchRoot } from './Search';
 
 export function Layout() {
   useSideTheme();
@@ -25,6 +26,7 @@ export function Layout() {
         </main>
         <Footer />
       </div>
+      <SearchRoot />
     </EditRoot>
   );
 }

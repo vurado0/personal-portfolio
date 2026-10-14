@@ -7,6 +7,7 @@ import { useT } from '../i18n';
 import { adminHint, logOut } from '../lib/auth';
 import { loginPrefetchProps } from '../lib/prefetch';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { SearchButton, SearchMenuItem } from './Search';
 import { ThemeToggle } from './ThemeToggle';
 
 function Item({ item, onClick }: { item: NavItem; onClick?: () => void }) {
@@ -103,10 +104,13 @@ export function Header() {
             </Link>
           ) : null}
           {isAdmin ? (
-            <button type="button" onClick={logOut} className="chip hidden min-h-11 whitespace-nowrap px-3 text-fg hover:border-accent sm:inline-flex" title={t('header.logoutTitle')}>
-              {t('header.logout')}
+            <button type="button" onClick={logOut} className="chip hidden min-h-11 min-w-11 justify-center whitespace-nowrap px-3 text-fg hover:border-accent sm:inline-flex" title={t('header.logoutTitle')} aria-label={t('header.logout')}>
+              <span className="xl:hidden 2xl:inline" aria-hidden="true">{t('header.logout')}</span>
+              <span className="hidden xl:inline 2xl:hidden" aria-hidden="true">⏻</span>
             </button>
           ) : null}
+          {/* The owner's extra buttons leave no room next to the full menu on 1280–1535 px; ⌘K still works there. */}
+          <SearchButton className={isAdmin ? 'xl:hidden 2xl:inline-flex' : ''} />
           <LanguageSwitcher />
           <ThemeToggle />
           <button
@@ -127,6 +131,7 @@ export function Header() {
       {open && (
         <nav id="mobile-nav" aria-label="Main" className="menu-enter border-t border-line/60 bg-bg font-mono xl:hidden">
           <div className="container-page grid gap-1 py-3 sm:grid-cols-2">
+            <SearchMenuItem onOpen={() => setOpen(false)} />
             <p className="label col-span-full px-2.5 pt-1">{t('nav.portfolio')}</p>
             {portfolio.map((i) => (
               <Item key={i.id} item={i} onClick={() => setOpen(false)} />

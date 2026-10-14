@@ -221,6 +221,8 @@
 .menu-enter { animation: pop-in 160ms var(--ease-out-soft) both; transform-origin: top right; }
 .drawer-enter { animation: slide-in-right 260ms var(--ease-out-soft) both; }
 .backdrop-enter { animation: fade-in 200ms ease-out both; }
+.search-dialog[open] { animation: pop-in 160ms var(--ease-out-soft) both; }
+.search-dialog::backdrop { background: rgb(0 0 0 / 0.55); animation: fade-in 160ms ease-out both; }
 
 /* Theme and language switches cross-fade (View Transitions where supported). */
 ::view-transition-old(root),

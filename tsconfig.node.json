@@ -17,5 +17,5 @@
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts", "tailwind.config.ts", "scripts", "src/config", "src/types"]
+  "include": ["vite.config.ts", "tailwind.config.ts", "playwright.config.ts", "scripts", "tests", "src/config", "src/types"]
 }

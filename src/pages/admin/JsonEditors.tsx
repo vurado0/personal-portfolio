@@ -80,6 +80,13 @@ export function ProfileEditor({ onDone }: { onDone?: () => void } = {}) {
       <TextField label="tagline" value={p.tagline} onChange={(tagline) => set({ tagline })} hint="One line on the home page." />
       <TextArea label="description" value={p.description} onChange={(description) => set({ description })} rows={2} hint="Used for search engines and link previews." />
       <LinesField label="current focus (one per line)" value={p.currentFocus} onChange={(currentFocus) => set({ currentFocus })} rows={4} />
+      <LinesField
+        label="highlights (one per line)"
+        value={p.highlights ?? []}
+        onChange={(highlights) => set({ highlights: highlights.length ? highlights : undefined })}
+        rows={4}
+        hint="Short facts under the tagline on the home page. {projects} becomes the number of projects."
+      />
       <Field label="links (header, footer, contact)">
         <RowsEditor
           items={p.socials}
