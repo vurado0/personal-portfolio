@@ -57,7 +57,7 @@ export default function Home() {
   const { content } = useContent();
   const site = content.profile;
   const t = useT();
-  const featured = content.projects.filter((p) => p.featured).slice(0, 3);
+  const featured = content.projects.filter((p) => p.featured).slice(0, 6);
   const espresso = backgrounds['espresso-shot'];
   return (
     <>
