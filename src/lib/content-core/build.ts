@@ -286,7 +286,20 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
       readingMinutes: readingMinutes(md.text),
     });
   }
-  projects.sort((a, b) => Number(b.featured) - Number(a.featured) || b.period.localeCompare(a.period));
+  // Order: content/project-order.json (set by drag and drop in edit mode) first, in that order;
+  // projects not listed there follow, featured first, then newest.
+  const orderFile = 'content/project-order.json';
+  const order = orderFile in files ? readJson<unknown>(files, orderFile, issues, []) : [];
+  const rank = new Map<string, number>();
+  if (!Array.isArray(order) || order.some((s) => typeof s !== 'string')) issues.push({ level: 'error', file: orderFile, message: 'must be a list of project slugs' });
+  else order.forEach((s: string, i) => rank.set(s, i));
+  for (const s of rank.keys())
+    if (!projects.some((p) => p.slug === s)) issues.push({ level: 'warn', file: orderFile, message: `unknown project "${s}" (ignored)` });
+  const unranked = rank.size;
+  projects.sort(
+    (a, b) =>
+      (rank.get(a.slug) ?? unranked) - (rank.get(b.slug) ?? unranked) || Number(b.featured) - Number(a.featured) || b.period.localeCompare(a.period),
+  );
 
   // ---- Blog articles ------------------------------------------------------
   const articles: ArticleDoc[] = [];

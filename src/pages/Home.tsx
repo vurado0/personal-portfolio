@@ -6,6 +6,7 @@ import { PostTile } from '../components/feed/PostCard';
 import { isEnabled } from '../config/site';
 import { useContent } from '../lib/content';
 import { AddButton, EditButton, useEdit } from '../lib/edit';
+import { SortableList } from '../components/Sortable';
 import { usePublishedPosts } from '../lib/feed';
 import { Seo } from '../lib/head';
 import { useT } from '../i18n';
@@ -58,6 +59,10 @@ export default function Home() {
   const site = content.profile;
   const t = useT();
   const featured = content.projects.filter((p) => p.featured).slice(0, 6);
+  // Edit mode: the featured cards can be dragged into the order they should have here.
+  const edit = useEdit();
+  const featuredIds = featured.map((p) => p.slug);
+  const bySlug = new Map(featured.map((p) => [p.slug, p]));
   const espresso = backgrounds['espresso-shot'];
   return (
     <>
@@ -154,11 +159,13 @@ export default function Home() {
               {t('home.allProjects')}
             </Link>
           </div>
-          <div className="stagger mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {featured.map((p) => (
-              <ProjectCard key={p.slug} project={p} />
-            ))}
-          </div>
+          <SortableList
+            className="stagger mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+            ids={featuredIds}
+            onReorder={(next) => edit?.reorderProjects?.(featuredIds, next)}
+            label={(id) => bySlug.get(id)!.title}
+            renderItem={(id) => <ProjectCard key={id} project={bySlug.get(id)!} among={featuredIds} />}
+          />
         </section>
       )}
 
