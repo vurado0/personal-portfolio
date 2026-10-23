@@ -17,11 +17,12 @@ export function StatusBadge({ status }: { status: ProjectDoc['status'] }) {
   return <span className={`chip ${statusStyle[status]}`}>{t(status === 'in progress' ? 'status.inProgress' : status === 'done' ? 'status.done' : 'status.idea')}</span>;
 }
 
-export function ProjectCard({ project }: { project: ProjectDoc }) {
+/** `among`: slugs of the list the card is shown in (lets edit mode move it within that list). */
+export function ProjectCard({ project, among }: { project: ProjectDoc; among?: string[] }) {
   const t = useT();
   return (
     <article className="card group relative flex flex-col gap-3 transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-accent/70">
-      <ItemTools target={{ kind: 'project', slug: project.slug }} label={project.title} />
+      <ItemTools target={{ kind: 'project', slug: project.slug, among }} label={project.title} />
       {project.cover ? (
         <img src={project.cover} alt="" loading="lazy" className="-mx-5 -mt-5 mb-1 aspect-[16/9] w-[calc(100%+2.5rem)] max-w-none rounded-t-lg object-cover" />
       ) : null}

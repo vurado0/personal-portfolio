@@ -4,7 +4,8 @@ import { ProjectCard, StatusBadge } from '../components/Cards';
 import { SkillChips } from '../components/Chips';
 import { Markdown } from '../components/Markdown';
 import { useContent, usePageText } from '../lib/content';
-import { AddButton, EditButton } from '../lib/edit';
+import { AddButton, EditButton, useEdit } from '../lib/edit';
+import { SortableList } from '../components/Sortable';
 import { Seo } from '../lib/head';
 import { useT } from '../i18n';
 import NotFound from './NotFound';
@@ -13,6 +14,10 @@ export function Projects() {
   const { content } = useContent();
   const text = usePageText('projects', { label: 'projects', title: 'Things I built', intro: 'From idea to done: what each project solves, how, and what I learned.' });
   const bg = backgrounds['espresso-shot'];
+  // Edit mode: drag the cards into the order they should have (also used on the home page).
+  const edit = useEdit();
+  const ids = content.projects.map((p) => p.slug);
+  const bySlug = new Map(content.projects.map((p) => [p.slug, p]));
   return (
     <>
       <Seo title="Projects" description="Projects with stack, role, status and lessons learned." path="/projects" />
@@ -31,12 +36,14 @@ export function Projects() {
           {text.intro ? <p className="mt-4 max-w-xl whitespace-pre-line text-muted">{text.intro}</p> : null}
         </div>
       </header>
-      <div className="stagger container-page mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {content.projects.map((p) => (
-          <ProjectCard key={p.slug} project={p} />
-        ))}
-        <AddButton target={{ kind: 'project' }} label="New project" className="min-h-60" />
-      </div>
+      <SortableList
+        className="stagger container-page mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+        ids={ids}
+        onReorder={(next) => edit?.reorderProjects?.(ids, next)}
+        label={(id) => bySlug.get(id)!.title}
+        renderItem={(id) => <ProjectCard key={id} project={bySlug.get(id)!} among={ids} />}
+        after={<AddButton target={{ kind: 'project' }} label="New project" className="min-h-60" />}
+      />
     </>
   );
 }

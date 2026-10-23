@@ -40,6 +40,9 @@ function swap<T>(list: T[], i: number, dir: -1 | 1): T[] | null {
 
 // ---- Delete & move -------------------------------------------------------------
 
+/** Project order set by drag and drop (see SortableList); projects not listed follow. */
+const PROJECT_ORDER = 'content/project-order.json';
+
 async function removeTarget(ws: Workspace, target: EditTarget, label: string): Promise<void> {
   const ask = (what = label) => confirm(`Delete "${what}"?\n\nThe change goes live when you publish.`);
   switch (target.kind) {
@@ -50,7 +53,11 @@ async function removeTarget(ws: Workspace, target: EditTarget, label: string): P
     case 'knowhow':
     case 'article': {
       const path = docPath(target);
-      if (path && ask()) ws.write({ [path]: null });
+      if (!path || !ask()) return;
+      // A deleted project also leaves the saved order.
+      const slug = target.kind === 'project' ? target.slug : undefined;
+      const order = slug ? readJsonFile<string[] | null>(ws.files[PROJECT_ORDER], null) : null;
+      ws.write({ [path]: null, ...(order ? { [PROJECT_ORDER]: prettyJson(order.filter((s) => s !== slug)) } : {}) });
       return;
     }
     case 'certificate': {
@@ -97,8 +104,21 @@ async function removeTarget(ws: Workspace, target: EditTarget, label: string): P
 
 const MOVABLE = new Set(['cv-section', 'cv-entry', 'certificate', 'hobby']);
 
-function moveTarget(ws: Workspace, target: EditTarget, dir: -1 | 1) {
-  if (target.kind === 'cv-section') {
+
+/** Writes the full project order, with the `visible` projects (one list on a page) put in the `next` order. */
+function reorderProjects(ws: Workspace, current: string[], visible: string[], next: string[]) {
+  const slots = visible.map((s) => current.indexOf(s)).filter((i) => i >= 0).sort((a, b) => a - b);
+  if (slots.length !== next.length) return;
+  const order = [...current];
+  slots.forEach((pos, i) => (order[pos] = next[i]));
+  ws.write({ [PROJECT_ORDER]: prettyJson(order) });
+}
+
+function moveTarget(ws: Workspace, target: EditTarget, dir: -1 | 1, projects: string[]) {
+  if (target.kind === 'project' && target.slug && target.among) {
+    const next = swap(target.among, target.among.indexOf(target.slug), dir);
+    if (next) reorderProjects(ws, projects, target.among, next);
+  } else if (target.kind === 'cv-section') {
     const cv = readCv(ws.files);
     const next = swap(cv.sections, cv.sections.findIndex((s) => s.id === target.id), dir);
     if (next) ws.write({ [CV]: prettyJson({ ...cv, sections: next }) });
@@ -232,8 +252,9 @@ function LiveEdit({ children, onPublished, published, onDismiss }: { children: R
       remove: (t, label) => {
         removeTarget(ws, t, label).catch((e) => alert((e as Error).message));
       },
-      move: (t, dir) => moveTarget(ws, t, dir),
-      canMove: (t) => MOVABLE.has(t.kind),
+      move: (t, dir) => moveTarget(ws, t, dir, bundle.projects.map((p) => p.slug)),
+      canMove: (t) => MOVABLE.has(t.kind) || (t.kind === 'project' && Boolean(t.among?.length)),
+      reorderProjects: (visible, next) => reorderProjects(ws, bundle.projects.map((p) => p.slug), visible, next),
     }),
     [bundle, ws],
   );

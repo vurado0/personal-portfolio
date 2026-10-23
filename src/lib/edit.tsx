@@ -12,7 +12,8 @@ export type EditTarget =
   | { kind: 'translations' }
   | { kind: 'skill'; id?: string; group?: string }
   | { kind: 'skill-groups' }
-  | { kind: 'project'; slug?: string }
+  /** `among`: the projects shown in this list (home: featured ones), for moving within it. */
+  | { kind: 'project'; slug?: string; among?: string[] }
   | { kind: 'knowhow'; path?: string; category?: string }
   | { kind: 'article'; path?: string }
   | { kind: 'certificate'; id?: string }
@@ -32,6 +33,8 @@ export type EditApi = {
   remove: (target: EditTarget, label: string) => void;
   move?: (target: EditTarget, dir: -1 | 1) => void;
   canMove: (target: EditTarget) => boolean;
+  /** New order for the projects shown in a list (`visible` → `next`, same slugs). */
+  reorderProjects?: (visible: string[], next: string[]) => void;
 };
 
 const EditContext = createContext<EditApi | null>(null);
