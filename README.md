@@ -54,6 +54,8 @@ npm run dev                  # http://localhost:5173 — portfolio pages work wi
 | `npm run validate:content` | Checks front matter, slugs, dates, tags, skill ids and internal links |
 | `npm run build` | validate → typecheck → client build → SSR build → prerender (`dist/`) |
 | `npm run preview` | Serves `dist/` (note: `/blog/p/:id` and `/admin` rely on Vercel's `spa.html` rewrite) |
+| `npm run serve` | Serves `dist/` like Vercel (clean URLs, `spa.html` fallback) on :4173 |
+| `npm run test:smoke` | Smoke + accessibility tests (Playwright + axe) against `dist/`; run `npm run build` first (once: `npx playwright install chromium`) |
 | `npm run images:backgrounds` | Re-creates the WebP backgrounds from `docs/design-references/` |
 | `npm run emulators` | Firebase Auth + Firestore emulators (needs Java) |
 | `npm run seed:feed` | Writes 4 sample feed posts (one per type) |
@@ -152,6 +154,8 @@ The repo is connected to Vercel; every push to `main` deploys production, every 
 2. Add all environment variables above → **Deploy**.
 3. Firebase → **Authentication → Settings → Authorized domains** → add `<project>.vercel.app` and any custom domain (without `https://`). Preview domains need to be added too if you want to log in on previews.
 4. Live test: pages load, `/admin` login works, a photo post uploads and appears in the feed, the music card loads the player only after the click, the contact form saves.
+
+Every pull request and push to `main` runs [CI](.github/workflows/ci.yml): build, smoke + accessibility tests and Lighthouse (`lighthouserc.json`); the reports are attached to the run.
 
 `vercel.json` uses `cleanUrls` so prerendered pages (`dist/skills.html` → `/skills`) are served directly, and rewrites everything else except `/api/*` to `/spa` (`spa.html`) (the client-side app for `/blog/p/:id`, `/admin` and 404s).
 

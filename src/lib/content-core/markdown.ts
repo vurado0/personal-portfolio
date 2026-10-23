@@ -48,7 +48,7 @@ export function renderMarkdown(source: string, highlight?: Highlighter): Rendere
         const lang = (token.lang ?? '').split(/\s/)[0];
         const highlighted = (lang && highlight?.(token.text, lang)) || escapeHtml(token.text);
         const label = lang ? `<span class="code-lang">${escapeHtml(lang)}</span>` : '';
-        return `<div class="code-block">${label}<button type="button" class="copy-btn" data-copy aria-label="Copy code">copy</button><pre><code class="hljs${lang ? ` language-${escapeHtml(lang)}` : ''}">${highlighted}</code></pre></div>\n`;
+        return `<div class="code-block">${label}<button type="button" class="copy-btn" data-copy aria-label="Copy code">copy</button><pre tabindex="0"><code class="hljs${lang ? ` language-${escapeHtml(lang)}` : ''}">${highlighted}</code></pre></div>\n`;
       },
       link(token: Tokens.Link) {
         links.push(token.href);

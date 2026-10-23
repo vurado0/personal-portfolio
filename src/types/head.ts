@@ -6,3 +6,6 @@ export type HeadData = {
   noindex?: boolean;
   path?: string;
 };
+
+/** Language versions of a page for search engines (hreflang → path). */
+export type HeadLanguages = { locale: string; ogLocale: string; alternates?: { hreflang: string; path: string }[] };

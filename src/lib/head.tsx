@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, type ReactNode } from 'react';
 import { site } from '../config/site';
-import type { HeadData } from '../types/head';
+import type { HeadData, HeadLanguages } from '../types/head';
 
-export type { HeadData };
+export type { HeadData, HeadLanguages };
 
 type Collector = { data: HeadData };
 
@@ -28,8 +28,8 @@ function absolute(url: string, base: string): string {
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 
-/** Serialises head data to HTML tags (used by the prerender script). */
-export function headToHtml(data: HeadData, baseUrl: string): string {
+/** Serialises head data to HTML tags (used by the prerender script). `path` is the canonical URL. */
+export function headToHtml(data: HeadData, baseUrl: string, languages?: HeadLanguages): string {
   const title = fullTitle();
   const ogTitle = previewTitle(data.title);
   const description = data.description ?? site.description;
@@ -45,6 +45,10 @@ export function headToHtml(data: HeadData, baseUrl: string): string {
     `<meta property="og:site_name" content="${esc(site.siteTitle)}">`,
     `<meta name="twitter:card" content="${data.image ? 'summary_large_image' : 'summary'}">`,
   ];
+  if (languages) {
+    tags.push(`<meta property="og:locale" content="${languages.ogLocale}">`);
+    for (const a of languages.alternates ?? []) tags.push(`<link rel="alternate" hreflang="${a.hreflang}" href="${esc(absolute(a.path, baseUrl))}">`);
+  }
   if (data.image) tags.push(`<meta property="og:image" content="${esc(absolute(data.image, baseUrl))}">`);
   if (data.noindex) tags.push('<meta name="robots" content="noindex">');
   return tags.join('\n    ');

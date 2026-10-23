@@ -54,7 +54,8 @@ function SectionBody({ section }: { section: CvSection }) {
             </p>
           )}
           {section.items.length > 0 && (
-            <div className="overflow-x-auto">
+            // Scrolls sideways on phones: focusable so it also scrolls with the keyboard.
+            <div className="overflow-x-auto" tabIndex={0} role="region" aria-label={section.title}>
               <table className="w-full min-w-[34rem] border-collapse font-mono text-sm">
                 <thead>
                   <tr className="text-left text-[11px] uppercase tracking-label text-muted">

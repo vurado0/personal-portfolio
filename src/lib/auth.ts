@@ -1,5 +1,6 @@
 // Owner login (Google via Firebase Auth). Admin = a Firestore document admins/{uid} exists.
 import { useEffect, useState } from 'react';
+import { currentLocale, localizedPath } from '../i18n';
 import type { User } from 'firebase/auth';
 import { firebaseConfigured } from './env';
 import { getFirebase } from './firebase';
@@ -187,6 +188,6 @@ export async function logOut(): Promise<void> {
   try {
     await signOutUser();
   } finally {
-    location.assign('/login');
+    location.assign(localizedPath('/login', currentLocale()));
   }
 }

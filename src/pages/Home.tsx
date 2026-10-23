@@ -57,7 +57,7 @@ export default function Home() {
   const { content } = useContent();
   const site = content.profile;
   const t = useT();
-  const featured = content.projects.filter((p) => p.featured).slice(0, 3);
+  const featured = content.projects.filter((p) => p.featured).slice(0, 6);
   const espresso = backgrounds['espresso-shot'];
   return (
     <>
@@ -77,6 +77,20 @@ export default function Home() {
             </h1>
             <p className="mt-3 font-mono text-lg text-muted">{site.role}</p>
             <p className="mt-6 max-w-xl text-lg">{site.tagline}</p>
+            {site.highlights?.length ? (
+              <ul aria-label={t('home.highlights')} className="mt-4 flex max-w-xl flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-sm text-muted">
+                {site.highlights.map((h, i) => (
+                  <li key={i} className="flex items-center gap-x-2.5">
+                    {i > 0 && (
+                      <span className="text-accent" aria-hidden="true">
+                        ·
+                      </span>
+                    )}
+                    {h.replace('{projects}', String(content.projects.length))}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
 
             <div className="mt-8 font-mono text-sm">
               <p className="section-title">{t('home.focus')}</p>

@@ -129,6 +129,8 @@ export type Profile = {
   /** Portrait on the home page (file in public/ or URL) */
   photo?: string;
   currentFocus: string[];
+  /** Short facts under the tagline on the home page; "{projects}" becomes the number of projects */
+  highlights?: string[];
   socials: { id: string; label: string; url: string }[];
 };
 

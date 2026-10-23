@@ -11,14 +11,18 @@
       (function () {
         var prefixes = __PERSONAL_PREFIXES__;
         var p = location.pathname;
+        // Language from the URL (/de/…, /ja/…); otherwise the saved choice, applied right after start.
+        var m = /^\/(de|ja)(?=\/|$)/.exec(p);
+        var lang = m ? m[1] : null;
+        if (m) p = p.slice(m[0].length) || '/';
         var side = prefixes.some(function (x) { return p === x || p.indexOf(x + '/') === 0; }) ? 'personal' : 'portfolio';
         var saved = null;
         try { saved = localStorage.getItem('theme'); } catch (e) {}
         var d = document.documentElement;
         d.dataset.side = side;
         d.dataset.theme = saved === 'light' ? 'light' : 'dark';
-        // Interface language (texts switch right after the app starts; lang helps fonts and screen readers now).
-        try { var lang = localStorage.getItem('lang'); if (lang === 'de' || lang === 'ja') d.lang = lang; } catch (e) {}
+        if (!lang) try { lang = localStorage.getItem('lang'); } catch (e) {}
+        if (lang === 'de' || lang === 'ja') d.lang = lang;
       })();
     </script>
     <!--app-head-->

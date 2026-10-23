@@ -52,7 +52,7 @@ No AI features at runtime and no paid APIs.
 
 **Optional (toggle in a config file, can be hidden from the menu)**
 6. **Hobbies**: e.g. filmmaking, languages, gaming, fitness
-7. **About / CV**: timeline (education, work, certificates), languages, downloadable CV (PDF)
+7. **About / CV**: timeline (education, work, certificates), languages, CV (PDF) on request (form; preferred language EN/DE)
 8. **Certificates**: planned and completed certifications with status
 9. **Contact**: contact form + links (GitHub, LinkedIn, email)
 
@@ -118,7 +118,7 @@ Menu items are defined in `src/config/site.ts` (`enabled: true/false`, order, la
 - Cards per hobby with short text, local photos/links
 
 ### About / CV (optional)
-- Timeline: education, jobs, certificates; spoken languages with level; CV download from `/public/cv.pdf`
+- Timeline: education, jobs, certificates; spoken languages with level; CV request form (no public PDF: it contains phone and address)
 
 ### Contact (optional)
 - Form: name, email, message → Firestore `messages` (create-only for visitors)
@@ -353,7 +353,9 @@ CLOUDINARY_API_SECRET=...
 
 - **Responsive, mobile-first**; the admin posting flow must be comfortable on the phone (big buttons, camera/gallery picker, upload progress)
 - **Dark / light mode** toggle (remembered in localStorage)
-- **Languages**: English default; German optional (i18n-ready)
+- **Languages**: English default (no URL prefix); German and Japanese under `/de/…` and `/ja/…`, prerendered with hreflang alternates and in the sitemap
+- **Site search**: ⌘K / Ctrl+K or `/` opens a search over pages, skills, know-how, projects, articles and CV entries (client-side, lazy chunk)
+- **CI**: every PR runs build, Playwright smoke + axe accessibility tests and Lighthouse (`.github/workflows/ci.yml`)
 - **SEO**: title + description per page, Open Graph tags, sitemap.xml, robots.txt; prerender portfolio pages and articles at build time. Feed posts load from Firestore at runtime (detail pages get OG tags client-side; SEO is secondary for the feed)
 - **Performance**: Lighthouse ≥ 90; lazy-loaded, responsive images; fonts self-hosted, only needed weights; background images WebP
 - **Accessibility**: semantic HTML, keyboard navigation, alt text required on every uploaded photo (field on the admin page), good contrast

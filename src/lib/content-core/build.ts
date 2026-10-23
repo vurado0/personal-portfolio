@@ -350,6 +350,8 @@ export function buildContent(files: FileMap, { includeDrafts, publicFiles, highl
   }
   if (profile.photo) allLinks.push({ file: profileFile, href: profile.photo });
   if (!Array.isArray(profile.currentFocus)) issues.push({ level: 'error', file: profileFile, message: '"currentFocus" must be a list' });
+  if (profile.highlights !== undefined && !(Array.isArray(profile.highlights) && profile.highlights.every((h) => typeof h === 'string')))
+    issues.push({ level: 'error', file: profileFile, message: '"highlights" must be a list of texts' });
   if (!Array.isArray(profile.socials)) issues.push({ level: 'error', file: profileFile, message: '"socials" must be a list' });
   for (const s of profile.socials ?? []) {
     if (!s.id || !s.label || !/^(https?:|mailto:)/.test(s.url ?? ''))

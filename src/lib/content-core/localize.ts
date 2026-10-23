@@ -36,7 +36,7 @@ function walk(bundle: ContentBundle, tr: Tr, tl: (list: string[]) => string[]) {
     ...bundle,
     navigation: buildNav(bundle.navigation).map((n) => ({ id: n.id, label: tr(n.label) ?? n.label, enabled: n.enabled })),
     pages: Object.fromEntries(Object.entries(bundle.pages).map(([id, pt]) => [id, page(pt)])),
-    profile: { ...p, role: tr(p.role) ?? p.role, tagline: tr(p.tagline) ?? p.tagline, description: tr(p.description) ?? p.description, location: tr(p.location) ?? p.location, currentFocus: tl(p.currentFocus) },
+    profile: { ...p, role: tr(p.role) ?? p.role, tagline: tr(p.tagline) ?? p.tagline, description: tr(p.description) ?? p.description, location: tr(p.location) ?? p.location, currentFocus: tl(p.currentFocus), highlights: p.highlights && tl(p.highlights) },
     skillGroups: bundle.skillGroups.map((g) => ({ ...g, label: tr(g.label) ?? g.label })),
     skills: bundle.skills.map((s) => ({ ...s, name: tr(s.name) ?? s.name, context: tr(s.context) ?? s.context })),
     hobbies: bundle.hobbies.map((h) => ({ ...h, title: tr(h.title) ?? h.title, text: tr(h.text) ?? h.text, links: h.links?.map((l) => ({ ...l, label: tr(l.label) ?? l.label })) })),
@@ -74,7 +74,7 @@ export function translatableStrings(bundle: ContentBundle): Translatable[] {
   for (const pt of Object.values(bundle.pages)) [pt.label, pt.title, pt.intro, ...(pt.meta ?? []).flatMap((m) => [m.label, m.value])].forEach(add);
   group = 'Profile';
   const p = bundle.profile;
-  [p.role, p.tagline, p.description, p.location, ...p.currentFocus].forEach(add);
+  [p.role, p.tagline, p.description, p.location, ...p.currentFocus, ...(p.highlights ?? [])].forEach(add);
   group = 'Skills';
   bundle.skillGroups.forEach((g) => add(g.label));
   bundle.skills.forEach((s) => [s.name, s.context].forEach(add));
