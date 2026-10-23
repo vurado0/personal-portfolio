@@ -1,12 +1,12 @@
 ---
 title: Kanji Trainer
 summary: An offline kanji PWA with two separate spaced-repetition tracks — recognising and writing — stroke-order checking on a drawing pad, confusion drills and smart multiple-choice distractors.
-stack: [JavaScript, IndexedDB, Service Worker, KanjiVG, Node.js, GitHub Pages]
-skills: [javascript, japanese]
-tags: [web, pwa, education, japanese, personal]
+stack: [ JavaScript, IndexedDB, Service Worker, KanjiVG, Node.js, GitHub Pages ]
+skills: [ javascript, japanese ]
+tags: [ web, pwa, education, japanese, personal ]
 role: Solo developer
-status: in progress
-period: 2026
+status: done
+period: "2026"
 cover: /images/projects/kanji-trainer.jpg
 featured: true
 links:

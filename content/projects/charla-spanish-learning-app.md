@@ -1,12 +1,15 @@
 ---
 title: "Charla — conversation-first Spanish"
 summary: A Spanish learning web app built around real conversations, with Latin American and Spain Spanish side by side, spaced-repetition vocabulary and offline sync.
-stack: [React, TypeScript, Vite, Tailwind, Firebase, Vercel]
-skills: [typescript, react, firebase, spanish]
-tags: [web, education, personal]
+
+
+  Currently Actively used!
+stack: [ React, TypeScript, Vite, Tailwind, Firebase, Vercel ]
+skills: [ typescript, react, firebase, spanish ]
+tags: [ web, education, personal ]
 role: Solo developer
-status: in progress
-period: 2026
+status: done
+period: "2026"
 links:
   github: https://github.com/vurado0/spanish-learn-application
   demo: https://spanish-learn-application.vercel.app

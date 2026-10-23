@@ -1,12 +1,12 @@
 ---
 title: Transcript Study — learn languages from YouTube
 summary: Paste a YouTube link and study from a time-synced transcript, with line looping, a listening mode that hides the text, click-to-save word lists exported to Anki, and furigana for Japanese. Runs locally, with offline Whisper when a video has no captions.
-stack: [Python, FastAPI, yt-dlp, faster-whisper, fugashi, JavaScript, Docker, Vercel]
-skills: [python, javascript, docker, japanese, german, english]
-tags: [web, education, japanese, personal]
+stack: [ Python, FastAPI, yt-dlp, faster-whisper, fugashi, JavaScript, Docker, Vercel ]
+skills: [ python, javascript, docker, japanese, german, english ]
+tags: [ web, education, japanese, personal ]
 role: Solo developer
-status: in progress
-period: 2026
+status: done
+period: "2026"
 cover: /images/projects/youtube-transcriber.jpg
 featured: true
 links:
