@@ -8,7 +8,11 @@
   --lg-foreground: rgb(var(--ink));
   --lg-surface: rgb(252 246 238 / 0.9);
   --lg-on: rgb(var(--accent));
-  --pg-material: rgb(255 250 244 / 0.7);
+  --pg-material: rgb(255 250 244 / 0.62);
+  --pg-clear: rgb(255 250 244 / 0.3);
+  --pg-edge: rgb(255 255 255 / 0.5);
+  --pg-rim: rgb(255 255 255 / 0.95);
+  --pg-rim-soft: rgb(255 255 255 / 0.5);
   min-height: 100vh;
   color: var(--pg-ink);
   font-family: "Inter Tight", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
@@ -19,14 +23,27 @@
   --lg-glass-active: rgb(60 42 30 / 0.62);
   --lg-foreground: rgb(var(--cream));
   --lg-surface: rgb(32 22 16 / 0.9);
-  --pg-material: rgb(30 20 14 / 0.62);
+  --pg-material: rgb(30 20 14 / 0.55);
+  --pg-clear: rgb(30 20 14 / 0.28);
+  --pg-edge: rgb(255 255 255 / 0.1);
+  --pg-rim: rgb(255 255 255 / 0.32);
+  --pg-rim-soft: rgb(255 255 255 / 0.12);
 }
+
+/* The navigation layer (portal next to #root) adds no height of its own. */
+.pg-layer { min-height: 0; }
+html:has(.pg-layer) { background-color: rgb(var(--bg)); }
 
 .pg-wallpaper {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  /* Large viewport height: also covers the area under a phone browser's collapsing toolbar. */
+  height: 100lvh;
   z-index: 0;
   background: url(/images/backgrounds/glass-latte-wide.webp) center / cover no-repeat;
+  transform: translateZ(0);
 }
 [data-theme="dark"] .pg-wallpaper { background-image: url(/images/backgrounds/glass-espresso-wide.webp); }
 @media (max-aspect-ratio: 1/1) {
@@ -62,8 +79,8 @@
   width: min(72rem, calc(100% - 28px));
   margin: 0 auto;
   padding: 92px 0 140px;
-  animation: pg-in 420ms var(--ease-out-soft, ease-out) both;
 }
+.pg-page { animation: pg-in 320ms var(--ease-out-soft, ease-out) both; }
 @keyframes pg-in { from { opacity: 0; transform: translateY(10px); } }
 
 .pg-tabbar {
@@ -76,19 +93,37 @@
 
 .pg-panel { border-radius: 28px; }
 /* Thicker material for text: frosted and more opaque. The hero stays clear and shows the bend. */
-/* (.lg-glass doubled: Glisse injects its own styles after ours.) */
-.lg-glass.pg-frost { --lg-blur: 24px; --lg-glass-bend: 0.14; --lg-glass-dispersion: 0.15; background-color: var(--pg-material); }
-.lg-glass.pg-clear { --lg-blur: 2px; }
+/* Content material: a frosted pane with a lit rim (top-left light, as Liquid Glass draws it).
+   Plain CSS blur, which the GPU composites while scrolling. */
+.pg-frost, .pg-clear, .pg-capsule {
+  position: relative;
+  -webkit-backdrop-filter: blur(var(--pg-blur)) saturate(1.5);
+  backdrop-filter: blur(var(--pg-blur)) saturate(1.5);
+  background-color: var(--pg-material);
+  box-shadow: 0 10px 30px -12px rgb(0 0 0 / 0.25), inset 0 0 0 0.5px var(--pg-edge);
+}
+.pg-frost { --pg-blur: 26px; }
+.pg-clear { --pg-blur: 8px; background-color: var(--pg-clear); }
+.pg-frost::before, .pg-clear::before, .pg-capsule::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--pg-rim) 0%, transparent 38%, transparent 62%, var(--pg-rim-soft) 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
 .pg-capsule {
+  --pg-blur: 16px;
   display: inline-flex;
   height: 32px;
   align-items: center;
   border-radius: 16px;
   padding: 0 14px;
-  --lg-blur: 12px;
-  --lg-glass-bend: 0.2;
 }
-.lg-glass.pg-capsule { background-color: var(--pg-material); }
 .pg-hero { border-radius: 36px; }
 
 .pg-mono { font-family: var(--font-mono); }
@@ -148,7 +183,7 @@
 .pg-panel li:has(> .pg-stretched), .pg-panel li:has(.pg-stretched) { position: relative; }
 
 @media (prefers-reduced-motion: reduce) {
-  .pg-main, .pg-caret { animation: none; }
+  .pg-page, .pg-caret { animation: none; }
   .pg-panel:has(.pg-stretched):hover { transform: none; }
 }
 

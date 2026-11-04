@@ -1,7 +1,11 @@
 // Design prototype: the portfolio rebuilt with Glisse (Apple's Liquid Glass for the web).
-// Real content and languages, glass components over a coffee wallpaper that the glass bends.
+// Real content and languages over a coffee wallpaper. As on iOS 26, Liquid Glass is the floating
+// navigation layer (top bar, tab bar, controls); content sits on a frosted material below it.
+// That split is also what keeps it smooth: the bars never move against the wallpaper they bend,
+// so nothing is refiltered while scrolling, and content cards are plain GPU blur.
 // Lives at /prototype on this branch only; the real site is untouched.
-import { useMemo, useState, type ReactNode } from 'react';
+import { startTransition, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router';
 import { Button, Glass, Menu, SearchField, SegmentedControl, Slider, Switch, TabBar, Input } from 'glisse';
 import './prototype.css';
@@ -14,19 +18,18 @@ import { ArrowIcon, BookIcon, GitHubIcon, HeartIcon, HomeIcon, LinkIcon, MailIco
 
 type Tab = 'home' | 'projects' | 'knowhow' | 'blog' | 'about';
 
-/** A glass surface for content. `clear` shows the bent wallpaper (hero); the default is a thicker,
- *  frosted material so longer text stays readable, as in iOS. */
+/** Content surface: frosted material (CSS blur, cheap to scroll). `clear` is thinner, for the hero. */
 function Panel({ children, className = '', clear = false }: { children: ReactNode; className?: string; clear?: boolean }) {
-  return <Glass className={`pg-panel ${clear ? 'pg-clear' : 'pg-frost'} ${className}`}>{children}</Glass>;
+  return <div className={`pg-panel ${clear ? 'pg-clear' : 'pg-frost'} ${className}`}>{children}</div>;
 }
 
-/** Section heading; on the wallpaper (`floating`) it sits on a small glass capsule. */
+/** Section heading; on the wallpaper (`floating`) it sits on a small frosted capsule. */
 function SectionTitle({ children, action, floating = false }: { children: ReactNode; action?: ReactNode; floating?: boolean }) {
   const title = <h2 className="pg-eyebrow">{children}</h2>;
   return (
     <div className={`mb-4 flex items-center justify-between gap-3 ${floating ? '' : 'px-1'}`}>
-      {floating ? <Glass className="pg-capsule">{title}</Glass> : title}
-      {action ? floating ? <Glass className="pg-capsule">{action}</Glass> : action : null}
+      {floating ? <div className="pg-capsule">{title}</div> : title}
+      {action ? floating ? <div className="pg-capsule">{action}</div> : action : null}
     </div>
   );
 }
@@ -385,15 +388,45 @@ export default function Prototype() {
   const { content } = useContent();
   const { theme, toggle } = useTheme();
   const [tab, setTab] = useState<Tab>('home');
+  // Visited tabs stay mounted (hidden), so switching back is instant.
+  const [visited, setVisited] = useState<Tab[]>(['home']);
+  const scrollOf = useRef<Partial<Record<Tab, number>>>({});
+  const [chrome, setChrome] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    // The navigation layer lives outside #root, next to the wallpaper: only its glass bends the
+    // wallpaper (Glisse looks for the backdrop among the glass's ancestors).
+    const el = document.createElement('div');
+    el.className = 'pg-chrome';
+    document.body.append(el);
+    setChrome(el);
+    return () => el.remove();
+  }, []);
   const nav = useMemo(() => new Map(content.navigation.map((n) => [n.id, n.label])), [content.navigation]);
   const go = (next: Tab) => {
-    setTab(next);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (next === tab) return window.scrollTo({ top: 0, behavior: 'smooth' });
+    scrollOf.current[tab] = window.scrollY;
+    // The tab bar animates first; the page swap is a low-priority update that must not block it.
+    startTransition(() => {
+      setVisited((v) => (v.includes(next) ? v : [...v, next]));
+      setTab(next);
+    });
+  };
+  // Each tab keeps its scroll position, as in an iOS app.
+  useEffect(() => {
+    window.scrollTo({ top: scrollOf.current[tab] ?? 0, behavior: 'instant' });
+  }, [tab]);
+
+  const pages: Record<Tab, ReactNode> = {
+    home: <HomeTab go={go} />,
+    projects: <ProjectsTab />,
+    knowhow: <KnowhowTab />,
+    blog: <BlogTab />,
+    about: <AboutTab />,
   };
 
-  return (
-    <div className="pg-root">
-      {/* The wallpaper every glass surface bends. */}
+  const navigation = (
+    <>
+      {/* The wallpaper the navigation glass bends. */}
       <div className="pg-wallpaper" data-glisse-backdrop aria-hidden="true" />
       <div className="pg-edge pg-edge-top" aria-hidden="true" />
       <div className="pg-edge pg-edge-bottom" aria-hidden="true" />
@@ -431,20 +464,6 @@ export default function Prototype() {
         </div>
       </header>
 
-      <main className="pg-main" key={tab}>
-        {tab === 'home' ? <HomeTab go={go} /> : null}
-        {tab === 'projects' ? <ProjectsTab /> : null}
-        {tab === 'knowhow' ? <KnowhowTab /> : null}
-        {tab === 'blog' ? <BlogTab /> : null}
-        {tab === 'about' ? <AboutTab /> : null}
-        <footer className="pg-mono mt-16 text-center text-xs opacity-60">
-          © {new Date().getFullYear()} {content.profile.name} · Liquid Glass prototype ·{' '}
-          <a href="https://glisse.kelvinzhang.com" className="underline">
-            Glisse
-          </a>
-        </footer>
-      </main>
-
       <nav className="pg-tabbar" aria-label="Main">
         <TabBar
           aria-label="Sections"
@@ -459,6 +478,25 @@ export default function Prototype() {
           ]}
         />
       </nav>
+    </>
+  );
+
+  return (
+    <div className="pg-root">
+      {chrome ? createPortal(<div className="pg-root pg-layer">{navigation}</div>, chrome) : null}
+      <main className="pg-main">
+        {visited.map((id) => (
+          <section key={id} hidden={id !== tab} className="pg-page">
+            {pages[id]}
+          </section>
+        ))}
+        <footer className="pg-mono mt-16 text-center text-xs opacity-60">
+          © {new Date().getFullYear()} {content.profile.name} · Liquid Glass prototype ·{' '}
+          <a href="https://glisse.kelvinzhang.com" className="underline">
+            Glisse
+          </a>
+        </footer>
+      </main>
     </div>
   );
 }
