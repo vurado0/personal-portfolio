@@ -1,0 +1,176 @@
+/* Liquid Glass prototype. Coffee-toned glass over a latte (light) / espresso (dark) wallpaper. */
+.pg-root {
+  --pg-ink: rgb(var(--fg));
+  --pg-separator: rgb(var(--fg) / 0.12);
+  --lg-fill: rgb(var(--accent));
+  --lg-glass: rgb(255 249 241 / 0.52);
+  --lg-glass-active: rgb(255 249 241 / 0.72);
+  --lg-foreground: rgb(var(--ink));
+  --lg-surface: rgb(252 246 238 / 0.9);
+  --lg-on: rgb(var(--accent));
+  --pg-material: rgb(255 250 244 / 0.7);
+  min-height: 100vh;
+  color: var(--pg-ink);
+  font-family: "Inter Tight", system-ui, -apple-system, "Hiragino Sans", "Yu Gothic", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+[data-theme="dark"] .pg-root {
+  --lg-glass: rgb(36 24 17 / 0.5);
+  --lg-glass-active: rgb(60 42 30 / 0.62);
+  --lg-foreground: rgb(var(--cream));
+  --lg-surface: rgb(32 22 16 / 0.9);
+  --pg-material: rgb(30 20 14 / 0.62);
+}
+
+.pg-wallpaper {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: url(/images/backgrounds/glass-latte-wide.webp) center / cover no-repeat;
+}
+[data-theme="dark"] .pg-wallpaper { background-image: url(/images/backgrounds/glass-espresso-wide.webp); }
+@media (max-aspect-ratio: 1/1) {
+  .pg-wallpaper { background-image: url(/images/backgrounds/glass-latte-tall.webp); }
+  [data-theme="dark"] .pg-wallpaper { background-image: url(/images/backgrounds/glass-espresso-tall.webp); }
+}
+
+.pg-top {
+  position: fixed;
+  top: 14px;
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  width: min(72rem, calc(100% - 28px));
+  transform: translateX(-50%);
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.pg-pill {
+  display: flex;
+  height: 44px;
+  align-items: center;
+  border-radius: 22px;
+}
+.pg-brand { padding: 0 18px; }
+.pg-caret { animation: pg-blink 1.1s steps(1) infinite; }
+@keyframes pg-blink { 50% { opacity: 0; } }
+
+.pg-main {
+  position: relative;
+  z-index: 1;
+  width: min(72rem, calc(100% - 28px));
+  margin: 0 auto;
+  padding: 92px 0 140px;
+  animation: pg-in 420ms var(--ease-out-soft, ease-out) both;
+}
+@keyframes pg-in { from { opacity: 0; transform: translateY(10px); } }
+
+.pg-tabbar {
+  position: fixed;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  left: 50%;
+  z-index: 40;
+  transform: translateX(-50%);
+}
+
+.pg-panel { border-radius: 28px; }
+/* Thicker material for text: frosted and more opaque. The hero stays clear and shows the bend. */
+/* (.lg-glass doubled: Glisse injects its own styles after ours.) */
+.lg-glass.pg-frost { --lg-blur: 24px; --lg-glass-bend: 0.14; --lg-glass-dispersion: 0.15; background-color: var(--pg-material); }
+.lg-glass.pg-clear { --lg-blur: 2px; }
+.pg-capsule {
+  display: inline-flex;
+  height: 32px;
+  align-items: center;
+  border-radius: 16px;
+  padding: 0 14px;
+  --lg-blur: 12px;
+  --lg-glass-bend: 0.2;
+}
+.lg-glass.pg-capsule { background-color: var(--pg-material); }
+.pg-hero { border-radius: 36px; }
+
+.pg-mono { font-family: var(--font-mono); }
+.pg-accent { color: rgb(var(--accent)); }
+.pg-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.pg-link {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgb(var(--accent));
+}
+.pg-link:hover { text-decoration: underline; }
+.pg-chip {
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: rgb(var(--fg) / 0.07);
+  box-shadow: inset 0 0 0 0.5px rgb(var(--fg) / 0.14);
+}
+.pg-dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: rgb(var(--accent));
+  box-shadow: 0 0 0 4px rgb(var(--accent) / 0.18);
+}
+.pg-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  opacity: 0.8;
+}
+.pg-status > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgb(var(--fg) / 0.5);
+}
+.pg-status[data-status="in progress"] > span { background: rgb(var(--accent)); }
+.pg-status[data-status="done"] > span { background: #34c759; }
+
+/* Whole card / row clickable through its title link. */
+.pg-stretched { color: inherit; text-decoration: none; }
+.pg-stretched::after { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+.pg-stretched:hover { text-decoration: none; color: rgb(var(--accent)); }
+.pg-panel:has(.pg-stretched) { transition: transform 260ms var(--ease-out-soft, ease-out); }
+.pg-panel:has(.pg-stretched):hover { transform: translateY(-3px); }
+.pg-panel li:has(> .pg-stretched), .pg-panel li:has(.pg-stretched) { position: relative; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-main, .pg-caret { animation: none; }
+  .pg-panel:has(.pg-stretched):hover { transform: none; }
+}
+
+/* iOS 26 scroll edge effect: content softly blurs and fades out under the floating bars. */
+.pg-edge {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 30;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.pg-edge-top {
+  top: 0;
+  height: 84px;
+  -webkit-mask-image: linear-gradient(black 45%, transparent);
+  mask-image: linear-gradient(black 45%, transparent);
+}
+.pg-edge-bottom {
+  bottom: 0;
+  height: 110px;
+  -webkit-mask-image: linear-gradient(transparent, black 60%);
+  mask-image: linear-gradient(transparent, black 60%);
+}
