@@ -27,10 +27,10 @@ jobs:
       - run: npm ci
       - name: Build (validate content, type check, prerender)
         run: npm run build
-      - name: Install Chromium and WebKit (Safari) for the tests
-        run: npx playwright install --with-deps chromium webkit
-      - name: Smoke and accessibility tests
-        run: npm run test:smoke
+      - name: Install Chromium for the tests
+        run: npx playwright install --with-deps chromium
+      - name: Smoke and accessibility tests (Chrome)
+        run: npm run test:smoke -- --project=desktop --project=mobile
       - name: Lighthouse
         run: npx --yes @lhci/cli@0.15.1 autorun
       - name: Upload reports
@@ -41,4 +41,30 @@ jobs:
           path: |
             playwright-report
             .lighthouseci
+          retention-days: 14
+
+  # Safari on a Mac: WebKit on Linux renders without a GPU and is far slower with the glass filters
+  # than Safari ever is, so the Safari checks run where Safari runs.
+  safari:
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Install WebKit for the tests
+        run: npx playwright install webkit
+      - name: Smoke and accessibility tests (Safari, Mac and iPhone)
+        run: npm run test:smoke -- --project=safari --project=iphone
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: safari-report
+          path: playwright-report
           retention-days: 14
