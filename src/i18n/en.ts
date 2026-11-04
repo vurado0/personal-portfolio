@@ -108,6 +108,9 @@ export const en = {
   'toc.label': 'Table of contents',
 
   // projects
+  'carousel.label': 'Project carousel',
+  'carousel.open': 'Open project',
+  'carousel.hint': 'scroll to spin ↓',
   'projects.back': '← all projects',
   'projects.role': 'role',
   'projects.stack': 'stack',

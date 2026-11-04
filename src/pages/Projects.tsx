@@ -5,6 +5,7 @@ import { Markdown } from '../components/Markdown';
 import { useContent, usePageText } from '../lib/content';
 import { AddButton, EditButton, useEdit } from '../lib/edit';
 import { SortableList } from '../components/Sortable';
+import { ProjectCarousel } from '../components/ProjectCarousel';
 import { Seo } from '../lib/head';
 import { useT } from '../i18n';
 import NotFound from './NotFound';
@@ -29,6 +30,7 @@ export function Projects() {
           {text.intro ? <p className="mt-4 max-w-xl whitespace-pre-line text-muted">{text.intro}</p> : null}
         </div>
       </header>
+      <ProjectCarousel projects={content.projects} />
       <SortableList
         className="stagger container-page mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
         ids={ids}

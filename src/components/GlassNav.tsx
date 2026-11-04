@@ -105,6 +105,10 @@ export function GlassNav() {
 
   return (
     <div className="nav-layer">
+      {/* Two copies of the wallpaper: the glass bends the top one through an SVG filter. Safari
+          paints nothing of a filtered element outside the filter's region (e.g. for a moment while
+          the tab bar's lens moves), so the plain copy below fills in exactly the same picture. */}
+      <div className="wallpaper" aria-hidden="true" />
       <div className="wallpaper" data-glisse-backdrop aria-hidden="true" />
       <div className="scroll-edge scroll-edge-top" aria-hidden="true" />
       <div className="scroll-edge scroll-edge-bottom" aria-hidden="true" />

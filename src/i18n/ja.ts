@@ -102,6 +102,9 @@ export const ja: Record<MessageKey, string> = {
   'toc.title': '目次',
   'toc.label': '目次',
 
+  'carousel.label': 'プロジェクトカルーセル',
+  'carousel.open': 'プロジェクトを開く',
+  'carousel.hint': 'スクロールで回転 ↓',
   'projects.back': '← すべてのプロジェクト',
   'projects.role': '担当',
   'projects.stack': '技術スタック',

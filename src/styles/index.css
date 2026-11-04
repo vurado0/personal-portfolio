@@ -280,7 +280,9 @@
 
 /* ---- Navigation layer (GlassNav) ------------------------------------------------------------ */
 .nav-layer {
-  /* Coffee-toned Glisse glass */
+  /* Coffee-toned Glisse glass, frosted enough that page content scrolling underneath stays calm
+     (Safari bends only the wallpaper, so the blur is what hides the content there) */
+  --lg-blur: 10px;
   --lg-fill: rgb(var(--accent));
   --lg-on: rgb(var(--accent));
   --lg-glass: rgb(255 249 241 / 0.52);
@@ -360,4 +362,84 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .caret { animation: none; }
+}
+
+/* ---- Project carousel (ProjectCarousel.tsx) --------------------------------------------------
+   A ring of screenshots in 3D. JS only sets --spin (degrees) on the ring while the page scrolls;
+   the stage is pinned (sticky) for the length of the section. */
+.carousel {
+  position: relative;
+  height: calc(100svh + var(--n) * 18vh);
+}
+.carousel-stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100svh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 28px;
+  padding: 72px 0 104px;
+  overflow: hidden;
+}
+.carousel-ring {
+  --card-w: min(400px, 64vw);
+  --radius: calc(var(--card-w) / 2 / tan(180deg / var(--n)) + 32px);
+  position: relative;
+  width: var(--card-w);
+  aspect-ratio: 16 / 10;
+  flex: none;
+  /* Each card is placed in 3D on its own (no preserve-3d, which Safari flattens while the ring
+     turns); z-index puts the cards nearest to us on top. */
+  perspective: 1700px;
+}
+.carousel-card {
+  --angle: calc(var(--i) * 360deg / var(--n) - var(--spin) * 1deg);
+  /* 1 facing us, 0 side-on, < 0 turned away */
+  --facing: cos(var(--angle));
+  position: absolute;
+  inset: 0;
+  z-index: calc(100 + round(var(--facing) * 100));
+  overflow: hidden;
+  border-radius: 22px;
+  backface-visibility: hidden;
+  transform: translateZ(calc(var(--radius) * -1)) rotateY(var(--angle)) translateZ(var(--radius));
+  opacity: clamp(0, calc(0.15 + var(--facing) * 0.85), 1);
+  box-shadow: 0 24px 60px -24px rgb(0 0 0 / 0.6), inset 0 0 0 1px rgb(255 255 255 / 0.18);
+}
+.carousel-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+.carousel-card[aria-current] { box-shadow: 0 30px 70px -24px rgb(0 0 0 / 0.65), 0 0 0 2px rgb(var(--accent) / 0.85); }
+.carousel-caption {
+  width: min(30rem, calc(100% - 32px));
+  border-radius: 24px;
+  padding: 16px 20px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .carousel { height: auto; }
+  .carousel-stage { position: static; height: auto; padding: 24px 0 0; }
+  .carousel-ring {
+    display: flex;
+    width: 100%;
+    aspect-ratio: auto;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 8px 16px 16px;
+    perspective: none;
+    scroll-snap-type: x mandatory;
+  }
+  .carousel-card {
+    position: relative;
+    flex: 0 0 min(320px, 78vw);
+    aspect-ratio: 16 / 10;
+    transform: none;
+    opacity: 1;
+    scroll-snap-align: center;
+  }
+  .carousel-caption, .carousel-hint { display: none; }
 }

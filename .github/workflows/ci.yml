@@ -1,5 +1,5 @@
 # Checks every pull request and every push to main: content validation, type check and build,
-# smoke + accessibility tests (Playwright + axe) and Lighthouse. Reports are attached to the run.
+# smoke + accessibility tests (Playwright + axe, in Chrome and Safari/WebKit) and Lighthouse. Reports are attached to the run.
 name: CI
 
 on:
@@ -27,8 +27,8 @@ jobs:
       - run: npm ci
       - name: Build (validate content, type check, prerender)
         run: npm run build
-      - name: Install Chromium for the tests
-        run: npx playwright install --with-deps chromium
+      - name: Install Chromium and WebKit (Safari) for the tests
+        run: npx playwright install --with-deps chromium webkit
       - name: Smoke and accessibility tests
         run: npm run test:smoke
       - name: Lighthouse

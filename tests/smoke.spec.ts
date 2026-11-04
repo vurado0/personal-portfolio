@@ -108,6 +108,16 @@ test.describe('features', () => {
     await expect(page.getByRole('list', { name: 'highlights' })).toContainText('projects');
   });
 
+  test('the project carousel turns while scrolling', async ({ page }) => {
+    await open(page, '/projects');
+    const caption = page.locator('.carousel-caption h2');
+    const first = await caption.textContent();
+    await page.evaluate(`(() => { const el = document.querySelector('.carousel'); scrollTo(0, el.getBoundingClientRect().top + scrollY + (el.offsetHeight - innerHeight) * 0.5); })()`);
+    await expect(caption).not.toHaveText(first ?? '');
+    const spin = await page.locator('.carousel-ring').evaluate((el) => Number((el as HTMLElement).style.getPropertyValue('--spin')));
+    expect(spin).toBeGreaterThan(0);
+  });
+
   test('search (⌘K / Ctrl+K) finds and opens a project', async ({ page }) => {
     await open(page, '/');
     await page.keyboard.press('ControlOrMeta+k');

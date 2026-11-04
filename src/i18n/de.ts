@@ -102,6 +102,9 @@ export const de: Record<MessageKey, string> = {
   'toc.title': 'Inhalt',
   'toc.label': 'Inhaltsverzeichnis',
 
+  'carousel.label': 'Projekt-Karussell',
+  'carousel.open': 'Projekt öffnen',
+  'carousel.hint': 'scrollen zum Drehen ↓',
   'projects.back': '← alle Projekte',
   'projects.role': 'Rolle',
   'projects.stack': 'Stack',
