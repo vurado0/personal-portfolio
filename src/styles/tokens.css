@@ -25,6 +25,15 @@
   --link: var(--mocha);
 
   /* Japanese glyphs fall back to the system's gothic fonts (nothing extra is downloaded). */
+  --font-ui: "Inter Tight", system-ui, -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
+  /* Frosted content material (see .material in index.css) */
+  --material: 255 250 244;
+  --material-thick: 0.64;
+  --material-medium: 0.5;
+  --material-faint: 0.3;
+  --material-edge: 255 255 255 / 0.5;
+  --rim: 255 255 255;
+  --rim-alpha: 0.95;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", monospace;
   --font-blog: "Raptor Text", "Inter Tight", system-ui, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
 
@@ -51,6 +60,7 @@
   unicode-range: U+2E80-2FDF, U+3000-30FF, U+3400-4DBF, U+4E00-9FFF, U+F900-FAFF, U+FF00-FFEF;
 }
 html[lang="ja"] {
+  --font-ui: "Inter Tight", "IBM Plex Sans JP", system-ui, -apple-system, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
   --font-mono: "JetBrains Mono", "IBM Plex Sans JP", ui-monospace, SFMono-Regular, Menlo, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", monospace;
   --font-blog: "Raptor Text", "Inter Tight", "IBM Plex Sans JP", system-ui, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, "Noto Sans JP", sans-serif;
 }
@@ -65,6 +75,13 @@ html[lang="ja"] {
   --accent: var(--crema);
   --on-accent: var(--espresso);
   --link: var(--crema);
+
+  --material: 30 20 14;
+  --material-thick: 0.56;
+  --material-medium: 0.46;
+  --material-faint: 0.28;
+  --material-edge: 255 255 255 / 0.1;
+  --rim-alpha: 0.32;
 
   color-scheme: dark;
 }

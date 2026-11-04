@@ -6,6 +6,9 @@ export const ja: Record<MessageKey, string> = {
   'nav.portfolio': '// ポートフォリオ',
   'nav.personal': '// パーソナル',
   'nav.owner': '// オーナー',
+  'nav.lightMode': 'ライトモード',
+  'nav.darkMode': 'ダークモード',
+  'nav.editMenu': 'メニューを編集',
   'nav.admin': '管理',
   'header.signIn': 'ログイン',
   'search.open': '検索',
@@ -32,6 +35,7 @@ export const ja: Record<MessageKey, string> = {
   'footer.impressum': 'Impressum（運営者情報）',
   'footer.privacy': 'Datenschutz（プライバシー）',
   'footer.rss': 'RSS',
+  'footer.pages': 'ページ',
   'footer.login': 'ログイン',
   'footer.logout': 'ログアウト',
 

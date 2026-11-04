@@ -21,16 +21,16 @@ export function StatusBadge({ status }: { status: ProjectDoc['status'] }) {
 export function ProjectCard({ project, among }: { project: ProjectDoc; among?: string[] }) {
   const t = useT();
   return (
-    <article className="card group relative flex flex-col gap-3 transition-[border-color,transform,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-accent/70">
+    <article className="card group relative flex flex-col gap-3 transition-[transform,box-shadow] duration-300 hover:-translate-y-1">
       <ItemTools target={{ kind: 'project', slug: project.slug, among }} label={project.title} />
       {project.cover ? (
-        <img src={project.cover} alt="" loading="lazy" className="-mx-5 -mt-5 mb-1 aspect-[16/9] w-[calc(100%+2.5rem)] max-w-none rounded-t-lg object-cover" />
+        <img src={project.cover} alt="" loading="lazy" className="-mx-3 -mt-3 mb-1 aspect-[16/9] w-[calc(100%+1.5rem)] max-w-none rounded-[16px] object-cover" />
       ) : null}
       <div className="flex items-center justify-between gap-2">
         <span className="label">{project.period}</span>
         <StatusBadge status={project.status} />
       </div>
-      <h3 className="font-mono text-lg font-bold leading-snug">
+      <h3 className="text-[19px] font-bold leading-snug tracking-tight">
         <Link to={project.url} className="text-fg after:absolute after:inset-0 hover:text-accent hover:no-underline">
           {project.title}
         </Link>
@@ -54,7 +54,7 @@ export function KnowhowRow({ doc }: { doc: KnowhowDoc }) {
       <ItemTools target={{ kind: 'knowhow', path: `content/knowhow/${doc.category}/${doc.slug}.md` }} label={doc.title} />
       <p className="label pt-1">{categoryLabel(doc.category)}</p>
       <div>
-        <h3 className="font-mono font-bold">
+        <h3 className="font-bold tracking-tight">
           <Link to={doc.url} className="text-fg after:absolute after:inset-0 hover:text-accent hover:no-underline">
             {doc.title}
           </Link>

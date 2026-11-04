@@ -1,4 +1,4 @@
-// Line icons for the Liquid Glass prototype (24px grid, stroke = currentColor).
+// Line icons for the Liquid Glass navigation (24px grid, stroke = currentColor).
 import type { ReactNode } from 'react';
 
 function Icon({ children }: { children: ReactNode }) {
@@ -83,5 +83,53 @@ export const HeartIcon = () => (
 export const ScaleIcon = () => (
   <Icon>
     <path d="M12 4v16M6 20h12M4 9h16M7 9l-3 6h6zM17 9l-3 6h6z" />
+  </Icon>
+);
+export const SearchIcon = () => (
+  <Icon>
+    <circle cx="11" cy="11" r="6.5" />
+    <path d="m16 16 4.5 4.5" />
+  </Icon>
+);
+export const SkillsIcon = () => (
+  <Icon>
+    <path d="M12 3.5 14.6 9l5.9.6-4.4 4 1.3 5.9L12 16.6 6.6 19.5l1.3-5.9-4.4-4L9.4 9z" />
+  </Icon>
+);
+export const CertificateIcon = () => (
+  <Icon>
+    <circle cx="12" cy="9.5" r="5" />
+    <path d="m9 14-1.5 6.5L12 18l4.5 2.5L15 14" />
+  </Icon>
+);
+export const GearIcon = () => (
+  <Icon>
+    <circle cx="12" cy="12" r="3" />
+    <path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8" />
+  </Icon>
+);
+export const LogoutIcon = () => (
+  <Icon>
+    <path d="M14 4.5h4.5v15H14M10 8l-4 4 4 4M6 12h9" />
+  </Icon>
+);
+export const LoginIcon = () => (
+  <Icon>
+    <path d="M10 4.5H5.5v15H10M14 8l4 4-4 4M18 12H9" />
+  </Icon>
+);
+export const EditIcon = () => (
+  <Icon>
+    <path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z" />
+  </Icon>
+);
+export const CheckIcon = () => (
+  <Icon>
+    <path d="m5 12.5 4.5 4.5L19 7.5" />
+  </Icon>
+);
+export const RssIcon = () => (
+  <Icon>
+    <path d="M5 19a1 1 0 1 0 0-.01M5 11a8 8 0 0 1 8 8M5 4.5A14.5 14.5 0 0 1 19.5 19" />
   </Icon>
 );

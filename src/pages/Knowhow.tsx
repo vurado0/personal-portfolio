@@ -58,7 +58,7 @@ export default function Knowhow() {
       <PageHeader pageId={category ? undefined : 'knowhow'} label={t('knowhow.crumb')} title={category ? `${categoryLabel(category)}` : 'Knowledge base'}>
         Guides, cheat sheets and setups I keep coming back to.
       </PageHeader>
-      <div ref={anchor} className="container-page grid gap-10 pt-8 lg:grid-cols-[13rem_1fr]">
+      <div ref={anchor} className="container-page sheet grid gap-10 lg:grid-cols-[13rem_1fr]">
         <aside className="font-mono text-sm lg:sticky lg:top-24 lg:self-start">
           <p className="section-title mb-3">{t('knowhow.categories')}</p>
           <ul className="flex flex-wrap gap-x-4 gap-y-1 lg:block lg:space-y-1">

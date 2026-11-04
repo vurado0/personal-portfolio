@@ -160,7 +160,7 @@ export default function Admin() {
   return (
     <>
       <Seo title="Admin" noindex />
-      <div className="container-page max-w-4xl pt-10">
+      <div className="container-page sheet max-w-4xl">
         <p className="section-title">admin</p>
         {auth.status === 'unconfigured' ? (
           <p className="mt-6">Firebase is not configured. Add the VITE_FIREBASE_* variables (see README).</p>
@@ -171,7 +171,7 @@ export default function Admin() {
         ) : (
           <>
             <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-              <h1 className="font-mono text-2xl font-bold">Hi, {auth.user.displayName?.split(' ')[0] ?? 'admin'} ☕</h1>
+              <h1 className="text-3xl font-bold tracking-tight">Hi, {auth.user.displayName?.split(' ')[0] ?? 'admin'} ☕</h1>
               <div className="flex gap-2">
                 <a href="/" className="chip min-h-9 text-fg">
                   view site

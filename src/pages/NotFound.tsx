@@ -8,8 +8,8 @@ export default function NotFound() {
   return (
     <>
       <Seo title="Not found" noindex />
-      <Background name="coffee-waves" className="min-h-[70vh]">
-        <div className="container-page flex min-h-[70vh] flex-col items-start justify-center py-20">
+      <Background name="coffee-waves" className="min-h-[60vh]" page>
+        <div className="flex min-h-[55vh] flex-col items-start justify-center px-6 py-16 sm:px-10">
           <p className="font-mono text-sm text-muted">
             <span className="text-accent">$</span> cat this-page
           </p>

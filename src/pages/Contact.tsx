@@ -47,7 +47,7 @@ export default function Contact() {
       <PageHeader pageId="contact" label="contact" title="Say hello">
         Questions, opportunities or just a coffee recommendation — write me a message.
       </PageHeader>
-      <div className="container-page grid gap-12 pt-10 lg:grid-cols-[1fr_18rem]">
+      <div className="container-page sheet grid gap-12 lg:grid-cols-[1fr_18rem]">
         {firebaseConfigured ? (
           <form onSubmit={onSubmit} className="max-w-xl space-y-5">
             <div>

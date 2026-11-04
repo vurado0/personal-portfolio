@@ -1,7 +1,6 @@
 // /login — the owner's sign-in page (Google). Visitors never need an account.
 import { useEffect, useState } from 'react';
 import { Link, Navigate, useSearchParams } from 'react-router';
-import backgrounds from '../generated/backgrounds.json';
 import { useContent } from '../lib/content';
 import { AuthError } from '../components/AuthError';
 import { adminHint, signInWithGoogle, signOutUser, useAdminAuth } from '../lib/auth';
@@ -28,7 +27,6 @@ export default function Login() {
   const next = params.get('next')?.startsWith('/') ? params.get('next')! : '/admin';
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-  const bg = backgrounds['espresso-shot'];
   const site = useContent().content.profile;
   const t = useT();
 
@@ -64,17 +62,13 @@ export default function Login() {
     <>
       <Seo title="Login" noindex />
       <section className="relative min-h-[calc(100vh-4rem)] overflow-hidden">
-        <div
-          className="absolute inset-0 opacity-70"
-          style={{ backgroundImage: `linear-gradient(90deg, rgb(var(--bg)) 15%, rgb(var(--bg) / 0.75) 55%, rgb(var(--bg) / 0.2)), url(${bg.src}), url(${bg.placeholder})`, backgroundSize: 'cover', backgroundPosition: 'center 30%' }}
-          aria-hidden="true"
-        />
-        <div className="container-page relative flex min-h-[calc(100vh-4rem)] items-center py-16">
-          <div className="w-full max-w-md">
+
+        <div className="container-page relative flex min-h-[calc(100vh-10rem)] items-center py-10">
+          <div className="material w-full max-w-md rounded-[28px] p-6 sm:p-8">
             <p className="font-mono text-sm text-muted">
               <span className="text-accent">$</span> sudo login
             </p>
-            <h1 className="mt-4 font-mono text-4xl font-bold leading-tight sm:text-5xl">
+            <h1 className="mt-4 text-4xl font-bold leading-tight tracking-[-0.03em] sm:text-5xl">
               {t('login.welcome')}<span className="text-accent">.</span>
             </h1>
             <p className="mt-3 text-muted">
@@ -84,7 +78,7 @@ export default function Login() {
             <section className="card mt-8 space-y-4" aria-labelledby="guest-title">
               <div>
                 <p className="label">{t('login.visitor')}</p>
-                <h2 id="guest-title" className="mt-1 font-mono text-lg font-bold">
+                <h2 id="guest-title" className="mt-1 text-lg font-bold tracking-tight">
                   {t('login.guestTitle')}
                 </h2>
                 <p className="mt-1 text-sm text-muted">{t('login.guestText')}</p>
@@ -111,7 +105,7 @@ export default function Login() {
             <div className="card mt-4 space-y-5">
               <div>
                 <p className="label">{t('login.owner')}</p>
-                <h2 className="mt-1 font-mono text-lg font-bold">{t('login.signInTitle')}</h2>
+                <h2 className="mt-1 text-lg font-bold tracking-tight">{t('login.signInTitle')}</h2>
               </div>
               {auth.status === 'unconfigured' ? (
                 <p className="text-sm">Firebase is not configured yet (VITE_FIREBASE_* variables are missing).</p>

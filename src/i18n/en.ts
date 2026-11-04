@@ -6,6 +6,9 @@ export const en = {
   'nav.portfolio': '// portfolio',
   'nav.personal': '// personal',
   'nav.owner': '// owner',
+  'nav.lightMode': 'Light mode',
+  'nav.darkMode': 'Dark mode',
+  'nav.editMenu': 'Edit menu',
   'nav.admin': 'Admin',
   'header.signIn': 'Sign in',
   'search.open': 'Search',
@@ -33,6 +36,7 @@ export const en = {
   'footer.impressum': 'Impressum',
   'footer.privacy': 'Datenschutz',
   'footer.rss': 'RSS',
+  'footer.pages': 'Pages',
   'footer.login': 'Login',
   'footer.logout': 'Log out',
 

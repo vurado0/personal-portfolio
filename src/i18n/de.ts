@@ -6,6 +6,9 @@ export const de: Record<MessageKey, string> = {
   'nav.portfolio': '// portfolio',
   'nav.personal': '// persönlich',
   'nav.owner': '// inhaber',
+  'nav.lightMode': 'Heller Modus',
+  'nav.darkMode': 'Dunkler Modus',
+  'nav.editMenu': 'Menü bearbeiten',
   'nav.admin': 'Admin',
   'header.signIn': 'Anmelden',
   'search.open': 'Suchen',
@@ -32,6 +35,7 @@ export const de: Record<MessageKey, string> = {
   'footer.impressum': 'Impressum',
   'footer.privacy': 'Datenschutz',
   'footer.rss': 'RSS',
+  'footer.pages': 'Seiten',
   'footer.login': 'Login',
   'footer.logout': 'Abmelden',
 

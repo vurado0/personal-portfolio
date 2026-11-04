@@ -19,8 +19,6 @@ import Skills from './pages/Skills';
 // The admin area (and with it the upload code) is only downloaded when /admin is opened.
 const Admin = lazy(loadAdmin);
 const Login = lazy(loadLogin);
-// Design prototype (Liquid Glass, branch proto/liquid-glass only).
-const Prototype = lazy(() => import('./prototype/Prototype'));
 
 function SkillRedirect() {
   const { id } = useParams();
@@ -30,14 +28,6 @@ function SkillRedirect() {
 export function App() {
   return (
     <Routes>
-      <Route
-        path="prototype"
-        element={
-          <Suspense fallback={null}>
-            <Prototype />
-          </Suspense>
-        }
-      />
       <Route element={<Layout />}>
         <Route index element={<Home />} />
         {isEnabled('skills') && (

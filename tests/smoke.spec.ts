@@ -54,16 +54,31 @@ test.describe('languages', () => {
     expect(ja).toContain('href="/ja/skills"');
   });
 
-  test('switching the language moves to its URL and back', async ({ page }) => {
+  test('switching the language moves to its URL and back', async ({ page, isMobile }) => {
     await open(page, '/skills');
-    await page.getByRole('button', { name: /Change language/ }).click();
-    await page.getByRole('link', { name: 'Deutsch' }).click();
+    if (isMobile) {
+      // Phones: the languages are in the ⋯ menu.
+      await page.getByRole('button', { name: 'Menu' }).click();
+      await page.getByRole('menuitem', { name: 'Deutsch' }).click();
+    } else {
+      await page.getByRole('radio', { name: 'DE' }).click();
+    }
     await expect(page).toHaveURL(/\/de\/skills$/);
     await expect(page.locator('h1')).toHaveText('Womit ich arbeite');
     await expect(page.locator('html')).toHaveAttribute('lang', 'de');
     await page.goBack();
     await expect(page).toHaveURL(/\/skills$/);
     await expect(page.locator('h1')).toHaveText('What I work with');
+  });
+
+  test('the tab bar navigates between the main sections', async ({ page }) => {
+    await open(page, '/');
+    const tabs = page.getByRole('navigation', { name: 'Main' }).last();
+    await tabs.getByRole('link', { name: 'Projects' }).click();
+    await expect(page).toHaveURL(/\/projects$/);
+    await expect(tabs.getByRole('link', { name: 'Projects' })).toHaveAttribute('aria-current', 'page');
+    await tabs.getByRole('link', { name: 'Know-how' }).click();
+    await expect(page).toHaveURL(/\/knowhow$/);
   });
 
   test('a saved language is applied on English URLs', async ({ page }) => {

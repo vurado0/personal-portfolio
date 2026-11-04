@@ -1,35 +1,29 @@
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import backgrounds from '../generated/backgrounds.json';
 
 export type BackgroundName = keyof typeof backgrounds;
 
 /**
- * Coffee texture background. The tiny blurred placeholder sits underneath the real WebP,
- * so something warm shows instantly. Content always sits on an overlay for readability.
+ * A section on thin frosted material. The coffee texture itself is now the site-wide wallpaper
+ * (GlassNav), so `name` and `position` only remain for the call sites.
  */
 export function Background({
-  name,
   className = '',
-  overlay = true,
-  position = 'center',
+  page = false,
   children,
 }: {
   name: BackgroundName;
   className?: string;
   overlay?: boolean;
   position?: string;
+  /** A page header: inside the page container, with room below. */
+  page?: boolean;
   children?: ReactNode;
 }) {
-  const bg = backgrounds[name];
-  const style: CSSProperties = {
-    backgroundImage: `url(${bg.src}), url(${bg.placeholder})`,
-    backgroundSize: 'cover, cover',
-    backgroundPosition: `${position}, ${position}`,
-  };
-  return (
-    <div className={`relative overflow-hidden ${className}`} style={style}>
-      {overlay ? <div className="bg-overlay absolute inset-0" aria-hidden="true" /> : null}
+  const pane = (
+    <div className={`material-thin overflow-hidden rounded-[28px] ${page ? 'pb-6' : ''} ${className}`}>
       <div className="relative">{children}</div>
     </div>
   );
+  return page ? <div className="container-page pt-6">{pane}</div> : pane;
 }

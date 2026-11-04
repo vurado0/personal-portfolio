@@ -30,8 +30,8 @@ function BlogHeader() {
   const tab = ({ isActive }: { isActive: boolean }) =>
     `-mb-px border-b-2 px-1 pb-3 text-lg font-bold no-underline hover:no-underline ${isActive ? 'border-accent text-fg' : 'border-transparent text-muted hover:text-fg'}`;
   return (
-    <Background name="coffee-waves" position="center 40%">
-      <div className="container-page pt-14 sm:pt-20">
+    <Background name="coffee-waves" position="center 40%" page>
+      <div className="px-6 pt-10 sm:px-10 sm:pt-14">
         <div className="grid gap-6 md:grid-cols-[9rem_1fr]">
           <dl className="meta-grid content-start md:grid-cols-[3.5rem_1fr]">
             {(text.meta ?? []).map((m, i) => (
@@ -67,7 +67,7 @@ export function BlogFeed() {
     <>
       <Seo title="Blog — Feed" description="Short posts: photos, daily achievements, thoughts and music." path="/blog" />
       <BlogHeader />
-      <div className="container-page max-w-4xl pt-8">
+      <div className="container-page sheet max-w-4xl">
         <FeedView />
       </div>
     </>
@@ -85,7 +85,7 @@ export function BlogArticles() {
     <>
       <Seo title="Blog — Articles" description="Longer articles and write-ups." path="/blog/articles" />
       <BlogHeader />
-      <div className="container-page max-w-5xl pt-8">
+      <div className="container-page sheet max-w-5xl">
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1.5 pb-6" role="group" aria-label={t('filter.byTag')}>
             <TagChip tag={t('filter.all')} active={!tag} onClick={() => setParams({}, { replace: true })} />
@@ -111,7 +111,7 @@ export function BlogArticle() {
   return (
     <>
       <Seo title={a.title} description={a.summary} image={a.cover} type="article" path={a.url} />
-      <article className="container-page max-w-5xl pt-10">
+      <article className="container-page sheet max-w-5xl">
         <div className="flex items-center justify-between gap-3">
           <Link to="/blog/articles" className="text-sm">
             {t('blog.backArticles')}
@@ -168,7 +168,7 @@ export function PostDetail() {
   return (
     <>
       <Seo title={title} description={post?.text.slice(0, 160)} image={image ? cldUrl(image, 1200) : undefined} type="article" />
-      <div className="container-page max-w-4xl pt-10">
+      <div className="container-page sheet max-w-4xl">
         <Link to="/blog" className="text-sm">
           {t('blog.backFeed')}
         </Link>
