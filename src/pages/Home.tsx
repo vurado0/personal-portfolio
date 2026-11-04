@@ -24,7 +24,7 @@ function LatestFeed() {
   return (
     <section className="container-page mt-20" aria-labelledby="feed-title">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <h2 id="feed-title" className="section-title">
+        <h2 id="feed-title" className="section-title capsule">
           {t('home.latestFeed')}
         </h2>
         <div className="flex items-center gap-3">
@@ -67,8 +67,8 @@ export default function Home() {
   return (
     <>
       <Seo path="/" image={site.photo || espresso.src} />
-      <section className="relative overflow-hidden border-b border-line/60">
-        <div className="container-page grid items-center gap-10 py-14 sm:py-20 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:gap-12">
+      <section className="container-page pt-6">
+        <div className="material-thin grid items-center gap-8 rounded-[36px] p-6 sm:p-10 md:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] md:gap-12">
           <div>
             <div className="flex items-center justify-between gap-3">
               <p className="font-mono text-sm text-muted">
@@ -76,39 +76,22 @@ export default function Home() {
               </p>
               <EditButton target={{ kind: 'profile' }} label="edit profile" />
             </div>
-            <h1 className="mt-4 font-mono text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="mt-3 text-5xl font-bold leading-[1.02] tracking-[-0.035em] sm:text-6xl lg:text-7xl">
               {site.name}
               <span className="text-accent">.</span>
             </h1>
-            <p className="mt-3 font-mono text-lg text-muted">{site.role}</p>
-            <p className="mt-6 max-w-xl text-lg">{site.tagline}</p>
+            <p className="mt-3 text-lg text-muted">{site.role}</p>
+            <p className="mt-5 max-w-lg text-xl font-bold tracking-tight">{site.tagline}</p>
             {site.highlights?.length ? (
-              <ul aria-label={t('home.highlights')} className="mt-4 flex max-w-xl flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-sm text-muted">
+              <ul aria-label={t('home.highlights')} className="mt-6 flex max-w-xl flex-wrap gap-2">
                 {site.highlights.map((h, i) => (
-                  <li key={i} className="flex items-center gap-x-2.5">
-                    {i > 0 && (
-                      <span className="text-accent" aria-hidden="true">
-                        ·
-                      </span>
-                    )}
+                  <li key={i} className="chip px-3 py-1">
                     {h.replace('{projects}', String(content.projects.length))}
                   </li>
                 ))}
               </ul>
             ) : null}
-
-            <div className="mt-8 font-mono text-sm">
-              <p className="section-title">{t('home.focus')}</p>
-              <ul className="mt-3 space-y-1.5">
-                {site.currentFocus.map((f) => (
-                  <li key={f}>
-                    <span className="text-accent">&gt;</span> {f}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mt-10 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link to="/projects" className="btn-primary">
                 {t('home.viewProjects')}
               </Link>
@@ -123,8 +106,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="relative mx-auto w-full max-w-xs md:mx-0 md:ml-auto md:max-w-sm">
-            <div className="absolute -inset-6 rounded-full bg-crema/10 blur-3xl" aria-hidden="true" />
+          <div className="mx-auto w-full max-w-xs md:mx-0 md:ml-auto md:max-w-md">
             {site.photo ? (
               <img
                 src={site.photo}
@@ -132,7 +114,7 @@ export default function Home() {
                 height={886}
                 alt={t('home.portraitAlt', { name: site.name })}
                 fetchPriority="high"
-                className="relative aspect-square w-full rounded-lg border border-line/60 bg-dark-roast object-cover shadow-warm"
+                className="aspect-square w-full rounded-[28px] object-cover shadow-2xl"
               />
             ) : (
               <img
@@ -141,7 +123,7 @@ export default function Home() {
                 height={espresso.height}
                 alt=""
                 fetchPriority="high"
-                className="relative aspect-[4/5] w-full rounded-lg border border-line/60 object-cover shadow-warm"
+                className="aspect-[4/5] w-full rounded-[28px] object-cover shadow-2xl"
                 style={{ backgroundImage: `url(${espresso.placeholder})`, backgroundSize: 'cover' }}
               />
             )}
@@ -151,11 +133,11 @@ export default function Home() {
 
       {featured.length > 0 && (
         <section className="container-page mt-16" aria-labelledby="featured-title">
-          <div className="flex items-baseline justify-between">
-            <h2 id="featured-title" className="section-title">
+          <div className="flex items-center justify-between gap-3">
+            <h2 id="featured-title" className="section-title capsule">
               {t('home.featured')}
             </h2>
-            <Link to="/projects" className="font-mono text-xs">
+            <Link to="/projects" className="capsule font-mono text-xs">
               {t('home.allProjects')}
             </Link>
           </div>
@@ -169,29 +151,40 @@ export default function Home() {
         </section>
       )}
 
-      <section className="container-page mt-20 grid gap-12 lg:grid-cols-2">
-        <div>
-          <div className="flex items-baseline justify-between">
+      <section className="container-page mt-16 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+        <div className="card p-6">
+          <h2 className="section-title">{t('home.focus')}</h2>
+          <ul className="mt-4 space-y-3">
+            {site.currentFocus.map((f) => (
+              <li key={f} className="flex items-center gap-3">
+                <span className="focus-dot" aria-hidden="true" />
+                {f}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="card p-6">
+          <div className="flex items-baseline justify-between gap-3">
             <h2 className="section-title">{t('home.recentKnowhow')}</h2>
             <Link to="/knowhow" className="font-mono text-xs">
               {t('home.knowledgeBase')}
             </Link>
           </div>
-          <div className="mt-2">
+          <div className="mt-2 [&_article:last-child]:border-b-0">
             {content.knowhow.slice(0, 4).map((d) => (
               <KnowhowRow key={d.url} doc={d} />
             ))}
           </div>
         </div>
         {content.articles.length > 0 && (
-          <div data-side="personal" className="font-blog">
-            <div className="flex items-baseline justify-between">
+          <div data-side="personal" className="card font-blog p-6 lg:col-span-2">
+            <div className="flex items-baseline justify-between gap-3">
               <h2 className="section-title">{t('home.latestArticle')}</h2>
               <Link to="/blog/articles" className="font-mono text-xs">
                 {t('home.allArticles')}
               </Link>
             </div>
-            <div className="mt-2 [&_h3]:text-3xl sm:[&_h3]:text-4xl [&_article]:md:grid-cols-1">
+            <div className="mt-2 [&_article]:border-b-0 [&_h3]:text-3xl sm:[&_h3]:text-4xl">
               <ArticleRow article={content.articles[0]} />
             </div>
           </div>

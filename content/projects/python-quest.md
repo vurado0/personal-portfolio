@@ -7,6 +7,7 @@ tags: [web, education, game]
 role: Solo developer
 status: done
 period: 2026
+cover: /images/projects/python-quest.jpg
 links:
   github: https://github.com/vurado0/python-quest
 ---

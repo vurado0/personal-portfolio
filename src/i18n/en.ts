@@ -6,6 +6,9 @@ export const en = {
   'nav.portfolio': '// portfolio',
   'nav.personal': '// personal',
   'nav.owner': '// owner',
+  'nav.lightMode': 'Light mode',
+  'nav.darkMode': 'Dark mode',
+  'nav.editMenu': 'Edit menu',
   'nav.admin': 'Admin',
   'header.signIn': 'Sign in',
   'search.open': 'Search',
@@ -33,6 +36,7 @@ export const en = {
   'footer.impressum': 'Impressum',
   'footer.privacy': 'Datenschutz',
   'footer.rss': 'RSS',
+  'footer.pages': 'Pages',
   'footer.login': 'Login',
   'footer.logout': 'Log out',
 
@@ -104,6 +108,9 @@ export const en = {
   'toc.label': 'Table of contents',
 
   // projects
+  'carousel.label': 'Project carousel',
+  'carousel.open': 'Open project',
+  'carousel.hint': 'scroll to spin ↓',
   'projects.back': '← all projects',
   'projects.role': 'role',
   'projects.stack': 'stack',

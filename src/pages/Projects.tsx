@@ -1,11 +1,11 @@
 import { Link, useParams } from 'react-router';
-import backgrounds from '../generated/backgrounds.json';
 import { ProjectCard, StatusBadge } from '../components/Cards';
 import { SkillChips } from '../components/Chips';
 import { Markdown } from '../components/Markdown';
 import { useContent, usePageText } from '../lib/content';
 import { AddButton, EditButton, useEdit } from '../lib/edit';
 import { SortableList } from '../components/Sortable';
+import { ProjectCarousel } from '../components/ProjectCarousel';
 import { Seo } from '../lib/head';
 import { useT } from '../i18n';
 import NotFound from './NotFound';
@@ -13,7 +13,6 @@ import NotFound from './NotFound';
 export function Projects() {
   const { content } = useContent();
   const text = usePageText('projects', { label: 'projects', title: 'Things I built', intro: 'From idea to done: what each project solves, how, and what I learned.' });
-  const bg = backgrounds['espresso-shot'];
   // Edit mode: drag the cards into the order they should have (also used on the home page).
   const edit = useEdit();
   const ids = content.projects.map((p) => p.slug);
@@ -21,23 +20,19 @@ export function Projects() {
   return (
     <>
       <Seo title="Projects" description="Projects with stack, role, status and lessons learned." path="/projects" />
-      <header className="relative overflow-hidden border-b border-line/60">
-        <div
-          className="absolute inset-y-0 right-0 hidden w-1/2 opacity-60 sm:block"
-          style={{ backgroundImage: `linear-gradient(90deg, rgb(var(--bg)) 0%, rgb(var(--bg) / 0.2) 60%), url(${bg.src}), url(${bg.placeholder})`, backgroundSize: 'cover', backgroundPosition: 'center 35%' }}
-          aria-hidden="true"
-        />
-        <div className="container-page relative pb-10 pt-12 sm:pt-16">
+      <header className="container-page pt-6">
+        <div className="material rounded-[28px] p-6 sm:p-8">
           <div className="flex items-center justify-between gap-3">
             <p className="section-title">{text.label}</p>
             <EditButton target={{ kind: 'page', id: 'projects' }} label="page text" />
           </div>
-          <h1 className="mt-3 font-mono text-3xl font-bold sm:text-4xl">{text.title}</h1>
+          <h1 className="mt-2 text-4xl font-bold tracking-[-0.03em] sm:text-5xl">{text.title}</h1>
           {text.intro ? <p className="mt-4 max-w-xl whitespace-pre-line text-muted">{text.intro}</p> : null}
         </div>
       </header>
+      <ProjectCarousel projects={content.projects} />
       <SortableList
-        className="stagger container-page mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+        className="stagger container-page mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3"
         ids={ids}
         onReorder={(next) => edit?.reorderProjects?.(ids, next)}
         label={(id) => bySlug.get(id)!.title}
@@ -58,7 +53,7 @@ export function ProjectDetail() {
   return (
     <>
       <Seo title={p.title} description={p.summary} image={p.cover} type="article" path={p.url} />
-      <article className="container-page max-w-4xl pt-10">
+      <article className="container-page sheet max-w-4xl">
         <div className="flex items-center justify-between gap-3">
           <Link to="/projects" className="font-mono text-xs">
             {t('projects.back')}
@@ -69,7 +64,7 @@ export function ProjectDetail() {
           <StatusBadge status={p.status} />
           <span className="label">{p.period}</span>
         </div>
-        <h1 className="mt-3 font-mono text-3xl font-bold leading-tight sm:text-5xl">{p.title}</h1>
+        <h1 className="mt-3 text-4xl font-bold leading-tight tracking-[-0.03em] sm:text-5xl">{p.title}</h1>
         <p className="mt-4 text-lg text-muted">{p.summary}</p>
 
         <dl className="mt-8 grid gap-4 border-y border-line/60 py-6 font-mono text-sm sm:grid-cols-3">

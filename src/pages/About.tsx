@@ -140,7 +140,7 @@ export default function About() {
           <EditButton target={{ kind: 'cv-personal' }} label="edit personal info" />
         </span>
       </PageHeader>
-      <div className="container-page grid gap-12 pt-10 lg:grid-cols-[1fr_18rem]">
+      <div className="container-page sheet grid gap-12 lg:grid-cols-[1fr_18rem]">
         <div className="min-w-0 space-y-12">
           {cv.summary ? (
             <section aria-labelledby="cv-summary">

@@ -81,7 +81,7 @@ export default function Skills() {
       <PageHeader pageId="skills" label="skills" title="What I work with">
         Every skill links to the projects, know-how articles and posts where it shows up.
       </PageHeader>
-      <div className="container-page">
+      <div className="container-page sheet">
         <div className="flex flex-wrap gap-1.5 py-6" role="group" aria-label={t('filter.byGroup')}>
           <TagChip tag={t('filter.allLower')} active={!group} onClick={() => setParams({}, { replace: true })} />
           {content.skillGroups.map((g) => (

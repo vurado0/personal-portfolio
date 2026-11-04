@@ -10,8 +10,8 @@ export default function Hobbies() {
   return (
     <>
       <Seo title="Hobbies" description="What I do when I am not at the keyboard." path="/hobbies" />
-      <Background name="latte-swirl" position="center 20%">
-        <div className="container-page pb-12 pt-14 sm:pt-20">
+      <Background name="latte-swirl" position="center 20%" page>
+        <div className="px-6 pb-6 pt-10 sm:px-10 sm:pt-14">
           <div className="flex items-start justify-between gap-3">
             <dl className="meta-grid">
               {(text.meta ?? []).map((m, i) => (
@@ -27,7 +27,7 @@ export default function Hobbies() {
           {text.intro ? <p className="mt-4 max-w-xl whitespace-pre-line text-lg">{text.intro}</p> : null}
         </div>
       </Background>
-      <div className="container-page grid gap-0 pt-6">
+      <div className="container-page sheet grid gap-0">
         {content.hobbies.map((h) => (
           <article key={h.id} className="reveal group relative grid gap-6 border-t border-ink/20 py-10 dark:border-cream/15 md:grid-cols-[1fr_1.2fr]">
             <ItemTools target={{ kind: 'hobby', id: h.id }} label={h.title} />

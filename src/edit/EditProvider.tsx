@@ -263,7 +263,7 @@ function LiveEdit({ children, onPublished, published, onDismiss }: { children: R
     <EditContextProvider value={api}>
       <div className="pb-36">{children}</div>
       {target ? <Drawer target={target} onClose={close} onPublished={onPublished} /> : null}
-      <div className="fixed inset-x-0 bottom-0 z-50 space-y-2 p-2 sm:inset-x-auto sm:bottom-4 sm:right-4 sm:w-[28rem] sm:p-0">
+      <div className="fixed inset-x-0 bottom-[86px] z-50 space-y-2 p-2 sm:inset-x-auto sm:bottom-[92px] sm:right-4 sm:w-[28rem] sm:p-0">
         {published ? <DeployNotice published={published} onDismiss={onDismiss} /> : null}
         <div className="flex flex-wrap items-center gap-1.5 rounded-lg border border-line bg-bg/95 px-3 py-2 font-mono text-xs shadow-warm backdrop-blur">
           <span className="mr-auto font-bold text-accent">✎ edit mode</span>

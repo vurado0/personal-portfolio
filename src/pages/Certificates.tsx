@@ -26,7 +26,7 @@ export default function Certificates() {
       <PageHeader pageId="certificates" label="certificates" title="Certifications">
         Completed, in progress and on the roadmap.
       </PageHeader>
-      <div className="container-page space-y-12 pt-10">
+      <div className="container-page sheet space-y-12">
         {order.map((status) => {
           const list = content.certificates.filter((c) => c.status === status);
           if (!list.length && !editing) return null;

@@ -54,16 +54,31 @@ test.describe('languages', () => {
     expect(ja).toContain('href="/ja/skills"');
   });
 
-  test('switching the language moves to its URL and back', async ({ page }) => {
+  test('switching the language moves to its URL and back', async ({ page, isMobile }) => {
     await open(page, '/skills');
-    await page.getByRole('button', { name: /Change language/ }).click();
-    await page.getByRole('link', { name: 'Deutsch' }).click();
+    if (isMobile) {
+      // Phones: the languages are in the ⋯ menu.
+      await page.getByRole('button', { name: 'Menu' }).click();
+      await page.getByRole('menuitem', { name: 'Deutsch' }).click();
+    } else {
+      await page.getByRole('radio', { name: 'DE' }).click();
+    }
     await expect(page).toHaveURL(/\/de\/skills$/);
     await expect(page.locator('h1')).toHaveText('Womit ich arbeite');
     await expect(page.locator('html')).toHaveAttribute('lang', 'de');
     await page.goBack();
     await expect(page).toHaveURL(/\/skills$/);
     await expect(page.locator('h1')).toHaveText('What I work with');
+  });
+
+  test('the tab bar navigates between the main sections', async ({ page }) => {
+    await open(page, '/');
+    const tabs = page.getByRole('navigation', { name: 'Main' }).last();
+    await tabs.getByRole('link', { name: 'Projects' }).click();
+    await expect(page).toHaveURL(/\/projects$/);
+    await expect(tabs.getByRole('link', { name: 'Projects' })).toHaveAttribute('aria-current', 'page');
+    await tabs.getByRole('link', { name: 'Know-how' }).click();
+    await expect(page).toHaveURL(/\/knowhow$/);
   });
 
   test('a saved language is applied on English URLs', async ({ page }) => {
@@ -91,6 +106,16 @@ test.describe('features', () => {
   test('home page shows the highlights', async ({ page }) => {
     await open(page, '/');
     await expect(page.getByRole('list', { name: 'highlights' })).toContainText('projects');
+  });
+
+  test('the project carousel turns while scrolling', async ({ page }) => {
+    await open(page, '/projects');
+    const caption = page.locator('.carousel-caption h2');
+    const first = await caption.textContent();
+    await page.evaluate(`(() => { const el = document.querySelector('.carousel'); scrollTo(0, el.getBoundingClientRect().top + scrollY + (el.offsetHeight - innerHeight) * 0.5); })()`);
+    await expect(caption).not.toHaveText(first ?? '');
+    const spin = await page.locator('.carousel-ring').evaluate((el) => Number((el as HTMLElement).style.getPropertyValue('--spin')));
+    expect(spin).toBeGreaterThan(0);
   });
 
   test('search (⌘K / Ctrl+K) finds and opens a project', async ({ page }) => {

@@ -6,7 +6,7 @@ import { Seo } from '../lib/head';
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="space-y-2">
-      <h2 className="font-mono text-lg font-bold">{title}</h2>
+      <h2 className="text-lg font-bold tracking-tight">{title}</h2>
       <div className="space-y-2 text-sm leading-relaxed text-fg/90">{children}</div>
     </section>
   );
@@ -35,7 +35,7 @@ export function Impressum() {
       <PageHeader label="legal" title="Impressum">
         Offenlegung gemäß § 25 MedienG und Informationspflicht gemäß § 5 ECG.
       </PageHeader>
-      <div className="container-page max-w-3xl space-y-8 pt-10">
+      <div className="container-page sheet max-w-3xl space-y-8">
         <Section title="Medieninhaber & Herausgeber">
           <p>
             {site.name}
@@ -70,7 +70,7 @@ export function Datenschutz() {
       <PageHeader label="legal" title="Datenschutzerklärung">
         Informationen zur Verarbeitung personenbezogener Daten gemäß Art. 13 DSGVO.
       </PageHeader>
-      <div className="container-page max-w-3xl space-y-8 pt-10">
+      <div className="container-page sheet max-w-3xl space-y-8">
         <Section title="Verantwortlicher">
           <p>
             {site.name}, {(site.legalAddress ?? '').split('\n').filter(Boolean).join(', ')}, E-Mail: <a href={`mailto:${site.email}`}>{site.email}</a>

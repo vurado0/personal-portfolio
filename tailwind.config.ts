@@ -32,6 +32,7 @@ export default {
       },
       fontFamily: {
         mono: ['var(--font-mono)'],
+        ui: ['var(--font-ui)'],
         blog: ['var(--font-blog)'],
       },
       borderRadius: {

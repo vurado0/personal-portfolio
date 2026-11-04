@@ -5,6 +5,9 @@ import '@fontsource/jetbrains-mono/700.css';
 import '@fontsource/inter-tight/400.css';
 import '@fontsource/inter-tight/700.css';
 import '@fontsource/inter-tight/900.css';
+// Glisse also injects its styles from JS; linking them here means prerendered pages show the glass
+// bars in their final shape before any script runs (no layout shift).
+import 'glisse/styles.css';
 import './styles/index.css';
 import { App } from './App';
 import { prepareLocale, splitLocalePath } from './i18n';

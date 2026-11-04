@@ -11,9 +11,12 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: { baseURL: `http://localhost:${port}`, trace: 'retain-on-failure' },
+  // Chrome and Safari (WebKit), on desktop and phones: the two browsers most visitors use.
   projects: [
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
+    { name: 'safari', use: { ...devices['Desktop Safari'] } },
+    { name: 'iphone', use: { ...devices['iPhone 15 Pro'] } },
   ],
   webServer: {
     command: 'npm run serve',

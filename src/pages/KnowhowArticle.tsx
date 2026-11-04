@@ -19,7 +19,7 @@ export default function KnowhowArticle() {
   return (
     <>
       <Seo title={doc.title} description={doc.summary} type="article" path={doc.url} />
-      <article className="container-page grid gap-10 pt-10 lg:grid-cols-[1fr_14rem]">
+      <article className="container-page sheet grid gap-10 lg:grid-cols-[1fr_14rem]">
         <div className="min-w-0">
           <div className="flex items-center justify-between gap-3">
             <nav aria-label="Breadcrumb" className="font-mono text-xs text-muted">
@@ -27,7 +27,7 @@ export default function KnowhowArticle() {
             </nav>
             <EditButton target={{ kind: 'knowhow', path: `content/knowhow/${doc.category}/${doc.slug}.md` }} />
           </div>
-          <h1 className="mt-4 font-mono text-3xl font-bold leading-tight sm:text-4xl">{doc.title}</h1>
+          <h1 className="mt-4 text-4xl font-bold leading-tight tracking-[-0.03em] sm:text-5xl">{doc.title}</h1>
           <p className="mt-3 max-w-2xl text-muted">{doc.summary}</p>
           <p className="mt-4 font-mono text-xs text-muted">
             <span className="text-accent">{t('knowhow.updated')}</span> {formatDate(doc.updated, locale)} · <span className="text-accent">{t('knowhow.level')}</span>{' '}
